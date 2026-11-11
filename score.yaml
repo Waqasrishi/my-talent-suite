@@ -1,0 +1,49 @@
+# THE ONLY FILE EDITED FOR DEPLOY CONFIG.
+# Checked by `canvas validate` (and again by `canvas deploy`) before anything is uploaded.
+apiVersion: score.dev/v1b1
+
+metadata:
+  name: talent-suite                      # also the hostname: talent-suite--<team>.<base>
+  # What people call it and what it does, shown in the console — `describe-app` writes them.
+  annotations:
+    canvas.dev/visibility: team                  # listed for the team — `canvas share private` keeps it to you
+    canvas.dev/title: AJMN Talent Suite
+    canvas.dev/description: A clickable sandbox prototype of the Talent Suite, with synthetic data only.
+  #   canvas.dev/category: editorial                     # one, from the list in .canvas/contracts/
+  #   canvas.dev/tags: news, workflow                    # up to three, from the same list
+  #   canvas.dev/icon: src/static/icon.png               # square, ≤100 KB — asked for before deploy
+  #   canvas.dev/cover: src/static/cover.jpg             # 1600×600, ≤300 KB — none: one is drawn for it
+
+containers:
+  app:                                # exactly one container, named `app`
+    image: .                          # built by the platform; never a registry reference
+    variables:
+      PORT: ${resources.www.PORT}
+      # DATA_DIR: /data               # with the `data` volume below — src/envs.py reads it
+    # volumes:                        # with the `data` volume below: its disk, always at /data
+    #   /data:
+    #     source: ${resources.data}
+
+resources:
+  www:
+    type: route
+    params:
+      port: 8080
+      path: /healthz                  # answered by server.mjs — a mismatch is `probe.path`
+      auth: sso                       # a company sign-in before anyone reaches the app; none: open to the company network
+      access:
+        read: ["canvas-erp-owners", "canvas-erp-members"]
+      # access:                       # with auth: sso — who, once signed in. None: anyone
+      #   read: ["Innovation and R&D"]        # may open it: emails, Entra groups, or canvas-<team>-members / -owners
+      #   write: ["someone@aljazeera.net"]    # may also change things; absent: the same as read
+      #   deny: []                            # never, whatever read and write say
+
+  # db:                           # DATABASE_URL, from your own Postgres — ajnkit.db
+  #   type: postgres              # schema: src/models.py, then `canvas db revision "<what>"`
+  #   params: {size: 1Gi}         # 1Gi-10Gi; more, to 100Gi, a team owner approves on the app's page
+  # data:                         # a disk of its own, kept across restarts — request-volume
+  #   type: volume                # mounted at /data (above); deleted with the app, no backup
+  #   params: {size: 1Gi}         # 1Gi-10Gi; more, to 100Gi, a team owner approves on the app's page
+  # ai:                           # the app's own AI key: OPENAI_BASE_URL, OPENAI_API_KEY
+  #   type: llm                   # and PLATFORM_LLM_MODELS — the request-llm skill
+  #   params: {models: [gemini-flash-lite]}   # optional: which models; default every one

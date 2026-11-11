@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AJMN Talent Suite Sandbox</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky suite header + amber sandbox bar, 1360px content column, three-zone cockpits, editorial light theme on white (single theme by design reference) */
+:root{
+  --bg:#FFFFFF; --ink:#14181F; --muted:#5A6472; --line:#DDE2E8; --soft:#F4F6F8;
+  --navy:#123D70; --navy-d:#0B2748; --teal:#0E7C78; --teal-soft:#E8F3F2;
+  --amber:#F0A93B; --amber-soft:#FFF6E5; --amber-ink:#17120A; --red:#C2362B; --red-soft:#FBEDEB; --bar:#9AA4B2;
+  --display:'Space Grotesk','IBM Plex Sans Arabic','Segoe UI',sans-serif;
+  --body:'Inter','IBM Plex Sans Arabic','Segoe UI',sans-serif;
+  color-scheme:light;
+}
+:root[dir="rtl"]{ --display:'IBM Plex Sans Arabic','Segoe UI',sans-serif; --body:'IBM Plex Sans Arabic','Segoe UI',sans-serif; }
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.lt,.ls,.n,.meta,.dt,.ds,.st,.gt,.aitext,.barrow>div:first-child,.chipbtn,.inp,h2{unicode-bidi:plaintext}
+main:focus{outline:none}
+a{color:var(--navy)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media(min-width:900px){.gut{padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px))}}
+
+/* shell */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.hdr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 28px;padding-block:6px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.02em;display:flex;align-items:baseline;gap:10px}
+.brand small{font-family:var(--body);font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+nav.main{display:flex;flex-wrap:wrap;gap:0 22px;min-width:0}
+nav.main a{font-size:14px;font-weight:500;text-decoration:none;padding:12px 2px;min-height:44px;display:flex;align-items:center;color:var(--muted);border-bottom:2px solid transparent}
+nav.main a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--navy)}
+nav.main a:hover{color:var(--ink)}
+.lang{display:flex;gap:8px}
+.lang button{min-height:40px;padding:0 14px;background:transparent;border:1px solid var(--line);border-radius:6px;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.sbar{background:var(--amber-soft);border-bottom:1px solid #F3D9A6}
+.sbar-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-block:8px;font-size:13px}
+.sbar label{font-weight:600}
+.sbar select{min-height:36px;padding:0 10px;border:1px solid #E6C68A;border-radius:6px;background:var(--bg)}
+.sbar .who{color:var(--muted)}
+.sbar .sp{flex:1 1 auto}
+.tag-sandbox{font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-ink);background:var(--amber);border-radius:4px;padding:3px 8px}
+
+/* page */
+main{max-width:1360px;margin:0 auto;padding-block:32px 96px;display:flex;flex-direction:column;gap:24px}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.phead>div:first-child{display:flex;flex-direction:column;gap:8px;min-width:0}
+.eyebrow{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy)}
+.eyebrow.teal{color:var(--teal)}
+h1{margin:0;font-family:var(--display);font-size:clamp(28px,4vw,38px);font-weight:700;line-height:1.08;letter-spacing:-.01em;text-wrap:balance}
+h2{margin:0;font-family:var(--display);font-size:20px;font-weight:700;text-wrap:balance}
+h3{margin:0;font-family:var(--display);font-size:16px;font-weight:600}
+.sample{font-size:12.5px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.grid{display:flex;flex-wrap:wrap;gap:20px;align-items:stretch}
+.card{flex:1 1 320px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.card.wide{flex-basis:420px}
+.card.full{flex-basis:100%}
+.card.ai{border-color:var(--teal)}
+.card.warn{border-color:var(--amber);background:var(--amber-soft)}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.meta{font-size:12.5px;color:var(--muted)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-top:1px solid var(--line);text-align:start;background:none;border-inline:0;border-bottom:0;width:100%}
+button.li{cursor:pointer}
+button.li:hover .lt{color:var(--navy)}
+.li .lt{font-size:15px;font-weight:500;line-height:1.3}
+.li .ls{font-size:13px;color:var(--muted);line-height:1.35}
+.li>div:first-child{min-width:0}
+.st{font-size:13px;font-weight:600;white-space:nowrap}
+.c-navy{color:var(--navy)}.c-teal{color:var(--teal)}.c-red{color:var(--red)}.c-muted{color:var(--muted)}
+.empty{font-size:13.5px;color:var(--muted);padding:12px 0;border-top:1px solid var(--line)}
+
+/* controls */
+.btn{min-height:40px;padding:0 16px;border-radius:6px;border:1px solid var(--navy);background:var(--navy);color:#FFFFFF;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--navy-d)}
+.btn.ghost{background:var(--bg);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.teal{background:var(--teal);border-color:var(--teal)}
+.btn.sm{min-height:32px;padding:0 10px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 180px}
+.field label{font-size:12.5px;color:var(--muted)}
+.field input,.field select,.field textarea,.inp{min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);width:100%}
+.field textarea{min-height:72px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chipbtn{min-height:40px;padding:0 14px;background:var(--soft);border:1px solid var(--line);border-radius:999px;font-size:13.5px;cursor:pointer;text-align:start}
+.chipbtn:hover{border-color:var(--teal)}
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg);white-space:nowrap}
+.pill.ok{color:var(--teal);border-color:#A9D3CF;background:var(--teal-soft)}
+.pill.wait{color:#8A5A08;border-color:#F0CF94;background:var(--amber-soft)}
+.pill.bad{color:var(--red);border-color:#EDB8B2;background:var(--red-soft)}
+.pill.navy{color:var(--navy);border-color:#B7C6DA;background:#EEF2F8}
+.pill.conf{color:var(--ink);border-style:dashed}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line)}
+.tabs button{min-height:44px;padding:0 14px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:500;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--teal)}
+.note{font-size:13px;color:var(--muted);background:var(--soft);border-radius:8px;padding:10px 14px}
+.deny{border:1px solid #EDB8B2;background:var(--red-soft);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:8px}
+.deny h2{color:var(--red)}
+
+/* bars */
+.bars{display:flex;flex-direction:column;gap:14px}
+.barrow{display:grid;grid-template-columns:minmax(0,160px) minmax(0,1fr) 84px;gap:12px;align-items:center}
+.barrow .n{font-size:13px;color:var(--muted);text-align:end;font-variant-numeric:tabular-nums}
+.track{height:10px;background:var(--soft);border-radius:5px;overflow:hidden}
+.track>div{height:100%;border-radius:5px}
+.dual{display:flex;flex-direction:column;gap:4px}
+.dual>div{height:8px;border-radius:4px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.stack{display:flex;height:22px;border-radius:5px;overflow:hidden;gap:2px}
+.stack>div{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;min-width:18px}
+
+/* ai */
+.aibox{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.ailbl{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.aitext{font-size:14.5px;line-height:1.5}
+
+/* tables */
+.scroll{overflow-x:auto;min-width:0}
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px}
+.tbl th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:start}
+.tbl td.num{font-variant-numeric:tabular-nums}
+.tbl .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+
+/* goals */
+.goal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 0;border-top:1px solid var(--line)}
+.goal .gt{font-size:15px;font-weight:500}
+.goal .gs{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.goal .gr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.goal .track{grid-column:1/-1;height:6px}
+
+/* review stepper */
+.steps{display:flex;flex-wrap:wrap;gap:8px}
+.step{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--muted)}
+.step b{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--soft);font-size:12px;color:var(--ink)}
+.step.done{color:var(--teal);border-color:#A9D3CF}.step.done b{background:var(--teal);color:#FFFFFF}
+.step.now{color:var(--ink);border-color:var(--amber);background:var(--amber-soft)}.step.now b{background:var(--amber);color:var(--amber-ink)}
+.rsec{display:flex;flex-direction:column;gap:10px}
+.rline{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,220px) minmax(0,220px);gap:10px 16px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.rline .rh{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:700px){.rline{grid-template-columns:1fr}}
+
+/* nine box */
+.nb{display:grid;grid-template-columns:28px repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(118px,auto)) 28px;gap:6px}
+.nb .ax{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.nb .ay{writing-mode:vertical-rl;transform:rotate(180deg)}
+.cell{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--bg);min-width:0;cursor:pointer;text-align:start}
+.cell.hot{background:var(--teal-soft);border-color:#A9D3CF}
+.cell.cool{background:var(--soft)}
+.cell.drop{outline:2px dashed var(--teal);outline-offset:-4px}
+.cell .cl{font-size:11.5px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.pchip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:12.5px;font-weight:500;cursor:grab;max-width:100%}
+.pchip[aria-pressed="true"]{border-color:var(--navy);box-shadow:0 0 0 2px #C9D6EA}
+.pchip .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none}
+.pchip.moved .dot{background:var(--teal)}
+.tray{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border:1px dashed var(--line);border-radius:8px;min-height:52px;align-items:center}
+
+/* talent card */
+.tcard{display:flex;flex-direction:column;gap:14px}
+.tcard .av{width:52px;height:52px;border-radius:50%;background:var(--navy);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:18px;flex:none}
+.kv{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:8px 14px;font-size:13.5px}
+.kv dt{color:var(--muted)}.kv dd{margin:0}
+
+/* toggles */
+.sw{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+.sw input{appearance:none;width:38px;height:22px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;margin:0;flex:none}
+.sw input::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;transition:inset-inline-start .15s}
+.sw input:checked{background:var(--teal)}
+.sw input:checked::after{inset-inline-start:19px}
+
+/* demo drawer */
+.dfab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));inset-inline-end:max(20px,env(safe-area-inset-right,0px));z-index:40;box-shadow:0 6px 20px rgba(20,24,31,.18)}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(420px,100%);background:var(--bg);border-inline-start:1px solid var(--line);z-index:50;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(20,24,31,.12);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer .dh{padding:20px 22px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.drawer .db{overflow:auto;padding:8px 22px 22px;display:flex;flex-direction:column}
+.dstep{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.dstep .ck{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted)}
+.dstep.ok .ck{background:var(--teal);border-color:var(--teal);color:#FFFFFF}
+.dstep .dt{font-size:14px;font-weight:500}
+.dstep .ds{font-size:12.5px;color:var(--muted)}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:#FFFFFF;padding:10px 16px;border-radius:8px;font-size:13.5px;z-index:60;max-width:calc(100% - 32px)}
+.panel{border:1px solid var(--amber);background:var(--amber-soft);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+@media(max-width:640px){.barrow{grid-template-columns:minmax(0,110px) minmax(0,1fr) 60px}.kv{grid-template-columns:1fr}}
+@media(min-width:1100px){body.wd .top,body.wd main{margin-inline-end:420px}body.wd main{margin-inline-start:0}body.wd .dfab{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="top">
+  <header class="hdr gut" id="hdr"></header>
+  <div class="sbar"><div class="sbar-in gut" id="sbar"></div></div>
+</div>
+<main class="gut" id="app" tabindex="-1"></main>
+<button class="btn teal dfab" id="dfab" data-act="drawer"></button>
+<aside class="drawer" id="drawer" hidden aria-label="Demo script"></aside>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+/* ============ i18n ============ */
+const T={en:{
+ home:'Home',goals:'Goals',performance:'Performance',growth:'Growth',opportunities:'Opportunities',talent:'Talent',insights:'Insights',admin:'Configuration',audit:'Audit log',
+ r_employee:'Employee',r_manager:'Line manager',r_hrbp:'HR business partner',r_talent:'Talent and calibration',r_exec:'Executive',r_admin:'Talent admin',
+ sandbox:'Sandbox',viewas:'Viewing as',demo:'Demo script · Gate A',reset:'Reset sandbox',sample:'Synthetic data',
+ needs:'Needs you',risk:'At risk',ask:'Ask anything',askhint:'Ask about anything you are allowed to see',aigen:'AI-generated · you decide',
+ items:'items',signals:'signals',
+ c_employee:'Employee cockpit',c_manager:'Manager cockpit',c_hrbp:'HR business partner cockpit',c_talent:'Talent and calibration cockpit',c_exec:'Executive cockpit',c_admin:'Admin cockpit',
+ h_employee:'Your work today',h_manager:'Your team today',h_hrbp:'Your organisation today',h_talent:'Calibration and bench',h_exec:'Your division at a glance',h_admin:'Configuration and audit',
+ reviews:'Reviews',feedback:'Feedback',calibration:'Calibration',succession:'Succession and career',development:'Development',learning:'Learning',
+ addgoal:'Add goal',approve:'Approve',submit:'Submit',signoff:'Sign off and release',savedraft:'Save draft',publish:'Publish',cancel:'Cancel',confirm:'Confirm',interest:'Express interest',nominate:'Nominate',
+ denied:'You do not have access to this record',hub:'Talent intelligence hub',market:'Opportunity marketplace'
+},ar:{
+ home:'الرئيسية',goals:'الأهداف',performance:'الأداء',growth:'النمو',opportunities:'الفرص',talent:'المواهب',insights:'الرؤى',admin:'الإعدادات',audit:'سجل التدقيق',
+ r_employee:'موظف',r_manager:'مدير مباشر',r_hrbp:'شريك أعمال الموارد البشرية',r_talent:'المواهب والمعايرة',r_exec:'تنفيذي',r_admin:'مسؤول المواهب',
+ sandbox:'بيئة تجريبية',viewas:'العرض بصفة',demo:'سيناريو العرض · البوابة A',reset:'إعادة الضبط',sample:'بيانات اصطناعية',
+ needs:'يحتاج إليك',risk:'معرّض للخطر',ask:'اسأل أي شيء',askhint:'اسأل عن أي شيء يُسمح لك برؤيته',aigen:'مولّد بالذكاء الاصطناعي · القرار لك',
+ items:'عناصر',signals:'مؤشرات',
+ c_employee:'لوحة الموظف',c_manager:'لوحة المدير',c_hrbp:'لوحة شريك الموارد البشرية',c_talent:'لوحة المواهب والمعايرة',c_exec:'اللوحة التنفيذية',c_admin:'لوحة المسؤول',
+ h_employee:'عملك اليوم',h_manager:'فريقك اليوم',h_hrbp:'مؤسستك اليوم',h_talent:'المعايرة وجاهزية الخلفاء',h_exec:'قسمك في لمحة',h_admin:'الإعدادات والتدقيق',
+ reviews:'التقييمات',feedback:'الملاحظات',calibration:'المعايرة',succession:'التعاقب والمسار المهني',development:'التطوير',learning:'التعلّم',
+ addgoal:'إضافة هدف',approve:'اعتماد',submit:'إرسال',signoff:'اعتماد نهائي ونشر',savedraft:'حفظ مسودة',publish:'نشر',cancel:'إلغاء',confirm:'تأكيد',interest:'إبداء الاهتمام',nominate:'ترشيح',
+ denied:'ليست لديك صلاحية الوصول إلى هذا السجل',hub:'مركز معلومات المواهب',market:'سوق الفرص'
+}};
+const t=k=>(T[S.lang]&&T[S.lang][k])||T.en[k]||k;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ============ seed (synthetic) ============ */
+const TODAY=new Date('2026-11-11T09:00:00');
+const daysAgo=d=>{const x=new Date(TODAY);x.setDate(x.getDate()-d);return x.toISOString().slice(0,10)};
+const ROLE_USER={employee:'sara',manager:'omar',hrbp:'layla',talent:'yusuf',exec:'noura',admin:'dina'};
+const TEAM=['sara','karim','aisha','daniel','mariam','tariq','hana','fatima','ravi'];
+function seed(){
+ const P=(id,name,title,unit,mgr,lvl,skills,extra)=>Object.assign({id,name,title,div:'News',unit,mgr,lvl,skills,matrix:null,risk:'Low',impact:'Medium'},extra||{});
+ const people=[
+  P('noura','Noura Saleh','Executive Director, News','News division',null,1,['Leadership','Editorial judgement']),
+  P('hassan','Hassan Idris','Director, Newsroom Operations','Newsroom operations','noura',2,['Leadership','Live production']),
+  P('omar','Omar Khalil','Head of Newsroom Production','Newsroom production','hassan',3,['Leadership','Live production','Editorial judgement']),
+  P('sara','Sara Haddad','Senior Producer','Newsroom production','omar',4,['Editorial judgement','Live production','Audience analytics'],{risk:'Medium',impact:'High'}),
+  P('karim','Karim Nasser','Producer','Newsroom production','omar',4,['Editorial judgement','Live production','Audience analytics']),
+  P('aisha','Aisha Farouk','Senior Editor','Newsroom production','omar',4,['Editorial judgement','Data storytelling'],{risk:'High',impact:'High'}),
+  P('daniel','Daniel Okoye','Broadcast Director','Newsroom production','omar',4,['Editorial judgement','Live production']),
+  P('mariam','Mariam Qasim','Producer','Newsroom production','omar',4,['Editorial judgement','Live production','Audience analytics']),
+  P('tariq','Tariq Bennani','Video Journalist','Newsroom production','omar',4,['Editorial judgement','Live production'],{matrix:'reem'}),
+  P('hana','Hana Yilmaz','Assistant Producer','Newsroom production','omar',5,['Live production']),
+  P('fatima','Fatima Idrissi','Head of Output','Newsroom production','omar',4,['Editorial judgement','Live production'],{risk:'Medium',impact:'High'}),
+  P('ravi','Ravi Menon','Graphics Producer','Newsroom production','omar',4,['Editorial judgement','Audience analytics']),
+  P('reem','Reem Odeh','Head of Digital Products','Digital','noura',3,['Audience analytics','Data storytelling','Leadership'],{div:'Digital'}),
+  P('layla','Layla Mansour','HR Business Partner, News','Human Resources',null,3,['Leadership'],{div:'Corporate'}),
+  P('yusuf','Yusuf Rahman','Talent and Calibration Lead','Human Resources',null,3,['Leadership'],{div:'Corporate'}),
+  P('dina','Dina Aziz','Talent Systems Administrator','Human Resources',null,4,[],{div:'Corporate'})
+ ];
+ const G=(id,owner,title,cat,weight,progress,status,upd,align,contrib)=>({id,owner,title,cat,weight,progress,status,updated:daysAgo(upd),align,contributors:contrib||[]});
+ const goals=[
+  G('g1','sara','Lead the live results desk for the regional elections','Editorial impact',40,55,'Approved',12,'Lead live coverage of the 2026 regional elections',['karim','ravi']),
+  G('g2','sara','Cut bulletin turnaround from 40 to 30 minutes','Operational excellence',35,70,'Approved',38,'Modernise production workflows'),
+  G('g3','sara','Coach two assistant producers on live gallery work','People and development',25,40,'Approved',20,'Grow and keep talent',['hana']),
+  G('g4','karim','Launch a weekly explainer for the digital feed','Audience and digital',60,10,'Submitted',3,'Grow digital audience by 20%'),
+  G('g5','karim','Own the overnight running order','Operational excellence',40,0,'Submitted',3,'Modernise production workflows'),
+  G('g6','mariam','Produce the election night special','Editorial impact',100,5,'Submitted',2,'Lead live coverage of the 2026 regional elections'),
+  G('g7','tariq','Deliver 12 field packages for the digital feed','Audience and digital',100,0,'Submitted',1,'Grow digital audience by 20%'),
+  G('g8','daniel','Move the second gallery to IP-based workflow','Operational excellence',100,25,'Approved',52,'Modernise production workflows'),
+  G('g9','fatima','Publish an output style guide in Arabic and English','Editorial impact',100,30,'Approved',47,'Lead live coverage of the 2026 regional elections'),
+  G('g10','aisha','Build a data desk template for election graphics','Audience and digital',100,60,'Approved',9,'Grow digital audience by 20%',['ravi'])
+ ];
+ const R=(step,self,mgr,comp)=>({step,self,mgr,comp:comp||{},selfComment:'',mgrComment:'',released:step==='done'});
+ const reviews={
+  sara:Object.assign(R('manager',3,null),{selfComment:'Election desk is on track; turnaround target is close. I want more data skills.'}),
+  karim:Object.assign(R('manager',3,null),{selfComment:'Explainer pilot launched late but audience response is strong.'}),
+  hana:R('self',null,null),
+  aisha:R('done',4,4),daniel:R('done',3,2),mariam:R('done',3,3),tariq:R('done',3,3),fatima:R('done',3,3),ravi:R('done',2,2)
+ };
+ const place={aisha:{perf:3,pot:3},daniel:{perf:2,pot:1},mariam:{perf:2,pot:2},tariq:{perf:2,pot:3},fatima:{perf:2,pot:2},ravi:{perf:1,pot:2},karim:{perf:2,pot:3}};
+ return {
+  v:3,lang:'en',role:'employee',route:'home',sub:{performance:'reviews',talent:'calibration',growth:'development',admin:'scales'},
+  people,goals,reviews,
+  calib:{place,unrated:['sara','hana'],released:false,trail:[]},
+  positions:[
+   {id:'p1',title:'Head of Newsroom Production',holder:'omar',succ:[{pid:'sara',ready:'Ready in 1 to 2 years'},{pid:'daniel',ready:'Ready now'}]},
+   {id:'p2',title:'Head of Output',holder:'fatima',succ:[{pid:'karim',ready:'Ready in 1 to 2 years'}]},
+   {id:'p3',title:'Senior Editor, Elections Desk',holder:'aisha',succ:[]},
+   {id:'p4',title:'Director, Newsroom Operations',holder:'hassan',succ:[{pid:'omar',ready:'Ready now'},{pid:'reem',ready:'Ready in 3 to 5 years'}]}
+  ],
+  feedback:[
+   {id:'f1',from:'karim',to:'sara',text:'Calm and clear in the gallery on the budget night. The handover notes saved us twenty minutes.',goal:'g1',date:daysAgo(6),kind:'given'},
+   {id:'f2',from:'reem',to:'sara',text:'Good instinct for what works on the digital feed. Bring the data team in earlier.',goal:'g1',date:daysAgo(15),kind:'given'},
+   {id:'f3',from:'hana',to:'sara',text:'Thank you for the gallery coaching sessions. I can now run the second camera script alone.',goal:'g3',date:daysAgo(21),kind:'given'},
+   {id:'f4',from:'sara',to:'karim',text:'',goal:null,date:daysAgo(2),kind:'request'}
+  ],
+  dev:[{id:'d1',pid:'sara',title:'Shadow the data desk for two election nights',cat:'Skills & Future Readiness',link:'Data storytelling',status:'In progress',source:'Self'}],
+  catalogue:[
+   {id:'l1',title:'Live production safety',type:'Compliance',hours:1,skill:'Live production'},
+   {id:'l2',title:'Data storytelling fundamentals',type:'E-learning',hours:3,skill:'Data storytelling'},
+   {id:'l3',title:'Audience analytics with dashboards',type:'Workshop',hours:6,skill:'Audience analytics'},
+   {id:'l4',title:'Arabic and English editorial style',type:'E-learning',hours:2,skill:'Editorial judgement'},
+   {id:'l5',title:'Leading a production team',type:'Programme',hours:16,skill:'Leadership'}
+  ],
+  assign:[{id:'a1',pid:'sara',lid:'l1',due:'2026-11-30',status:'Assigned'},{id:'a2',pid:'sara',lid:'l2',due:'2026-12-15',status:'In progress'},{id:'a3',pid:'hana',lid:'l1',due:'2026-11-30',status:'Completed'}],
+  opps:[
+   {id:'o1',title:'Digital election coverage',type:'Project',dur:'8 weeks',owner:'reem',skills:['Audience analytics','Data storytelling','Editorial judgement'],interest:[{pid:'sara',status:'Awaiting manager'}]},
+   {id:'o2',title:'Mentor for new producers',type:'Mentoring',dur:'2 hours a week',owner:'omar',skills:['Live production','Editorial judgement'],interest:[]},
+   {id:'o3',title:'Arabic to English desk rotation',type:'Short assignment',dur:'3 months',owner:'hassan',skills:['Editorial judgement','Arabic-English translation'],interest:[]},
+   {id:'o4',title:'Data visualisation sprint',type:'Project',dur:'4 weeks',owner:'reem',skills:['Data storytelling','Audience analytics'],interest:[]},
+   {id:'o5',title:'Senior Digital Producer',type:'Internal role',dur:'Permanent',owner:'reem',skills:['Audience analytics','Editorial judgement','Live production'],interest:[]}
+  ],
+  cfg:{
+   scales:{
+    four:{name:'4-point performance scale',use:'Goals and overall rating',pub:{version:1,values:[{v:1,label:'Below expectations',band:1},{v:2,label:'Meets expectations',band:2},{v:3,label:'Exceeds expectations',band:3},{v:4,label:'Outstanding',band:3}]},draft:null},
+    six:{name:'0 to 6 competency scale',use:'Competencies',pub:{version:1,values:[0,1,2,3,4,5,6].map(v=>({v,label:['Not shown','Emerging','Developing','Solid','Strong','Excellent','Role model'][v],band:v<=2?1:v<=4?2:3}))},draft:null}
+   },
+   route:{pub:{version:1,steps:[{key:'self',label:'Self-assessment',on:true,who:'employee'},{key:'manager',label:'Manager assessment',on:true,who:'manager'},{key:'hr',label:'HR review',on:false,who:'hrbp'},{key:'signoff',label:'Sign-off',on:true,who:'manager'}]},draft:null},
+   grid:{pub:{version:1,labels:{'3-1':'Potential gem','3-2':'High potential','3-3':'Star','2-1':'Inconsistent','2-2':'Core contributor','2-3':'High performer','1-1':'Under review','1-2':'Effective','1-3':'Trusted professional'}},draft:null},
+   readiness:['Ready now','Ready in 1 to 2 years','Ready in 3 to 5 years'],
+   devcats:['Performance & Role Excellence','Career & Leadership Growth','Skills & Future Readiness'],
+   goalcats:['Editorial impact','Audience and digital','Operational excellence','People and development'],
+   goalrules:{min:3,max:7,total:100},
+   ai:{ask:{employee:true,manager:true,hrbp:true,talent:true,exec:true,admin:true},assist:{employee:true,manager:true,hrbp:true,talent:true,exec:false,admin:false},insight:{employee:false,manager:true,hrbp:true,talent:true,exec:true,admin:false},act:{employee:false,manager:false,hrbp:false,talent:false,exec:false,admin:false}}
+  },
+  comps:['Editorial judgement','Collaboration','Delivery under pressure'],
+  audit:[{ts:'2026-11-10 17:02',actor:'dina',role:'admin',behalf:null,action:'cycle.launch',obj:'Review cycle 2026 annual',before:'Draft',after:'Running'},{ts:'2026-11-10 17:05',actor:'sara',role:'employee',behalf:null,action:'review.submit',obj:'Review · Sara Haddad',before:'Self-assessment',after:'Manager assessment'}],
+  done:{},sel:null,pending:null,card:null,openReview:null,ans:null,drawer:false
+ };
+}
+let S;
+try{const raw=localStorage.getItem('ajmn-ts-sandbox');S=raw?JSON.parse(raw):null;if(!S||S.v!==3)S=seed();}catch(e){S=seed();}
+function save(){try{localStorage.setItem('ajmn-ts-sandbox',JSON.stringify(S));}catch(e){}}
+
+/* ============ helpers ============ */
+const per=id=>S.people.find(p=>p.id===id)||{name:id,title:'',skills:[]};
+const me=()=>per(ROLE_USER[S.role]);
+const first=id=>per(id).name.split(' ')[0];
+const nowStr=()=>{const d=new Date();return d.toISOString().slice(0,10)+' '+d.toTimeString().slice(0,5)};
+function log(action,obj,before,after){S.audit.push({ts:nowStr(),actor:ROLE_USER[S.role],role:S.role,behalf:null,action,obj,before:before??'',after:after??''});}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600);}
+const scaleVals=k=>S.cfg.scales[k].pub.values;
+const labelOf=(k,v)=>{const x=scaleVals(k).find(s=>s.v===+v);return x?x.label:'—'};
+const bandOf=(k,v)=>{const x=scaleVals(k).find(s=>s.v===+v);return x?x.band:null};
+const BAND=['','Low','Mid','High'];
+const steps=()=>S.cfg.route.pub.steps.filter(s=>s.on);
+function nextStep(key){const st=steps();const i=st.findIndex(s=>s.key===key);return i<0||i===st.length-1?'done':st[i+1].key;}
+function stepLabel(key){if(key==='done')return 'Released';const s=S.cfg.route.pub.steps.find(x=>x.key===key);return s?s.label:key;}
+const isTeam=id=>TEAM.includes(id);
+function inScope(id){ // target population derived from org spine
+ const r=S.role,u=ROLE_USER[r];
+ if(r==='employee')return id===u;
+ if(r==='manager')return isTeam(id)||id===u;
+ if(r==='hrbp'||r==='talent'||r==='admin')return true;
+ if(r==='exec')return per(id).div==='News';
+ return false;
+}
+const canTier3=()=>['manager','hrbp','talent','exec','admin'].includes(S.role);
+const pill=(txt,cls)=>`<span class="pill ${cls||''}">${esc(txt)}</span>`;
+const statusPill=s=>pill(s,{Approved:'ok',Submitted:'wait',Draft:'',Released:'ok','In progress':'wait',Completed:'ok',Assigned:'navy','Awaiting manager':'wait','Approved by manager':'ok',Shortlisted:'navy',Declined:'bad'}[s]||'');
+function head(eyebrow,title,right,teal){return `<div class="phead"><div><div class="eyebrow ${teal?'teal':''}">${esc(eyebrow)}</div><h1>${esc(title)}</h1></div><div class="row">${right||''}<span class="sample">${t('sample')}</span></div></div>`;}
+function tabs(area,list){return `<div class="tabs" role="tablist">${list.map(([k,l])=>`<button role="tab" aria-selected="${S.sub[area]===k}" data-act="sub" data-area="${area}" data-k="${k}">${esc(l)}</button>`).join('')}</div>`;}
+function deny(what){return `<div class="deny"><h2>${t('denied')}</h2><p style="margin:0">${esc(what)} The request was refused by the authorization service and written to the audit log.</p><div><button class="btn ghost sm" data-act="go" data-r="home">Back to home</button></div></div>`;}
+
+/* ============ navigation ============ */
+const NAV={employee:['home','goals','performance','growth','opportunities'],manager:['home','goals','performance','growth','opportunities','talent','insights'],hrbp:['home','goals','performance','talent','insights','audit'],talent:['home','performance','talent','insights','audit'],exec:['home','goals','talent','insights'],admin:['home','admin','audit','insights']};
+function renderShell(){
+ document.getElementById('hdr').innerHTML=`<div class="brand">Talent Suite <small>AJMN</small></div>
+  <nav class="main" aria-label="Main">${NAV[S.role].map(r=>`<a href="#${r}" ${S.route===r?'aria-current="page"':''}>${t(r)}</a>`).join('')}</nav>
+  <div class="lang"><button data-act="lang" data-l="en" aria-pressed="${S.lang==='en'}">English</button><button data-act="lang" data-l="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button></div>`;
+ const u=me();
+ document.getElementById('sbar').innerHTML=`<span class="tag-sandbox">${t('sandbox')}</span><label for="rolesel">${t('viewas')}</label>
+  <select id="rolesel" data-chg="role">${Object.keys(ROLE_USER).map(r=>`<option value="${r}" ${S.role===r?'selected':''}>${t('r_'+r)}</option>`).join('')}</select>
+  <span class="who">${esc(u.name)} · ${esc(u.title)}</span><span class="sp"></span>
+  <button class="btn ghost sm" data-act="reset">${t('reset')}</button>`;
+ document.getElementById('dfab').textContent=t('demo');
+}
+
+/* ============ ask anything (scripted placeholder for Prompt 3) ============ */
+const SUGG={employee:['How are my goals tracking?','What feedback have I received?','Which opportunities match my skills?','Show me Karim’s rating'],manager:['Which goals are off track?','Who on my team is ready for a bigger role?','Summarise feedback for my reviews','Who matches the open digital project?'],hrbp:['Which key positions have no successor?','Where is the review cycle behind?','Show the rating spread by manager'],talent:['Which key positions have no successor?','Who is not yet placed on the grid?','Show the rating spread by manager'],exec:['Where are we thinnest on data skills?','Which key positions have no successor?'],admin:['What changed in configuration today?','Which AI features are switched on?']};
+function answer(q){
+ const r=S.role,u=ROLE_USER[r],ql=q.toLowerCase();
+ const others=S.people.filter(p=>p.id!==u&&ql.includes(p.name.split(' ')[0].toLowerCase()));
+ if(r==='employee'&&(others.length||/team|who |everyone|rating spread/.test(ql))) return {text:'I can only use records you are allowed to see. That question needs another person’s records, so I have not looked them up. Ask about your own goals, reviews, feedback or development.',src:'Permission check: employee · self only. Logged.',denied:true};
+ if(r==='admin'&&/rating|ready|feedback/.test(ql)&&!/config|ai/.test(ql)) return {text:'Talent admins run cycles and settings. Individual ratings and feedback are outside this question’s scope.',src:'Permission check. Logged.',denied:true};
+ if(/off track|goals/.test(ql)){
+  const gs=S.goals.filter(g=>inScope(g.owner)&&(r==='employee'?g.owner===u:true));
+  const stalled=gs.filter(g=>(TODAY-new Date(g.updated))/864e5>=30);
+  if(r==='employee') return {text:`You have ${gs.length} goals. ${stalled.length?`${stalled.length} has had no update for over 30 days: “${stalled[0].title}”.`:'All have recent updates.'} Weighted progress is ${Math.round(gs.reduce((a,g)=>a+g.progress*g.weight,0)/Math.max(1,gs.reduce((a,g)=>a+g.weight,0)))}%.`,src:`From ${gs.length} goal records. Open each to verify.`};
+  return {text:`${stalled.length} goals have had no update for 30 days or more: ${stalled.map(g=>`${first(g.owner)} (“${g.title}”)`).join('; ')}. A check-in this week covers them.`,src:`From ${gs.length} goal records in scope. Open each to verify.`};
+ }
+ if(/ready|bigger role/.test(ql)){const c=Object.entries(S.calib.place).filter(([id,p])=>inScope(id)&&p.pot===3&&p.perf>=2).map(([id])=>per(id).name);return {text:`${c.join(' and ')||'Nobody yet'} sit in the high-potential row with solid or better performance. Readiness is a decision for you and HR; the AI does not set it.`,src:'From calibration placements and successor records.'};}
+ if(/feedback/.test(ql)){const fb=S.feedback.filter(f=>f.kind==='given'&&inScope(f.to)&&(r!=='employee'||f.to===u));return {text:`${fb.length} feedback notes this cycle. Common themes: composure in live coverage, clear handovers, and a wish to bring data work in earlier. Two notes link to the elections goal.`,src:`From ${fb.length} feedback records. Feedback text is treated as data, never as instructions.`};}
+ if(/match|opportunit|digital project/.test(ql)){const o=S.opps[0];const ms=S.people.filter(p=>inScope(p.id)&&p.id!==o.owner).map(p=>({p,m:matchPct(p,o)})).filter(x=>x.m>=66).sort((a,b)=>b.m-a.m);return {text:`For “${o.title}”: ${ms.map(x=>`${x.p.name} (${x.m}%)`).join(', ')||'no strong matches'}. Matches are driven by audience analytics and editorial judgement; data storytelling is the gap for most.`,src:'From the skill library and the opportunity record.'};}
+ if(/successor/.test(ql)){const z=S.positions.filter(p=>!p.succ.length),o=S.positions.filter(p=>p.succ.length===1);return {text:`${z.length} key position has no successor (${z.map(p=>p.title).join(', ')}). ${o.length} has a single successor (${o.map(p=>p.title).join(', ')}).`,src:'From successor nominations. Tier 3 data, shown because your role allows it.'};}
+ if(/data skills|thinnest/.test(ql)) return {text:'Data and AI is the widest gap: 48 roles need it and 14 people hold it. Technology and Digital account for most of the shortfall.',src:'From the skill library and position records. Groups under 5 are hidden.'};
+ if(/unplaced|not yet placed|grid/.test(ql)) return {text:`${S.calib.unrated.length} people are not yet placed: ${S.calib.unrated.map(first).join(', ')}. They join the grid when their review is signed off.`,src:'From review status and calibration records.'};
+ if(/spread|behind|cycle/.test(ql)) return {text:'Mid-year reviews are 67% complete. Newsroom production has 2 reviews waiting on the manager. Ratings in this team sit mostly in the middle band; no manager is more than one band off the division average.',src:'From review status and normalised bands. Deterministic counts; wording by AI.'};
+ if(/config|ai feature|switched/.test(ql)){const on=Object.entries(S.cfg.ai).map(([f,m])=>`${f}: ${Object.values(m).filter(Boolean).length} roles`).join(', ');return {text:`AI switches by feature: ${on}. Act features stay off until Gate C.`,src:'From the configuration service.'};}
+ return {text:'In the sandbox, Ask anything answers a set of scripted questions. Try one of the suggestions. In the build (Prompt 3) it calls the suite API with your permissions.',src:'Scripted placeholder.'};
+}
+function askZone(){
+ if(!S.cfg.ai.ask[S.role]) return `<section class="card ai"><div class="chead"><h2>${t('ask')}</h2></div><p class="note">Ask anything is switched off for this role in configuration.</p></section>`;
+ const a=S.ans;
+ return `<section class="card ai"><div class="chead"><h2>${t('ask')}</h2><span class="meta">Prototype · scripted</span></div>
+ <form data-form="ask" class="field" style="flex:none"><label for="askbox">${t('askhint')}</label><input id="askbox" name="q" class="inp" style="border-color:var(--teal);min-height:48px" placeholder="${esc(SUGG[S.role][0])}" autocomplete="off"></form>
+ <div class="chips">${SUGG[S.role].map(q=>`<button class="chipbtn" data-act="askq" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+ ${a?`<div class="aibox"><div class="ailbl">${t('aigen')}</div><div class="meta">“${esc(a.q)}”</div><div class="aitext">${esc(a.text)}</div><div class="meta">${esc(a.src)}</div><div class="row"><button class="btn ghost sm" data-act="aidiscard">Discard</button></div></div>`:''}
+ </section>`;
+}
+
+/* ============ home cockpits ============ */
+function li(tl,sub,tag,tone,go,extra){return `<button class="li" data-act="go" data-r="${go||'home'}" ${extra||''}><div><div class="lt">${esc(tl)}</div><div class="ls">${esc(sub)}</div></div><div class="st c-${tone||'navy'}">${esc(tag)}</div></button>`;}
+function zone(title,count,unit,rows){return `<section class="card"><div class="chead"><h2>${title}</h2><span class="meta">${count} ${unit}</span></div><div class="list">${rows.join('')||'<div class="empty">Nothing here right now.</div>'}</div></section>`;}
+function stalled(scope){return S.goals.filter(g=>scope(g.owner)&&g.status==='Approved'&&(TODAY-new Date(g.updated))/864e5>=45);}
+function home(){
+ const r=S.role,u=ROLE_USER[r];let needs=[],risks=[],row2='';
+ if(r==='employee'){
+  const rv=S.reviews[u];
+  if(rv.step==='done'&&!S.done.ackd) needs.push(li('Read your released review','Overall rating and comments are now visible','New','teal','performance'));
+  S.assign.filter(a=>a.pid===u&&a.status!=='Completed').forEach(a=>{const l=S.catalogue.find(c=>c.id===a.lid);needs.push(li(l.title,l.type+' · '+l.hours+' h',l.type==='Compliance'?'Due 30 Nov':'In progress',l.type==='Compliance'?'red':'navy','growth'));});
+  S.feedback.filter(f=>f.kind==='request'&&f.from===u).forEach(f=>needs.push(li('Feedback requested from '+first(f.to),'Sent '+f.date,'Waiting','muted','performance')));
+  needs.push(li('Update goal progress','Mid-year check-in is open','Due 20 Nov','navy','goals'));
+  const st=S.goals.filter(g=>g.owner===u&&(TODAY-new Date(g.updated))/864e5>=30);
+  st.forEach(g=>risks.push(li('No update for '+Math.round((TODAY-new Date(g.updated))/864e5)+' days',g.title,'Stalled','red','goals')));
+  const dc=S.dev.filter(d=>d.pid===u).length;if(dc<2)risks.push(li('Development plan has '+dc+' item'+(dc===1?'':'s'),'Your plan template asks for at least 2','Plan','red','growth'));
+  const mine=S.goals.filter(g=>g.owner===u);
+  row2=`<section class="card wide"><div class="chead"><h2>My goals</h2><span class="meta">${mine.reduce((a,g)=>a+g.weight,0)}% weight assigned</span></div><div class="bars">${mine.map(g=>barRow(g.title.length>34?g.title.slice(0,32)+'…':g.title,g.progress,g.progress+'%',g.progress<45?'var(--teal)':'var(--amber)')).join('')}</div></section>
+  <section class="card wide"><div class="chead"><h2>Opportunities for you</h2><span class="meta">From the marketplace</span></div><div class="list">${S.opps.map(o=>({o,m:matchPct(per(u),o)})).sort((a,b)=>b.m-a.m).slice(0,3).map(({o,m})=>li(o.title,o.type+' · '+o.dur,m+'% match','teal','opportunities')).join('')}</div></section>`;
+ }
+ if(r==='manager'){
+  const pend=S.goals.filter(g=>isTeam(g.owner)&&g.status==='Submitted');
+  const owners=[...new Set(pend.map(g=>g.owner))];
+  if(owners.length)needs.push(li(`Approve ${owners.length} goal plan${owners.length>1?'s':''}`,owners.map(first).join(', '),'Due Thu','navy','goals'));
+  const rv=TEAM.filter(id=>S.reviews[id].step==='manager'||S.reviews[id].step==='signoff');
+  if(rv.length)needs.push(li(`Complete ${rv.length} review${rv.length>1?'s':''}`,rv.map(id=>first(id)+' · '+stepLabel(S.reviews[id].step)).join(', '),'Due 20 Nov','navy','performance'));
+  needs.push(li('Confirm calibration attendance','Performance by potential session, Newsroom production','26 Nov','muted','talent'));
+  S.opps.forEach(o=>o.interest.filter(i=>isTeam(i.pid)&&i.status==='Awaiting manager').forEach(i=>needs.push(li('Respond to an opportunity request',per(i.pid).name+', '+o.title,'New','teal','opportunities'))));
+  stalled(isTeam).length&&risks.push(li(`${stalled(isTeam).length} goals have had no update for 45 days`,stalled(isTeam).map(g=>first(g.owner)).join(', ')+' · linked to division objectives','Stalled','red','goals'));
+  S.positions.filter(p=>p.succ.length===1).forEach(p=>risks.push(li('1 key position has a single successor',p.title,'Bench','red','talent')));
+  S.positions.filter(p=>p.succ.length===0).forEach(p=>risks.push(li('A key position has no successor',p.title,'Bench','red','talent')));
+  risks.push(li('Skill gap: data storytelling','4 of 9 roles need it; '+TEAM.filter(id=>per(id).skills.includes('Data storytelling')).length+' person has it','Gap','red','insights'));
+  row2=teamSkills()+`<section class="card wide"><div class="chead"><h2>Opportunities for your team</h2><span class="meta">From the marketplace</span></div><div class="list">${S.opps.slice(0,3).map(o=>{const n=TEAM.filter(id=>matchPct(per(id),o)>=66).length;return li(o.title,o.type+' · '+o.dur,n+' match'+(n===1?'':'es'),'teal','opportunities')}).join('')}</div></section>`;
+ }
+ if(r==='hrbp'){
+  needs.push(li('Reopen request: Ravi Menon review','Manager asked to correct a goal weight; reason required','Today','navy','performance'));
+  needs.push(li('Prepare calibration pack','Newsroom production · 9 people · 26 Nov','26 Nov','muted','talent'));
+  needs.push(li('Validate 3 successor nominations','Elections desk and output roles','This week','navy','talent'));
+  risks.push(li('Review cycle behind in Newsroom production',TEAM.filter(id=>S.reviews[id].step!=='done').length+' of 9 reviews still open','Cycle','red','performance'));
+  S.positions.filter(p=>!p.succ.length).forEach(p=>risks.push(li('No successor',p.title,'Bench','red','talent')));
+  risks.push(li('High risk of loss with high impact','1 person in News · tier 3','Retention','red','talent'));
+  row2=cycleHealth()+bench();
+ }
+ if(r==='talent'){
+  needs.push(li('Run calibration: Newsroom production','9 people · '+S.calib.unrated.length+' not yet placed','26 Nov','navy','talent'));
+  needs.push(li(S.calib.released?'Results released':'Release calibration results','Writes the agreed box to each talent record',S.calib.released?'Done':'After session',S.calib.released?'teal':'muted','talent'));
+  needs.push(li('Confirm 5 calibration sessions across divisions','3 of 8 sessions held','Plan','muted','insights'));
+  S.positions.filter(p=>p.succ.length<=1).forEach(p=>risks.push(li(p.succ.length?'Single successor':'No successor',p.title,'Bench','red','talent')));
+  risks.push(li('Rating spread','Newsroom production sits 0.2 bands above division','Watch','muted','insights'));
+  row2=gridSummary()+bench();
+ }
+ if(r==='exec'){
+  needs.push(li('Approve division talent review','News · results from 3 calibration sessions','5 Dec','navy','talent'));
+  needs.push(li('Sponsor digital election coverage','Project needs 2 people from News','New','teal','insights'));
+  risks.push(li('Data and AI skills gap','14 of 48 roles covered across the network','Gap','red','insights'));
+  S.positions.filter(p=>!p.succ.length).forEach(p=>risks.push(li('No successor',p.title,'Bench','red','talent')));
+  row2=bench()+cycleHealth();
+ }
+ if(r==='admin'){
+  const drafts=[['Rating scales',Object.values(S.cfg.scales).some(s=>s.draft)],['Review route',!!S.cfg.route.draft],['Calibration grid',!!S.cfg.grid.draft]];
+  drafts.filter(d=>d[1]).forEach(d=>needs.push(li('Unpublished draft: '+d[0],'Nothing goes live until you publish','Draft','navy','admin')));
+  needs.push(li('Prepare 2027 cycle calendar','Annual review with a mid-year check-in','Jan','muted','admin'));
+  needs.push(li('Export configuration for test system','Transport file for promotion','Ready','teal','admin'));
+  risks.push(li('Act features off until Gate C','Switches stay off until security and legal approve','Gate C','muted','admin'));
+  row2=`<section class="card wide"><div class="chead"><h2>Configuration</h2><span class="meta">Published versions</span></div><div class="list">
+   ${li('4-point performance scale','Version '+S.cfg.scales.four.pub.version,S.cfg.scales.four.draft?'Draft open':'Published',S.cfg.scales.four.draft?'navy':'teal','admin')}
+   ${li('0 to 6 competency scale','Version '+S.cfg.scales.six.pub.version,S.cfg.scales.six.draft?'Draft open':'Published',S.cfg.scales.six.draft?'navy':'teal','admin')}
+   ${li('Review route','Version '+S.cfg.route.pub.version+' · '+steps().map(s=>s.label).join(' → '),S.cfg.route.draft?'Draft open':'Published',S.cfg.route.draft?'navy':'teal','admin')}
+   ${li('Calibration grid labels','Version '+S.cfg.grid.pub.version,S.cfg.grid.draft?'Draft open':'Published',S.cfg.grid.draft?'navy':'teal','admin')}</div></section>
+   <section class="card wide"><div class="chead"><h2>Recent audit events</h2><span class="meta">${S.audit.length} events</span></div><div class="list">${S.audit.slice(-4).reverse().map(a=>li(a.action+' · '+a.obj,a.ts+' · '+per(a.actor).name,a.after?String(a.after).slice(0,18):'', 'muted','audit')).join('')}</div></section>`;
+ }
+ return head(t('c_'+r),t('h_'+r))+`<div class="grid">${zone(t('needs'),needs.length,t('items'),needs)}${zone(t('risk'),risks.length,t('signals'),risks)}${askZone()}</div><div class="grid">${row2}</div>`;
+}
+function barRow(label,pct,n,col){return `<div class="barrow"><div style="font-size:14px">${esc(label)}</div><div class="track"><div style="width:${Math.max(2,pct)}%;background:${col}"></div></div><div class="n">${esc(n)}</div></div>`;}
+function teamSkills(){const sk=['Editorial judgement','Live production','Audience analytics','Data storytelling'];return `<section class="card wide"><div class="chead"><h2>Team skills</h2><span class="meta">From the skill library</span></div><div class="bars">${sk.map(s=>{const n=TEAM.filter(id=>per(id).skills.includes(s)).length;const p=Math.round(n/9*100);return barRow(s,p,n+' of 9',p<20?'var(--red)':p<60?'var(--teal)':'var(--amber)')}).join('')}</div></section>`;}
+function cycleHealth(){const open=TEAM.filter(id=>S.reviews[id].step==='done').length;return `<section class="card wide"><div class="chead"><h2>Cycle health</h2><span class="meta">All modules</span></div><div class="bars">${barRow('Goals approved',91,'91%','var(--amber)')}${barRow('Reviews released',Math.round(open/9*100),open+' of 9','var(--amber)')}${barRow('Calibration sessions',38,'3 of 8','var(--teal)')}${barRow('Development plans',54,'54%','var(--teal)')}</div></section>`;}
+function bench(){return `<section class="card wide"><div class="chead"><h2>Bench strength</h2><span class="meta">Key positions by division</span></div><div class="legend"><span><i style="background:var(--red)"></i>No successor</span><span><i style="background:var(--amber)"></i>One successor</span><span><i style="background:var(--teal)"></i>Two or more</span></div><div class="bars">${[['News',2,5,6],['Programmes',1,4,5],['Technology',3,4,3],['Digital',2,3,2],['Corporate',1,3,6]].map(([d,a,b,c])=>`<div class="barrow" style="grid-template-columns:minmax(0,120px) minmax(0,1fr)"><div style="font-size:14px">${d}</div><div class="stack"><div style="flex:${a};background:var(--red);color:#FFFFFF">${a}</div><div style="flex:${b};background:var(--amber);color:var(--amber-ink)">${b}</div><div style="flex:${c};background:var(--teal);color:#FFFFFF">${c}</div></div></div>`).join('')}</div></section>`;}
+function gridSummary(){const L=S.cfg.grid.pub.labels;const cnt={};Object.values(S.calib.place).forEach(p=>{const k=p.pot+'-'+p.perf;cnt[k]=(cnt[k]||0)+1});return `<section class="card wide"><div class="chead"><h2>Newsroom production grid</h2><span class="meta">${Object.keys(S.calib.place).length} placed · ${S.calib.unrated.length} waiting</span></div><div class="list">${Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,n])=>li(L[k],'Potential '+BAND[k[0]]+' · performance '+BAND[k[2]],n+' people','teal','talent')).join('')}</div></section>`;}
+function matchPct(p,o){return Math.round(o.skills.filter(s=>(p.skills||[]).includes(s)).length/o.skills.length*100);}
+
+/* ============ goals ============ */
+function goals(){
+ const r=S.role,u=ROLE_USER[r];
+ const vis=S.goals.filter(g=>inScope(g.owner));
+ const owners=r==='employee'?[u]:[...new Set(vis.map(g=>g.owner))];
+ const rules=S.cfg.goalrules;
+ const mine=S.goals.filter(g=>g.owner===u),wsum=mine.reduce((a,g)=>a+g.weight,0);
+ let form='';
+ if(r==='employee'){
+  form=`<section class="card full"><div class="chead"><h2>${t('addgoal')}</h2><span class="meta">Plan rules from configuration: ${rules.min} to ${rules.max} goals, weights total ${rules.total}% · now ${mine.length} goals, ${wsum}%</span></div>
+  <form data-form="goal" class="row" style="align-items:flex-end">
+   <div class="field" style="flex:2 1 280px"><label for="gt">Goal</label><input id="gt" name="title" required placeholder="e.g. Build a data storytelling segment for the evening bulletin"></div>
+   <div class="field"><label for="gc">Category</label><select id="gc" name="cat">${S.cfg.goalcats.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+   <div class="field" style="flex:0 1 110px"><label for="gw">Weight %</label><input id="gw" name="weight" type="number" min="5" max="100" value="${Math.max(5,Math.min(100,rules.total-wsum))||10}"></div>
+   <div class="field"><label for="ga">Aligned to</label><select id="ga" name="align"><option>Lead live coverage of the 2026 regional elections</option><option>Grow digital audience by 20%</option><option>Modernise production workflows</option><option>Grow and keep talent</option></select></div>
+   <button class="btn">${t('addgoal')}</button></form>
+   ${wsum>rules.total?`<p class="note" style="color:var(--red)">Weights total ${wsum}%. Rebalance to ${rules.total}% before submitting the plan.</p>`:''}</section>`;
+ }
+ const blocks=owners.map(o=>{
+  const gs=vis.filter(g=>g.owner===o);
+  const canApprove=(r==='manager'&&isTeam(o));
+  return `<section class="card full"><div class="chead"><h2>${esc(per(o).name)}</h2><span class="meta">${esc(per(o).title)} · ${gs.length} goals · ${gs.reduce((a,g)=>a+g.weight,0)}%</span></div><div>
+  ${gs.map(g=>{const age=Math.round((TODAY-new Date(g.updated))/864e5);return `<div class="goal"><div><div class="gt">${esc(g.title)}</div><div class="gs">${pill(g.cat,'navy')}<span>Weight ${g.weight}%</span><span>Aligned: ${esc(g.align)}</span>${g.contributors.length?`<span>Contributors: ${g.contributors.map(first).join(', ')}</span>`:''}<span class="${age>=45?'c-red':''}">Updated ${age} days ago</span></div></div>
+   <div class="gr">${statusPill(g.status)}<span class="meta" style="font-variant-numeric:tabular-nums">${g.progress}%</span>
+   ${r==='employee'&&g.owner===u?`<button class="btn ghost sm" data-act="prog" data-id="${g.id}">+10% progress</button>`:''}
+   ${canApprove&&g.status==='Submitted'?`<button class="btn sm" data-act="approve" data-id="${g.id}">${t('approve')}</button>`:''}</div>
+   <div class="track"><div style="width:${g.progress}%;background:${age>=45?'var(--red)':'var(--amber)'}"></div></div></div>`}).join('')||'<div class="empty">No goals yet.</div>'}
+  </div></section>`;}).join('');
+ return head(t('goals'),r==='employee'?'Your goal plan':'Goals in your scope',r==='manager'?`<button class="btn" data-act="approveall">${t('approve')} all submitted</button>`:'')+`<div class="grid">${form}${blocks}</div>`;
+}
+
+/* ============ performance ============ */
+function performance(){
+ const r=S.role;
+ const body=S.sub.performance==='feedback'?feedbackView():reviewsView();
+ return head(t('performance'),'2026 annual review')+tabs('performance',[['reviews',t('reviews')],['feedback',t('feedback')]])+body;
+}
+function reviewsView(){
+ const r=S.role,u=ROLE_USER[r];
+ if(r==='admin') return `<div class="grid"><section class="card full"><h2>Cycle administration</h2><p class="note">Talent admins run cycles: dates, route and reminders. Review content is outside this role. Change the route in Configuration.</p>${cycleTable(false)}</section></div>`;
+ if(S.openReview&&S.openReview!==u&&!inScope(S.openReview)){ return deny(`${per(S.openReview).name}’s review is outside your target population.`); }
+ const id=S.openReview||(r==='employee'?u:null);
+ if(id) return reviewForm(id);
+ if(r==='exec') return `<div class="grid"><section class="card full"><h2>Rating distribution · News</h2><p class="note">Executives see summaries, not individual forms.</p>${distribution()}</section></div>`;
+ return `<div class="grid"><section class="card full"><div class="chead"><h2>Reviews in your scope</h2><span class="meta">Route: ${steps().map(s=>esc(s.label)).join(' → ')}</span></div>${cycleTable(true)}</section></div>`;
+}
+function cycleTable(open){return `<div class="scroll"><table class="tbl"><thead><tr><th>Person</th><th>Role</th><th>Step</th><th>Overall</th><th></th></tr></thead><tbody>${TEAM.filter(inScopeOrAdmin).map(id=>{const rv=S.reviews[id];return `<tr><td>${esc(per(id).name)}</td><td>${esc(per(id).title)}</td><td>${statusPill(stepLabel(rv.step))}</td><td>${rv.step==='done'?esc(labelOf('four',rv.mgr)):'—'}</td><td>${open?`<button class="btn ghost sm" data-act="openrev" data-id="${id}">Open</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`;}
+function inScopeOrAdmin(id){return S.role==='admin'||inScope(id);}
+function distribution(){const c=[0,0,0,0];TEAM.forEach(id=>{const rv=S.reviews[id];if(rv.step==='done')c[bandOf('four',rv.mgr)]++;});const tot=c[1]+c[2]+c[3]||1;return `<div class="bars">${[3,2,1].map(b=>barRow(BAND[b]+' band',Math.round(c[b]/tot*100),c[b]+' people','var(--amber)')).join('')}</div><p class="meta">Groups under 5 are suppressed in division views. Shown here at team level for the sandbox.</p>`;}
+function reviewForm(id){
+ const r=S.role,u=ROLE_USER[r],rv=S.reviews[id],p=per(id),own=id===u;
+ const st=steps();const curIdx=rv.step==='done'?st.length:st.findIndex(s=>s.key===rv.step);
+ const goalsOf=S.goals.filter(g=>g.owner===id&&g.status==='Approved');
+ const showMgr=!own||rv.released; // tier 2: employee sees manager rating only after release
+ const editSelf=own&&rv.step==='self';
+ const editMgr=r==='manager'&&isTeam(id)&&(rv.step==='manager');
+ const canSign=r==='manager'&&isTeam(id)&&rv.step==='signoff';
+ const canHr=r==='hrbp'&&rv.step==='hr';
+ const opts=(k,v,dis,name)=>`<select class="inp" name="${name}" ${dis?'disabled':''}><option value="">Select</option>${scaleVals(k).map(s=>`<option value="${s.v}" ${+v===s.v&&v!==null?'selected':''}>${s.v} · ${esc(s.label)}</option>`).join('')}</select>`;
+ const band=rv.mgr?bandOf('four',rv.mgr):null;
+ return `<div class="grid"><section class="card full">
+  <div class="chead"><div style="display:flex;flex-direction:column;gap:4px"><h2>${esc(p.name)}</h2><span class="meta">${esc(p.title)} · ${esc(p.unit)} · manager ${esc(per(p.mgr).name)}</span></div>${S.openReview?`<button class="btn ghost sm" data-act="closerev">All reviews</button>`:''}</div>
+  <div class="steps">${st.map((s,i)=>`<div class="step ${i<curIdx?'done':i===curIdx?'now':''}"><b>${i<curIdx?'✓':i+1}</b>${esc(s.label)}</div>`).join('')}<div class="step ${rv.step==='done'?'done':''}"><b>${rv.step==='done'?'✓':st.length+1}</b>Released</div></div>
+  <form data-form="review" data-id="${id}" class="rsec">
+   <div class="rline"><span class="rh">Goals · ${esc(S.cfg.scales.four.name)}</span><span class="rh">Self</span><span class="rh">Manager</span></div>
+   ${goalsOf.map(g=>`<div class="rline"><div>${esc(g.title)} <span class="meta">· ${g.weight}%</span></div><div>${opts('four',rv.self,!editSelf,'gs_'+g.id)}</div><div>${showMgr?opts('four',rv.comp['g_'+g.id]??(rv.mgr),!editMgr,'gm_'+g.id):'<span class="pill conf">Visible after release</span>'}</div></div>`).join('')}
+   <div class="rline"><span class="rh">Competencies · ${esc(S.cfg.scales.six.name)}</span><span></span><span></span></div>
+   ${S.comps.map((c,i)=>`<div class="rline"><div>${esc(c)}</div><div>${opts('six',rv.comp['cs'+i]??(rv.self?rv.self+1:null),!editSelf,'cs'+i)}</div><div>${showMgr?opts('six',rv.comp['cm'+i]??(rv.mgr?rv.mgr+1:null),!editMgr,'cm'+i):'<span class="pill conf">Visible after release</span>'}</div></div>`).join('')}
+   <div class="rline" style="background:var(--soft);padding-inline:10px;border-radius:6px"><strong>Overall rating</strong><div>${opts('four',rv.self,!editSelf,'self')}</div><div>${showMgr?opts('four',rv.mgr,!editMgr,'mgr'):'<span class="pill conf">Visible after release</span>'}</div></div>
+   <div class="row"><div class="field"><label for="sc">Self comment</label><textarea id="sc" name="selfComment" ${editSelf?'':'readonly'}>${esc(rv.selfComment)}</textarea></div>
+   <div class="field"><label for="mc">Manager comment</label>${showMgr?`<textarea id="mc" name="mgrComment" ${editMgr?'':'readonly'}>${esc(rv.mgrComment)}</textarea>`:'<span class="pill conf">Visible after release</span>'}</div></div>
+   ${band&&showMgr?`<p class="note">Normalised band: <strong>${BAND[band]}</strong> (from “${esc(labelOf('four',rv.mgr))}” on the 4-point scale). This feeds the calibration grid.</p>`:''}
+   <div class="row">
+    ${editSelf?`<button class="btn" name="do" value="self">${t('submit')} self-assessment</button>`:''}
+    ${editMgr?`<button class="btn" name="do" value="mgr">${t('submit')} ${esc(stepLabel('manager').toLowerCase())}</button>`:''}
+    ${canHr?`<button class="btn" name="do" value="hr">${t('approve')} HR review</button>`:''}
+    ${canSign?`<button class="btn" name="do" value="sign">${t('signoff')}</button>`:''}
+    ${rv.step==='done'&&(r==='manager'||own)?`<button class="btn teal" type="button" data-act="devfromrev" data-id="${id}">Create development item from this review</button>`:''}
+    ${r==='hrbp'&&rv.step==='done'?`<button class="btn ghost" type="button" data-act="reopen" data-id="${id}">Reopen with reason</button>`:''}
+    ${!editSelf&&!editMgr&&!canSign&&!canHr&&rv.step!=='done'?`<span class="meta">Waiting for: ${esc(stepLabel(rv.step))}</span>`:''}
+   </div>
+  </form>
+  ${S.cfg.ai.assist[r]&&editMgr?`<div class="aibox"><div class="ailbl">${t('aigen')} · comment draft from evidence</div><div class="aitext">${esc(first(id))} led the election results desk with calm, clear handovers (2 feedback notes) and is 70% through the turnaround goal. Next step: bring data work in earlier.</div><div class="meta">From 3 feedback records and 3 goal records. Edit or discard before you use it.</div></div>`:''}
+ </section></div>`;
+}
+function feedbackView(){
+ const r=S.role,u=ROLE_USER[r];
+ const fb=S.feedback.filter(f=>r==='employee'?(f.to===u||f.from===u):inScope(f.to)||inScope(f.from));
+ const ppl=S.people.filter(p=>p.id!==u&&['News','Digital'].includes(p.div));
+ return `<div class="grid"><section class="card"><h2>Give or request feedback</h2>
+ <form data-form="fb" class="rsec"><div class="row"><div class="field"><label for="fbk">Type</label><select id="fbk" name="kind"><option value="given">Give feedback</option><option value="request">Request feedback</option></select></div>
+ <div class="field"><label for="fbp">Colleague</label><select id="fbp" name="to">${ppl.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div></div>
+ <div class="field"><label for="fbt">Feedback</label><textarea id="fbt" name="text" placeholder="Specific, recent, and linked to a goal where you can"></textarea></div>
+ <div class="row"><button class="btn">${t('submit')}</button></div></form></section>
+ <section class="card wide"><div class="chead"><h2>Feedback in your scope</h2><span class="meta">${fb.length} notes</span></div><div class="list">${fb.slice().reverse().map(f=>`<div class="li"><div><div class="lt">${f.kind==='request'?`${esc(first(f.from))} asked ${esc(first(f.to))} for feedback`:`${esc(first(f.from))} → ${esc(first(f.to))}`}</div><div class="ls">${esc(f.text||'Waiting for a response')}${f.goal?` · Goal: ${esc((S.goals.find(g=>g.id===f.goal)||{}).title)}`:''}</div></div><div class="st c-muted">${esc(f.date)}</div></div>`).join('')}</div></section></div>`;
+}
+
+/* ============ talent: calibration + succession ============ */
+function talent(){
+ const r=S.role;
+ if(r==='employee') return head(t('talent'),'')+deny('Calibration and succession records are tier 3 confidential.');
+ return head(t('talent'),S.sub.talent==='succession'?'Bench, successors and talent cards':'Performance by potential · Newsroom production')+tabs('talent',[['calibration',t('calibration')],['succession',t('succession')]])+(S.sub.talent==='succession'?succession():calibration());
+}
+function calibration(){
+ const r=S.role,canMove=['talent','manager','hrbp'].includes(r),L=S.cfg.grid.pub.labels;
+ const chip=id=>`<button class="pchip ${S.calib.trail.some(x=>x.pid===id)?'moved':''}" ${canMove?'draggable="true"':''} data-act="chip" data-id="${id}" aria-pressed="${S.sel===id}"><span class="dot"></span>${esc(per(id).name)}</button>`;
+ let cells='';
+ for(const pot of [3,2,1]){cells+=`<div class="ax ay">${BAND[pot]}</div>`;for(const perf of [1,2,3]){const k=pot+'-'+perf;const ids=Object.entries(S.calib.place).filter(([,p])=>p.pot===pot&&p.perf===perf).map(([id])=>id);cells+=`<div class="cell ${pot+perf>=5?'hot':pot+perf<=3?'cool':''}" data-act="cell" data-k="${k}" role="button" tabindex="0" aria-label="${esc(L[k])}"><div class="cl"><span>${esc(L[k])}</span><span>${ids.length}</span></div><div class="chips" style="gap:6px">${ids.map(chip).join('')}</div></div>`;}}
+ cells+=`<div></div>${[1,2,3].map(b=>`<div class="ax">${BAND[b]} performance</div>`).join('')}`;
+ const pm=S.pending;
+ return `<div class="grid"><section class="card full" style="flex-basis:620px">
+  <div class="chead"><h2>Session · 26 Nov · Facilitator ${esc(per('yusuf').name)}</h2><span class="meta">Distribution is a guideline, not forced</span></div>
+  ${canMove?`<p class="note">Drag a name to another box, or select a name and then select a box. A reason is required for every move. Nobody calibrates themselves.</p>`:`<p class="note">View only for this role.</p>`}
+  ${pm?`<form class="panel" data-form="move"><strong>Move ${esc(per(pm.pid).name)}: ${esc(L[pm.from]||'Not placed')} → ${esc(L[pm.to])}</strong><div class="field"><label for="mr">Reason (required, written to the audit log)</label><textarea id="mr" name="reason" required placeholder="e.g. Led election desk under pressure; potential evidenced by coaching two juniors"></textarea></div><div class="row"><button class="btn">${t('confirm')} move</button><button class="btn ghost" type="button" data-act="cancelmove">${t('cancel')}</button></div></form>`:''}
+  <div class="scroll"><div class="nb" style="min-width:560px">${cells}</div></div>
+  <div><h3 style="margin-bottom:8px">Not yet placed</h3><div class="tray">${S.calib.unrated.map(id=>`<span class="pill">${esc(per(id).name)} · ${esc(stepLabel(S.reviews[id].step))}</span>`).join('')||'<span class="meta">Everyone is placed.</span>'}</div><p class="meta">People join the grid when their review is released, placed by the normalised band. Potential starts from the manager’s proposal.</p></div>
+  ${r==='talent'?`<div class="row"><button class="btn teal" data-act="release" ${S.calib.released?'disabled':''}>${S.calib.released?'Results released':'Release results to talent records'}</button></div>`:''}
+ </section>
+ <section class="card"><div class="chead"><h2>Before and after</h2><span class="meta">${S.calib.trail.length} moves</span></div><div class="list">${S.calib.trail.slice().reverse().map(x=>`<div class="li"><div><div class="lt">${esc(per(x.pid).name)}</div><div class="ls">${esc(L[x.from]||'Not placed')} → ${esc(L[x.to])} · “${esc(x.reason)}”</div></div><div class="st c-muted">${esc(first(x.by))}</div></div>`).join('')||'<div class="empty">No moves yet in this session.</div>'}</div>
+ ${S.cfg.ai.insight[r]?`<div class="aibox"><div class="ailbl">${t('aigen')} · preparation pack</div><div class="aitext">Aisha is the only Star and holds a single-successor role. Ravi’s placement rests on one rating; ask for evidence. Tariq’s potential comes partly from matrix feedback in Digital.</div><div class="meta">From 7 placements, 9 reviews and 4 feedback notes. The AI proposes; the session decides.</div></div>`:''}</section></div>`;
+}
+function succession(){
+ const r=S.role,canNom=['manager','hrbp','talent','admin'].includes(r);
+ const pos=S.positions;
+ const cand=S.people.filter(p=>inScope(p.id)&&p.lvl>=3&&p.div!=='Corporate');
+ const tbl=`<div class="scroll"><table class="tbl"><thead><tr><th>Key position</th><th>Holder</th><th>Risk of loss</th><th>Successors</th><th>Bench</th>${canNom?'<th>Nominate</th>':''}</tr></thead><tbody>${pos.map(p=>`<tr><td><strong>${esc(p.title)}</strong></td><td><button class="btn ghost sm" data-act="card" data-id="${p.holder}">${esc(per(p.holder).name)}</button></td><td>${canTier3()?pill(per(p.holder).risk,per(p.holder).risk==='High'?'bad':per(p.holder).risk==='Medium'?'wait':'ok'):pill('Confidential','conf')}</td>
+  <td><div class="chips" style="gap:6px">${p.succ.map(s=>`<button class="pchip" data-act="card" data-id="${s.pid}"><span class="dot" style="background:${s.ready==='Ready now'?'var(--teal)':'var(--amber)'}"></span>${esc(per(s.pid).name)} · ${esc(s.ready)}</button>`).join('')||'<span class="meta">None</span>'}</div></td>
+  <td>${pill(p.succ.length===0?'No successor':p.succ.length===1?'Single':'Covered',p.succ.length===0?'bad':p.succ.length===1?'wait':'ok')}</td>
+  ${canNom?`<td><form data-form="nom" data-id="${p.id}" class="row" style="flex-wrap:nowrap"><select class="inp" name="pid" aria-label="Candidate" style="min-width:130px">${cand.filter(c=>c.id!==p.holder&&!p.succ.some(s=>s.pid===c.id)).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><select class="inp" name="ready" aria-label="Readiness" style="min-width:150px">${S.cfg.readiness.map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn sm">${t('nominate')}</button></form></td>`:''}</tr>`).join('')}</tbody></table></div>`;
+ return `<div class="grid"><section class="card full" style="flex-basis:640px"><div class="chead"><h2>Key positions</h2><span class="meta">Readiness levels from configuration</span></div>${tbl}<div><h3 style="margin-bottom:8px">Team talent cards</h3><div class="chips">${TEAM.filter(inScope).map(id=>`<button class="chipbtn" data-act="card" data-id="${id}">${esc(per(id).name)}</button>`).join('')}</div></div></section>${talentCard()}</div>`;
+}
+function talentCard(){
+ const id=S.card;if(!id) return `<section class="card"><h2>Talent card</h2><p class="note">Select a person to open their talent card.</p></section>`;
+ if(!inScope(id)) return `<section class="card">${deny('This talent card is outside your scope.')}</section>`;
+ const p=per(id),pl=S.calib.place[id],L=S.cfg.grid.pub.labels,rv=S.reviews[id];
+ const nom=S.positions.flatMap(x=>x.succ.filter(s=>s.pid===id).map(s=>x.title+' · '+s.ready));
+ const t3=canTier3();
+ return `<section class="card tcard"><div class="row" style="flex-wrap:nowrap"><div class="av">${esc(p.name.split(' ').map(w=>w[0]).join(''))}</div><div style="min-width:0"><h2>${esc(p.name)}</h2><div class="meta">${esc(p.title)} · ${esc(p.unit)}</div></div></div>
+ <dl class="kv"><dt>Manager</dt><dd>${esc(per(p.mgr).name)}${p.matrix?` · matrix: ${esc(per(p.matrix).name)}`:''}</dd>
+ <dt>Latest rating</dt><dd>${rv&&rv.step==='done'?esc(labelOf('four',rv.mgr))+' · '+BAND[bandOf('four',rv.mgr)]+' band':'In progress'}</dd>
+ <dt>Calibrated box</dt><dd>${t3?(pl?`<strong>${esc(L[pl.pot+'-'+pl.perf])}</strong>${S.calib.trail.some(x=>x.pid===id)?' '+pill('Calibrated','ok'):''}`:'Not placed'):pill('Confidential','conf')}</dd>
+ <dt>Potential</dt><dd>${t3?(pl?BAND[pl.pot]:'—'):pill('Confidential','conf')}</dd>
+ <dt>Risk / impact of loss</dt><dd>${t3?esc(p.risk)+' / '+esc(p.impact):pill('Confidential','conf')}</dd>
+ <dt>Successor for</dt><dd>${t3?(nom.map(esc).join('<br>')||'—'):pill('Confidential','conf')}</dd>
+ <dt>Skills</dt><dd><div class="chips" style="gap:6px">${p.skills.map(s=>pill(s,'navy')).join('')}</div></dd>
+ <dt>Development</dt><dd>${S.dev.filter(d=>d.pid===id).map(d=>esc(d.title)).join('<br>')||'—'}</dd></dl>
+ <p class="meta">Tier 3 fields are never shown to the person they describe unless configuration releases them.</p></section>`;
+}
+
+/* ============ growth ============ */
+function growth(){
+ const r=S.role,u=ROLE_USER[r];
+ const ppl=r==='employee'?[u]:TEAM;
+ let body;
+ if(S.sub.growth==='learning'){
+  body=`<div class="grid"><section class="card wide"><div class="chead"><h2>Assigned learning</h2><span class="meta">Completion records</span></div><div class="scroll"><table class="tbl"><thead><tr><th>Person</th><th>Item</th><th>Type</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>${S.assign.filter(a=>ppl.includes(a.pid)).map(a=>{const l=S.catalogue.find(c=>c.id===a.lid);return `<tr><td>${esc(per(a.pid).name)}</td><td>${esc(l.title)}</td><td>${esc(l.type)}</td><td class="num">${esc(a.due)}</td><td>${statusPill(a.status)}</td><td>${a.pid===u&&a.status!=='Completed'?`<button class="btn ghost sm" data-act="complete" data-id="${a.id}">Mark complete</button>`:''}</td></tr>`}).join('')}</tbody></table></div><p class="meta">No content player yet. Build or keep a lightweight LMS is still an open decision.</p></section>
+  <section class="card"><div class="chead"><h2>Catalogue</h2><span class="meta">${S.catalogue.length} items</span></div><div class="list">${S.catalogue.map(l=>`<div class="li"><div><div class="lt">${esc(l.title)}</div><div class="ls">${esc(l.type)} · ${l.hours} h · builds ${esc(l.skill)}</div></div>${r==='employee'&&!S.assign.some(a=>a.pid===u&&a.lid===l.id)?`<button class="btn ghost sm" data-act="enrol" data-id="${l.id}">Enrol</button>`:''}</div>`).join('')}</div></section></div>`;
+ } else {
+  body=`<div class="grid">${r==='employee'||r==='manager'?`<section class="card"><h2>Add development item</h2><form data-form="dev" class="rsec">
+   ${r==='manager'?`<div class="field"><label for="dp">For</label><select id="dp" name="pid">${TEAM.map(id=>`<option value="${id}">${esc(per(id).name)}</option>`).join('')}</select></div>`:''}
+   <div class="field"><label for="dtt">Item</label><input id="dtt" name="title" required placeholder="e.g. Run the data desk for one election night"></div>
+   <div class="field"><label for="dc">Category</label><select id="dc" name="cat">${S.cfg.devcats.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+   <div class="field"><label for="dl">Linked competency or skill</label><select id="dl" name="link">${[...S.comps,'Data storytelling','Audience analytics','Leadership'].map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+   <div><button class="btn">Add item</button></div></form></section>`:''}
+   <section class="card wide"><div class="chead"><h2>Development plans</h2><span class="meta">Categories from configuration</span></div><div class="list">${S.dev.filter(d=>ppl.includes(d.pid)||inScope(d.pid)).map(d=>`<div class="li"><div><div class="lt">${esc(d.title)}</div><div class="ls">${esc(per(d.pid).name)} · ${esc(d.cat)} · ${esc(d.link)} · source: ${esc(d.source)}</div></div>${statusPill(d.status)}</div>`).join('')||'<div class="empty">No items yet.</div>'}</div>
+   ${S.cfg.ai.assist[r]?`<div class="aibox"><div class="ailbl">${t('aigen')} · suggestion</div><div class="aitext">Data storytelling is the main gap against the elections goal. “Data storytelling fundamentals” (3 h) and the Data visualisation sprint in the marketplace both build it.</div><div class="meta">From the skill library, goals and catalogue. Add it yourself if it fits.</div></div>`:''}</section></div>`;
+ }
+ return head(t('growth'),r==='employee'?'Your development':'Your team’s development')+tabs('growth',[['development',t('development')],['learning',t('learning')]])+body;
+}
+
+/* ============ opportunities ============ */
+function opportunities(){
+ const r=S.role,u=ROLE_USER[r],p=me();
+ const cards=S.opps.map(o=>{
+  const m=matchPct(p,o),has=o.skills.filter(s=>p.skills.includes(s)),miss=o.skills.filter(s=>!p.skills.includes(s));
+  const myInt=o.interest.find(i=>i.pid===u);
+  const teamInt=o.interest.filter(i=>isTeam(i.pid));
+  return `<section class="card"><div class="chead"><h2>${esc(o.title)}</h2>${r==='employee'?`<span class="st c-teal">${m}% match</span>`:''}</div>
+  <div class="meta">${esc(o.type)} · ${esc(o.dur)} · owner ${esc(per(o.owner).name)}</div>
+  <div class="chips" style="gap:6px">${o.skills.map(s=>pill(s,r==='employee'&&p.skills.includes(s)?'ok':'')).join('')}</div>
+  ${r==='employee'?`<p class="meta" style="margin:0">Matched on ${has.map(esc).join(', ')||'nothing yet'}${miss.length?`. To build: ${miss.map(esc).join(', ')}`:''}.</p>
+   <div class="row">${myInt?statusPill(myInt.status):`<button class="btn" data-act="interest" data-id="${o.id}">${t('interest')}</button>`}</div>`:''}
+  ${r==='manager'?`<div class="list">${teamInt.map(i=>`<div class="li"><div><div class="lt">${esc(per(i.pid).name)}</div><div class="ls">Interest · ${matchPct(per(i.pid),o)}% match</div></div><div class="row">${i.status==='Awaiting manager'?`<button class="btn sm" data-act="oppok" data-id="${o.id}" data-p="${i.pid}">${t('approve')}</button><button class="btn ghost sm" data-act="oppno" data-id="${o.id}" data-p="${i.pid}">Decline</button>`:statusPill(i.status)}</div></div>`).join('')||`<div class="empty">${TEAM.filter(id=>matchPct(per(id),o)>=66).length} people in your team match. No requests yet.</div>`}</div>`:''}
+  </section>`;}).join('');
+ const post=r==='manager'?`<section class="card full"><h2>Post an opportunity</h2><form data-form="opp" class="row" style="align-items:flex-end"><div class="field" style="flex:2 1 260px"><label for="ot">Title</label><input id="ot" name="title" required placeholder="e.g. Gallery director cover for Ramadan schedule"></div><div class="field"><label for="oty">Type</label><select id="oty" name="type"><option>Project</option><option>Short assignment</option><option>Mentoring</option><option>Internal role</option></select></div><div class="field"><label for="od">Duration</label><input id="od" name="dur" value="6 weeks"></div><div class="field"><label for="os">Main skill</label><select id="os" name="skill">${['Live production','Editorial judgement','Audience analytics','Data storytelling'].map(s=>`<option>${s}</option>`).join('')}</select></div><button class="btn">Post</button></form><p class="meta">Line manager approval is required before anyone starts (from configuration).</p></section>`:'';
+ return head(t('market'),r==='employee'?'Projects, assignments, mentoring and roles':'Opportunities and your team')+`<div class="grid">${post}${cards}</div>`;
+}
+
+/* ============ insights hub ============ */
+function insights(){
+ const sk=[['Editorial',82,90],['Production',64,70],['Broadcast engineering',38,52],['Digital product',31,60],['Data and AI',14,48],['Leadership',40,44]];
+ return head(t('hub'),'Skills, bench and mobility in one view','<div class="field" style="flex:none"><label for="fdiv">Division</label><select id="fdiv" class="inp"><option>All divisions</option><option>News</option><option>Digital</option></select></div>',true)+
+ `<div class="grid"><section class="card wide"><div class="chead"><h2>Skills: supply against demand</h2><span class="meta">By skill family</span></div><div class="legend"><span><i style="background:var(--amber)"></i>People who have it</span><span><i style="background:var(--bar)"></i>Roles that need it</span></div><div class="bars">${sk.map(([n,a,b])=>`<div class="barrow"><div style="font-size:14px">${n}</div><div class="dual"><div style="width:${b}%;background:var(--bar)"></div><div style="width:${a}%;background:var(--amber)"></div></div><div class="n">${a} of ${b}</div></div>`).join('')}</div></section>${bench()}</div>
+ <div class="grid"><section class="card"><div class="chead"><h2>Internal mobility</h2><span class="meta">Opportunity marketplace</span></div><div class="list">${[['Opportunities posted this quarter','Projects, assignments, mentoring, roles',45+S.opps.length-4],['Filled from inside','Matched through the skill library',29],['Median time to fill','From posting to accepted','11 days'],['Skills added through assignments','Validated by the opportunity owner',63]].map(([a,b,c])=>`<div class="li"><div><div class="lt">${a}</div><div class="ls">${b}</div></div><div class="st c-teal">${c}</div></div>`).join('')}</div></section>${cycleHealth()}${askZone()}</div>
+ <p class="note">Read-only. The hub owns no data: every figure is built from events and the talent data model. Groups under 5 are hidden so individuals cannot be inferred.</p>`;
+}
+
+/* ============ admin / configuration ============ */
+function admin(){
+ if(S.role!=='admin') return head(t('admin'),'')+deny('Configuration is limited to talent admins (business settings) and system admins (technical settings).');
+ const sub=S.sub.admin;let body='';
+ const verLine=(item)=>`<span class="meta">Published v${item.pub.version}${item.draft?' · draft open':''}</span>`;
+ if(sub==='scales'){
+  body=Object.entries(S.cfg.scales).map(([k,s])=>{const d=s.draft||s.pub;return `<section class="card full"><div class="chead"><h2>${esc(s.name)}</h2>${verLine(s)}</div><div class="meta">Used for: ${esc(s.use)}. Mapped to three normalised bands.</div>
+  <form data-form="scale" data-k="${k}"><div class="scroll"><table class="tbl"><thead><tr><th>Value</th><th>Label (English)</th><th>Normalised band</th><th>Published label</th></tr></thead><tbody>${d.values.map((v,i)=>`<tr><td class="num">${v.v}</td><td><input class="inp" name="l${i}" value="${esc(v.label)}" aria-label="Label for ${v.v}"></td><td><select class="inp" name="b${i}" aria-label="Band for ${v.v}">${[1,2,3].map(b=>`<option value="${b}" ${v.band===b?'selected':''}>${BAND[b]}</option>`).join('')}</select></td><td class="meta">${esc(s.pub.values[i].label)}</td></tr>`).join('')}</tbody></table></div>
+  <div class="row" style="margin-top:12px"><button class="btn ghost" name="do" value="draft">${t('savedraft')}</button><button class="btn" name="do" value="publish">${t('publish')}</button>${s.draft?`<button class="btn ghost" type="button" data-act="discard" data-k="scales.${k}">Discard draft</button>`:''}</div></form></section>`}).join('');
+ }
+ if(sub==='route'){
+  const s=S.cfg.route,d=s.draft||s.pub;
+  body=`<section class="card full"><div class="chead"><h2>Annual review route</h2>${verLine(s)}</div><form data-form="route"><div class="scroll"><table class="tbl"><thead><tr><th>Order</th><th>Step label</th><th>Done by</th><th>On</th></tr></thead><tbody>${d.steps.map((st,i)=>`<tr><td class="num">${i+1}</td><td><input class="inp" name="l${i}" value="${esc(st.label)}" aria-label="Label for step ${i+1}"></td><td>${esc(t('r_'+st.who))}</td><td><label class="sw"><input type="checkbox" name="on${i}" ${st.on?'checked':''} ${st.key==='self'||st.key==='signoff'?'disabled':''}><span>${st.key==='self'||st.key==='signoff'?'Required':'Optional'}</span></label></td></tr>`).join('')}</tbody></table></div>
+  <div class="row" style="margin-top:12px"><button class="btn ghost" name="do" value="draft">${t('savedraft')}</button><button class="btn" name="do" value="publish">${t('publish')}</button></div></form>
+  <p class="note">In the build, a running cycle keeps the version it started with and changes apply to new cycles. The sandbox applies a published route to open reviews so you can see the effect.</p></section>`;
+ }
+ if(sub==='grid'){
+  const s=S.cfg.grid,d=s.draft||s.pub;
+  body=`<section class="card full"><div class="chead"><h2>Calibration grid labels</h2>${verLine(s)}</div><form data-form="grid"><div class="row">${['3-1','3-2','3-3','2-1','2-2','2-3','1-1','1-2','1-3'].map(k=>`<div class="field" style="flex:1 1 30%"><label for="gl${k}">Potential ${BAND[k[0]]} · performance ${BAND[k[2]]}</label><input id="gl${k}" name="${k}" value="${esc(d.labels[k])}"></div>`).join('')}</div><div class="row" style="margin-top:12px"><button class="btn ghost" name="do" value="draft">${t('savedraft')}</button><button class="btn" name="do" value="publish">${t('publish')}</button></div></form></section>`;
+ }
+ if(sub==='perm'){
+  const M=[['Employee','Self','Edit own','Self-assess; view own after release','None','None','None'],['Line manager','Direct reports','View, comment, approve','Rate until sign-off','Propose','Participate for own team','None'],['Matrix manager','Matrix reports','View, comment','Contribute feedback','None','None','None'],['Second-level manager','All levels below','View','View, approve','View, nominate','Participate','None'],['HR business partner','Org unit subtree','View','View; reopen with reason','View, edit','Facilitate','None'],['Talent admin','Everyone','View','Run cycles','Administer','Administer','Business settings'],['Executive','Own division','View','View summaries','View','View results','None'],['System admin','No talent data','None','None','None','None','Technical settings'],['Auditor','Everyone, read-only','View','View','View','View','View']];
+  body=`<section class="card full"><div class="chead"><h2>Starter authorization matrix</h2><span class="meta">Business view · enforced cell by cell in Prompt 2</span></div><div class="scroll"><table class="tbl"><thead><tr><th>Role</th><th>Population</th><th>Goals</th><th>Reviews and ratings</th><th>Potential and successors</th><th>Calibration</th><th>Configuration</th></tr></thead><tbody>${M.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?`<strong>${c}</strong>`:esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="note">Field tiers: 1 open (goals, competencies) · 2 restricted (ratings, review comments) · 3 confidential (potential, risk of loss, successors, calibration notes). Deny by default. The AI agent role inherits the requesting user’s permissions on each call.</p></section>`;
+ }
+ if(sub==='ai'){
+  const roles=Object.keys(ROLE_USER);
+  body=`<section class="card full"><div class="chead"><h2>AI feature switches</h2><span class="meta">Per role · takes effect on publish (immediate in the sandbox)</span></div><div class="scroll"><table class="tbl"><thead><tr><th>Feature</th>${roles.map(r=>`<th>${esc(t('r_'+r))}</th>`).join('')}</tr></thead><tbody>${[['ask','Ask anything'],['assist','Assist: drafting'],['insight','Insight: gaps and risk'],['act','Act: launches and nudges']].map(([f,l])=>`<tr><td><strong>${l}</strong></td>${roles.map(r=>`<td><label class="sw"><input type="checkbox" data-chg="ai" data-f="${f}" data-r="${r}" ${S.cfg.ai[f][r]?'checked':''} ${f==='act'?'disabled':''} aria-label="${l} for ${t('r_'+r)}"></label></td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="note">Act features stay off until Gate C. The AI never sets a rating, potential value, readiness level or nomination.</p></section>`;
+ }
+ if(sub==='transport'){
+  const json=JSON.stringify({exported:nowStr(),scales:Object.fromEntries(Object.entries(S.cfg.scales).map(([k,s])=>[k,s.pub])),route:S.cfg.route.pub,grid:S.cfg.grid.pub,readiness:S.cfg.readiness,devcats:S.cfg.devcats,goalrules:S.cfg.goalrules,ai:S.cfg.ai},null,2);
+  body=`<section class="card full"><div class="chead"><h2>Export configuration</h2><span class="meta">Transportable: test first, then move to production</span></div><textarea id="cfgjson" class="inp mono" style="min-height:300px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px" readonly>${esc(json)}</textarea><div class="row"><button class="btn" data-act="copycfg">Copy</button></div></section>`;
+ }
+ return head(t('admin'),'Change the suite without code')+tabs('admin',[['scales','Rating scales'],['route','Review route'],['grid','Calibration grid'],['perm','Permissions'],['ai','AI switches'],['transport','Export']])+`<div class="grid">${body}</div><p class="note">Every item is versioned, effective-dated and audited, with a draft and publish step. Nothing goes live on save.</p>`;
+}
+
+/* ============ audit ============ */
+function audit(){
+ if(!['admin','hrbp','talent'].includes(S.role)) return head(t('audit'),'')+deny('The audit log is available to admins, HR and auditors.');
+ return head(t('audit'),'Who, what, before, after, when')+`<section class="card full"><div class="chead"><h2>${S.audit.length} events</h2><span class="meta">Append-only · newest first</span></div><div class="scroll"><table class="tbl"><thead><tr><th>When</th><th>Who</th><th>Role</th><th>Action</th><th>Object</th><th>Before</th><th>After</th></tr></thead><tbody>${S.audit.slice().reverse().map(a=>`<tr><td class="num" style="white-space:nowrap">${esc(a.ts)}</td><td>${esc(per(a.actor).name)}</td><td>${esc(t('r_'+a.role))}</td><td class="mono">${esc(a.action)}</td><td>${esc(a.obj)}</td><td>${esc(a.before)}</td><td>${esc(a.after)}</td></tr>`).join('')}</tbody></table></div></section>`;
+}
+
+/* ============ demo script ============ */
+const DEMO=[
+ {k:'goal',t:'An employee creates a goal',s:'As Sara, add a goal on the Goals page.',role:'employee',r:'goals'},
+ {k:'rate',t:'The manager reviews and rates',s:'As Omar, open Sara’s review, rate, submit, then sign off.',role:'manager',r:'performance',open:'sara'},
+ {k:'calib',t:'A facilitator calibrates',s:'As Yusuf, move Sara on the grid with a reason.',role:'talent',r:'talent',sub:['talent','calibration']},
+ {k:'card',t:'The result appears on the talent card',s:'Open Sara’s talent card under Succession.',role:'talent',r:'talent',sub:['talent','succession'],card:'sara'},
+ {k:'nom',t:'A successor is nominated',s:'Nominate someone for Senior Editor, Elections Desk.',role:'manager',r:'talent',sub:['talent','succession']},
+ {k:'dev',t:'A development item is created from the review',s:'On Sara’s released review, create a development item.',role:'manager',r:'performance',open:'sara'},
+ {k:'scale',t:'Admin changes a rating scale label',s:'Edit a label on the 4-point scale and publish.',role:'admin',r:'admin',sub:['admin','scales']},
+ {k:'route',t:'Admin changes a route step',s:'Rename a step or switch on HR review, then publish.',role:'admin',r:'admin',sub:['admin','route']},
+ {k:'deny',t:'An employee cannot read another review',s:'As Sara, try to open Karim’s review. It is refused and logged.',role:'employee',r:'performance',open:'karim'},
+ {k:'audit',t:'Every action is in the audit log',s:'Open the audit log as admin.',role:'admin',r:'audit'}
+];
+function drawer(){
+ const n=DEMO.filter(d=>S.done[d.k]).length;
+ return `<div class="dh"><div class="row" style="justify-content:space-between"><div class="eyebrow">Gate A walkthrough</div><button class="btn ghost sm" data-act="drawer">Close</button></div><h2>Demo script</h2><div class="meta">${n} of ${DEMO.length} done. Each step switches role and opens the right screen.</div><div class="track"><div style="width:${n/DEMO.length*100}%;background:var(--teal)"></div></div></div>
+ <div class="db">${DEMO.map((d,i)=>`<div class="dstep ${S.done[d.k]?'ok':''}"><div class="ck">${S.done[d.k]?'✓':i+1}</div><div><div class="dt">${esc(d.t)}</div><div class="ds">${esc(d.s)}</div></div><button class="btn ghost sm" data-act="demogo" data-i="${i}">Go</button></div>`).join('')}</div>`;
+}
+
+/* ============ render ============ */
+const VIEWS={home,goals,performance,growth,opportunities,talent,insights,admin,audit};
+function render(focus){
+ document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
+ if(!NAV[S.role].includes(S.route)&&S.route!=='performance')S.route=S.route; // direct URL still allowed; views enforce permission
+ renderShell();
+ const v=VIEWS[S.route]||home;
+ document.getElementById('app').innerHTML=v();
+ const dr=document.getElementById('drawer');dr.hidden=!S.drawer;document.body.classList.toggle('wd',!!S.drawer);if(S.drawer)dr.innerHTML=drawer();
+ save();
+ if(focus)document.getElementById('app').focus({preventScroll:true});
+}
+function go(r){S.route=r;S.ans=null;if(location.hash!=='#'+r)history.replaceState(null,'','#'+r);render(true);window.scrollTo(0,0);}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(VIEWS[h]&&h!==S.route){S.route=h;S.ans=null;S.openReview=null;render(true);}});
+
+function setRole(r){S.role=r;S.openReview=null;S.ans=null;S.sel=null;S.pending=null;if(!NAV[r].includes(S.route))S.route='home';log('session.view_as','Sandbox role switch','',t('r_'+r));}
+
+/* ============ actions ============ */
+const ACT={
+ go:el=>{S.openReview=null;go(el.dataset.r)},
+ lang:el=>{S.lang=el.dataset.l;render()},
+ reset:()=>{const keepLang=S.lang;S=seed();S.lang=keepLang;history.replaceState(null,'','#home');render();toast('Sandbox reset to seed data')},
+ drawer:()=>{S.drawer=!S.drawer;render()},
+ sub:el=>{S.sub[el.dataset.area]=el.dataset.k;S.openReview=null;render()},
+ demogo:el=>{const d=DEMO[+el.dataset.i];setRole(d.role);if(d.sub)S.sub[d.sub[0]]=d.sub[1];if(d.r==='performance')S.sub.performance='reviews';S.openReview=d.open||null;if(d.card){S.card=d.card;}S.route=d.r;history.replaceState(null,'','#'+d.r);
+  if(d.k==='deny'&&!inScope('karim')){log('access.denied','Review · Karim Nasser','GET /api/v1/reviews/karim','403 refused');S.done.deny=true;}
+  if(d.k==='card'&&S.calib.trail.some(x=>x.pid==='sara'))S.done.card=true;
+  if(d.k==='audit')S.done.audit=true;
+  if(window.innerWidth<1100)S.drawer=false;render(true);window.scrollTo(0,0)},
+ askq:el=>doAsk(el.dataset.q),
+ aidiscard:()=>{S.ans=null;render()},
+ prog:el=>{const g=S.goals.find(x=>x.id===el.dataset.id);const b=g.progress;g.progress=Math.min(100,g.progress+10);g.updated=TODAY.toISOString().slice(0,10);log('goal.progress','Goal · '+g.title,b+'%',g.progress+'%');render()},
+ approve:el=>{const g=S.goals.find(x=>x.id===el.dataset.id);g.status='Approved';log('goal.approve','Goal · '+g.title,'Submitted','Approved');toast('Goal approved');render()},
+ approveall:()=>{S.goals.filter(g=>isTeam(g.owner)&&g.status==='Submitted').forEach(g=>{g.status='Approved';log('goal.approve','Goal · '+g.title,'Submitted','Approved')});toast('All submitted goals approved');render()},
+ openrev:el=>{S.openReview=el.dataset.id;render(true)},
+ closerev:()=>{S.openReview=null;render()},
+ devfromrev:el=>{const id=el.dataset.id;const item={id:'d'+Date.now(),pid:id,title:'Build data storytelling for the elections desk',cat:'Skills & Future Readiness',link:'Data storytelling',status:'Not started',source:'2026 review'};S.dev.push(item);log('dev.create','Development item · '+per(id).name,'',item.title+' (from review)');S.done.dev=true;S.sub.growth='development';toast('Development item created from the review');go('growth')},
+ reopen:el=>{const id=el.dataset.id;const rv=S.reviews[id];rv.step='manager';rv.released=false;log('review.reopen','Review · '+per(id).name,'Released','Manager assessment · reason: correction requested by manager');toast('Review reopened. Reason recorded.');render()},
+ chip:(el,e)=>{e.stopPropagation();if(!['talent','manager','hrbp'].includes(S.role))return;S.sel=S.sel===el.dataset.id?null:el.dataset.id;render()},
+ cell:el=>{if(!S.sel)return;startMove(S.sel,el.dataset.k)},
+ cancelmove:()=>{S.pending=null;S.sel=null;render()},
+ release:()=>{S.calib.released=true;log('calibration.release','Session · Newsroom production','Draft','Released to talent records');toast('Results released');render()},
+ card:el=>{S.card=el.dataset.id;log('talentcard.view','Talent card · '+per(el.dataset.id).name,'','');if(el.dataset.id==='sara'&&S.calib.trail.some(x=>x.pid==='sara'))S.done.card=true;render()},
+ interest:el=>{const o=S.opps.find(x=>x.id===el.dataset.id);o.interest.push({pid:ROLE_USER[S.role],status:'Awaiting manager'});log('opportunity.interest','Opportunity · '+o.title,'','Awaiting manager');toast('Interest sent. Your manager approves before you start.');render()},
+ oppok:el=>oppSet(el,'Approved by manager'),oppno:el=>oppSet(el,'Declined'),
+ complete:el=>{const a=S.assign.find(x=>x.id===el.dataset.id);const b=a.status;a.status='Completed';log('learning.complete','Learning · '+S.catalogue.find(c=>c.id===a.lid).title,b,'Completed');render()},
+ enrol:el=>{S.assign.push({id:'a'+Date.now(),pid:ROLE_USER[S.role],lid:el.dataset.id,due:'2026-12-31',status:'Assigned'});log('learning.assign','Learning · '+S.catalogue.find(c=>c.id===el.dataset.id).title,'','Assigned');render()},
+ discard:el=>{const [a,b]=el.dataset.k.split('.');S.cfg[a][b].draft=null;log('config.discard','Config · '+S.cfg[a][b].name,'Draft','Discarded');render()},
+ copycfg:()=>{const ta=document.getElementById('cfgjson');const txt=ta.value;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Configuration copied')).catch(()=>{ta.select();toast('Select all and copy')});log('config.export','Configuration transport file','','Exported')}
+};
+function oppSet(el,status){const o=S.opps.find(x=>x.id===el.dataset.id);const i=o.interest.find(x=>x.pid===el.dataset.p);const b=i.status;i.status=status;log('opportunity.decision','Opportunity · '+o.title+' · '+per(i.pid).name,b,status);render()}
+function startMove(pid,to){const cur=S.calib.place[pid];const from=cur?cur.pot+'-'+cur.perf:null;if(from===to){S.sel=null;render();return;}if(pid===ROLE_USER[S.role]){toast('Nobody can calibrate their own record');return;}S.pending={pid,from,to};S.sel=null;render();const r=document.getElementById('mr');if(r)r.focus();}
+function doAsk(q){const a=answer(q);S.ans=Object.assign({q},a);log(a.denied?'ai.ask.refused':'ai.ask','Ask anything',q.slice(0,60),a.denied?'Refused: outside permissions':'Answered · categories: '+(a.src.split('.')[0]));render()}
+
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;if(el.tagName==='A')e.preventDefault();const f=ACT[el.dataset.act];if(f)f(el,e);});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.cell')){e.preventDefault();ACT.cell(e.target);}if(e.key==='Escape'&&S.drawer){S.drawer=false;render();}});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset.chg==='role'){setRole(el.value);history.replaceState(null,'','#'+S.route);render(true);}
+ if(el.dataset.chg==='ai'){const b=S.cfg.ai[el.dataset.f][el.dataset.r];S.cfg.ai[el.dataset.f][el.dataset.r]=el.checked;log('config.publish','AI switch · '+el.dataset.f+' · '+t('r_'+el.dataset.r),b?'On':'Off',el.checked?'On':'Off');render();}});
+/* drag and drop on the grid */
+document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.closest('.pchip[draggable]');if(c){e.dataTransfer.setData('text/plain',c.dataset.id);e.dataTransfer.effectAllowed='move';}});
+document.addEventListener('dragover',e=>{const c=e.target.closest&&e.target.closest('.cell');if(c){e.preventDefault();c.classList.add('drop');}});
+document.addEventListener('dragleave',e=>{const c=e.target.closest&&e.target.closest('.cell');if(c)c.classList.remove('drop');});
+document.addEventListener('drop',e=>{const c=e.target.closest&&e.target.closest('.cell');if(c){e.preventDefault();c.classList.remove('drop');const id=e.dataTransfer.getData('text/plain');if(id)startMove(id,c.dataset.k);}});
+
+/* forms */
+document.addEventListener('submit',e=>{
+ const f=e.target;e.preventDefault();const fd=new FormData(f);const kind=f.dataset.form;const by=e.submitter?e.submitter.value:fd.get('do');const u=ROLE_USER[S.role];
+ if(kind==='ask'){const q=String(fd.get('q')||'').trim();if(q)doAsk(q);return;}
+ if(kind==='goal'){const title=String(fd.get('title')).trim();if(!title)return;const mine=S.goals.filter(g=>g.owner===u);if(mine.length>=S.cfg.goalrules.max){toast(`Your plan already has ${S.cfg.goalrules.max} goals, the maximum set in configuration`);return;}
+  const g={id:'g'+Date.now(),owner:u,title,cat:fd.get('cat'),weight:+fd.get('weight')||10,progress:0,status:'Submitted',updated:TODAY.toISOString().slice(0,10),align:fd.get('align'),contributors:[]};S.goals.push(g);log('goal.create','Goal · '+title,'','Submitted for approval');S.done.goal=true;toast('Goal added and sent to your manager');render();return;}
+ if(kind==='review'){const id=f.dataset.id,rv=S.reviews[id];const before=stepLabel(rv.step);
+  if(by==='self'){if(!fd.get('self')){toast('Choose an overall self rating first');return;}rv.self=+fd.get('self');rv.selfComment=fd.get('selfComment');S.comps.forEach((c,i)=>rv.comp['cs'+i]=+fd.get('cs'+i)||null);rv.step=nextStep('self');}
+  if(by==='mgr'){if(!fd.get('mgr')){toast('Choose an overall rating first');return;}rv.mgr=+fd.get('mgr');rv.mgrComment=fd.get('mgrComment')||'';S.comps.forEach((c,i)=>rv.comp['cm'+i]=+fd.get('cm'+i)||null);rv.step=nextStep('manager');}
+  if(by==='hr'){rv.step=nextStep('hr');}
+  if(by==='sign'){rv.step='done';rv.released=true;const band=bandOf('four',rv.mgr);if(!S.calib.place[id]){S.calib.place[id]={perf:band,pot:2};}else S.calib.place[id].perf=band;S.calib.unrated=S.calib.unrated.filter(x=>x!==id);if(id==='sara')S.done.rate=true;}
+  if(rv.step==='done'&&!rv.released){rv.released=true;const band=bandOf('four',rv.mgr);S.calib.place[id]=Object.assign({pot:2},S.calib.place[id]||{},{perf:band});S.calib.unrated=S.calib.unrated.filter(x=>x!==id);if(id==='sara')S.done.rate=true;}
+  log(by==='sign'?'review.signoff':'review.submit','Review · '+per(id).name,before,stepLabel(rv.step)+(rv.mgr&&by!=='self'?' · '+labelOf('four',rv.mgr):''));toast(rv.step==='done'?'Review signed off and released':'Moved to '+stepLabel(rv.step));render();return;}
+ if(kind==='fb'){const to=fd.get('to'),k=fd.get('kind'),txt=String(fd.get('text')||'').trim();if(k==='given'&&!txt){toast('Write the feedback first');return;}S.feedback.push({id:'f'+Date.now(),from:u,to,text:k==='given'?txt:'',goal:null,date:TODAY.toISOString().slice(0,10),kind:k});log(k==='given'?'feedback.give':'feedback.request','Feedback · '+per(to).name,'',k==='given'?'Given':'Requested');render();return;}
+ if(kind==='move'){const reason=String(fd.get('reason')||'').trim();if(!reason){toast('A reason is required');return;}const pm=S.pending;const [pot,perf]=pm.to.split('-').map(Number);S.calib.place[pm.pid]={pot,perf};S.calib.unrated=S.calib.unrated.filter(x=>x!==pm.pid);S.calib.trail.push({pid:pm.pid,from:pm.from,to:pm.to,reason,by:u});const L=S.cfg.grid.pub.labels;log('calibration.move','Talent record · '+per(pm.pid).name,L[pm.from]||'Not placed',L[pm.to]+' · reason: '+reason);if(pm.pid==='sara')S.done.calib=true;S.pending=null;toast('Moved and written to the talent record');render();return;}
+ if(kind==='nom'){const pos=S.positions.find(p=>p.id===f.dataset.id);const pid=fd.get('pid');if(!pid)return;pos.succ.push({pid,ready:fd.get('ready')});log('succession.nominate','Position · '+pos.title,'',per(pid).name+' · '+fd.get('ready'));S.done.nom=true;toast('Successor nominated');render();return;}
+ if(kind==='dev'){const pid=fd.get('pid')||u;S.dev.push({id:'d'+Date.now(),pid,title:fd.get('title'),cat:fd.get('cat'),link:fd.get('link'),status:'Not started',source:S.role==='manager'?'Manager':'Self'});log('dev.create','Development item · '+per(pid).name,'',fd.get('title'));render();return;}
+ if(kind==='opp'){const o={id:'o'+Date.now(),title:fd.get('title'),type:fd.get('type'),dur:fd.get('dur'),owner:u,skills:[fd.get('skill'),'Editorial judgement'].filter((v,i,a)=>a.indexOf(v)===i),interest:[]};S.opps.unshift(o);log('opportunity.post','Opportunity · '+o.title,'','Open');toast('Opportunity posted');render();return;}
+ if(kind==='scale'){const k=f.dataset.k,s=S.cfg.scales[k];const vals=(s.draft||s.pub).values.map((v,i)=>({v:v.v,label:String(fd.get('l'+i)).trim()||v.label,band:+fd.get('b'+i)}));
+  if(by==='publish'){const before=s.pub.values.map(v=>v.label).join(' / ');s.pub={version:s.pub.version+1,values:vals};s.draft=null;log('config.publish','Config · '+s.name+' v'+s.pub.version,before,vals.map(v=>v.label).join(' / '));S.done.scale=true;toast('Published. Review forms now use the new labels.');}
+  else{s.draft={values:vals};log('config.draft','Config · '+s.name,'','Draft saved');toast('Draft saved. Not live until you publish.');}render();return;}
+ if(kind==='route'){const s=S.cfg.route;const st=(s.draft||s.pub).steps.map((x,i)=>({...x,label:String(fd.get('l'+i)).trim()||x.label,on:x.key==='self'||x.key==='signoff'?true:fd.get('on'+i)==='on'}));
+  if(by==='publish'){const before=steps().map(x=>x.label).join(' → ');s.pub={version:s.pub.version+1,steps:st};s.draft=null;Object.values(S.reviews).forEach(rv=>{if(rv.step!=='done'&&!steps().some(x=>x.key===rv.step))rv.step=nextStep('manager');});log('config.publish','Config · Review route v'+s.pub.version,before,steps().map(x=>x.label).join(' → '));S.done.route=true;toast('Route published');}
+  else{s.draft={steps:st};log('config.draft','Config · Review route','','Draft saved');toast('Draft saved. Not live until you publish.');}render();return;}
+ if(kind==='grid'){const s=S.cfg.grid;const labels={};Object.keys(s.pub.labels).forEach(k=>labels[k]=String(fd.get(k)).trim()||s.pub.labels[k]);
+  if(by==='publish'){s.pub={version:s.pub.version+1,labels};s.draft=null;log('config.publish','Config · Calibration grid v'+s.pub.version,'',Object.values(labels).slice(0,3).join(' / ')+' …');toast('Grid labels published');}else{s.draft={labels};log('config.draft','Config · Calibration grid','','Draft saved');toast('Draft saved');}render();return;}
+});
+
+/* boot */
+(function(){const h=location.hash.slice(1);if(VIEWS[h])S.route=h;render();})();
+</script>
+
+</body>
+</html>
