@@ -1,11 +1,12 @@
 // Serves the one static page (index.html) on Canvas, with the platform's checks: who may open it
 // (score.yaml's access, as PLATFORM_ACCESS), /healthz, and the security headers. No dependencies.
 // It serves index.html, strategy.html, successfactors.html and goals-hub.html and nothing else: no other file in this folder is reachable.
+// The front page "/" is AJMN People (goals-hub.html); the original Talent Suite page stays at /index.html, unchanged.
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
-const PAGES = { "/": "index.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
+const PAGES = { "/": "goals-hub.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
   "/successfactors.html": "successfactors.html", "/goals-hub.html": "goals-hub.html" };
 const RULES = JSON.parse(process.env.PLATFORM_ACCESS || "{}");
 const SSO = process.env.PLATFORM_AUTH === "sso";

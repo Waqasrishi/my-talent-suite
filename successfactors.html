@@ -623,7 +623,7 @@ function shell(mod,inner){
  <label>${tr('signed')} <select data-chg="me">${Object.keys(P).map(k=>`<option value="${k}" ${k===ME?'selected':''}>${e(P[k].name)}</option>`).join('')}</select></label>
  <span class="lng"><button data-a="lang" data-l="en" aria-pressed="${S.lang!=='ar'}">English</button><button data-a="lang" data-l="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button></span>
  <label><input type="checkbox" data-chg="fail" ${U.failNext?'checked':''}> ${tr('failnext')}</label><label><input type="checkbox" data-chg="aifail" ${U.aiFail?'checked':''}> Fail next AI call</label><a href="#parity">${tr('parity')}</a>
- <a href="./">Talent Suite</a><a href="strategy.html">Strategy Room</a><a href="goals-hub.html">AJMN People</a><button data-a="reset">Reset sandbox</button></div>
+ <a href="index.html">Talent Suite</a><a href="strategy.html">Strategy Room</a><a href="goals-hub.html">AJMN People</a><button data-a="reset">Reset sandbox</button></div>
  <header class="hdr"><div class="logo" title="Logo placeholder">AJ</div><button class="mod" data-a="menu" aria-haspopup="true">${MOD[mod]} ⌄</button>
  ${U.menu?`<div class="modmenu">${Object.entries(MOD).map(([k,l])=>`<button data-a="go" data-h="${k}">${l}</button>`).join('')}</div>`:''}
  <span class="sp"></span><input class="hsearch" placeholder="Search for actions or people" aria-label="Search for actions or people">

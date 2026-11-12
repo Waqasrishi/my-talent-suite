@@ -53,9 +53,9 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
-- **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
+- **Talent Suite**: /index.html — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
-- **AJMN People**: /goals-hub.html — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
+- **AJMN People**: / (also /goals-hub.html) — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions
