@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AJMN SuccessFactors Replica Sandbox</title>
+<style>
+/* A replica of AJMN's current SuccessFactors setup (goal plan 14, development plans 2004 and 2005, the 2026 forms, calibration), with synthetic data. */
+:root{--hdr:#243267;--blue:#8FAEDD;--blue-d:#7C9FD6;--ink:#1D2D3E;--ink2:#131E29;--muted:#556B82;--line:#D9DDE3;--bg:#F5F6F7;--card:#FFFFFF;--link:#0064D9;--sel:#EBF1FA;
+ --green:#30914C;--yellow:#B89B00;--red:#C0392B;--amber:#F0A93B;--amber-soft:#FFF6E5}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 "72","72full",Arial,Helvetica,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-family:"72 Black","72",Arial,Helvetica,sans-serif;font-weight:900;color:var(--ink2);letter-spacing:-.01em}
+h1{font-size:26px;line-height:1.15}h2{font-size:22px}h3{font-size:16px;font-weight:700}
+a{color:var(--link);text-decoration:none}
+:focus-visible{outline:2px solid #0032A5;outline-offset:1px}
+.sand{background:var(--amber-soft);border-bottom:1px solid #F3D9A6;padding:5px 16px;font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.sand b{background:var(--amber);border-radius:4px;padding:1px 7px;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.sand .sp{flex:1}
+.sand button{border:1px solid #E6C68A;background:#fff;border-radius:5px;padding:3px 9px;cursor:pointer}
+.hdr{background:var(--hdr);color:#fff;height:68px;display:flex;align-items:center;gap:20px;padding:0 48px 0 60px;position:relative}
+.logo{width:38px;height:38px;background:#fff;color:var(--hdr);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex:none}
+.mod{background:none;border:0;color:#fff;font-weight:700;font-size:16px;cursor:pointer;padding:8px 10px;margin-left:16px}
+.modmenu{position:absolute;top:58px;left:120px;background:#fff;color:var(--ink);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:30;min-width:200px;padding:6px 0}
+.modmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 16px;cursor:pointer}
+.modmenu button:hover{background:var(--sel)}
+.hdr .sp{flex:1}
+.hsearch{flex:0 1 400px;min-width:120px;height:36px;border-radius:18px;border:1px solid #6F7FB5;background:transparent;color:#fff;padding:0 14px;font-style:italic}
+.hsearch::placeholder{color:#fff;opacity:.9}
+.hico{width:36px;height:36px;border:0;background:none;color:#fff;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;flex:none}
+.hico svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hico i{position:absolute;top:0;right:-2px;background:#C0392B;border-radius:8px;font-size:10px;font-style:normal;font-weight:700;padding:0 4px;line-height:14px}
+.av{width:32px;height:32px;border-radius:50%;background:#fff;color:var(--hdr);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+.sub{background:#A8B1CC;display:flex;gap:36px;padding:0 40px;height:30px;align-items:center}
+.sub button{border:0;background:none;color:#fff;font-weight:700;cursor:pointer;padding:0;font-size:14px}
+.sub button[aria-current]{color:var(--ink2);text-decoration:underline}
+.wrap{display:flex;min-height:calc(100vh - 100px)}
+.side{width:350px;flex:none;background:#fff;border-right:1px solid var(--line)}
+.side h2{padding:14px 10px 10px;font-size:20px}
+.side .srch{margin:4px 10px 8px;position:relative}
+.side .srch input{width:100%;height:26px;border:1px solid #8996A8;border-radius:4px;padding:0 8px;font-style:italic}
+.side label.chk{display:flex;gap:8px;align-items:center;padding:4px 16px 12px}
+.pp{display:flex;align-items:center;gap:14px;width:100%;border:0;border-top:1px solid var(--line);background:#fff;padding:12px 20px 12px 10px;text-align:left;cursor:pointer;min-height:72px}
+.pp:hover,.pp[aria-current]{background:var(--sel)}
+.pp .pa{width:46px;height:46px;border-radius:50%;background:#D5E5F9;color:#1B62C4;display:flex;align-items:center;justify-content:center;font-size:17px;flex:none}
+.pp .pn{flex:1;min-width:0}.pp .pn small{display:block;font-size:14px}
+.pp::after{content:"›";color:var(--muted);font-size:20px}
+.side .grp{font-weight:700;padding:16px 10px 10px;border-top:1px solid var(--line)}
+.side .nv{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 14px;cursor:pointer;font-weight:700}
+.side .nv.in{padding-left:38px;font-weight:400}
+.side .nv[aria-current]{background:var(--bg);box-shadow:inset 3px 0 0 var(--ink2)}
+.main{flex:1;min-width:0}
+.tabsbar{background:#fff;border-bottom:1px solid var(--line);display:flex;gap:26px;padding:0 34px}
+.tabsbar button{border:0;background:none;font-weight:700;padding:12px 2px 10px;cursor:pointer;border-bottom:3px solid transparent}
+.tabsbar button[aria-selected=true]{border-bottom-color:var(--ink2)}
+.ph{background:#fff;padding:10px 16px 0 32px;border-bottom:1px solid var(--line);position:relative}
+.ph .r1{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ph .r1 h1{margin-right:20px}
+.ph .sp{flex:1}
+.ph .dt{padding:10px 0;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.btn{height:26px;padding:0 9px;border-radius:6px;border:1px solid #BCC3CA;background:#E9ECEF;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.em{background:var(--blue);border-color:var(--blue)}
+.btn.em:hover{background:var(--blue-d)}
+.btn.t{background:none;border-color:transparent}
+.btn.t:hover{background:#E9ECEF}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.kpis{display:flex;gap:0 44px;padding:14px 20px 0;flex-wrap:wrap}
+.kpis div{padding-bottom:8px;font-weight:700}
+.kpis div b{display:block;font-size:13px}
+.kpis div:first-child{border-right:1px solid var(--line);padding-right:22px;margin-right:-22px;box-shadow:inset 0 -3px 0 var(--ink2)}
+.kpis .w{margin-left:auto;text-align:right;font-weight:400}
+.body{padding:16px 16px 60px 32px}
+.sect{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;padding:10px 0;cursor:pointer;border:0;background:none}
+.intro{background:#fff;border-radius:10px;padding:14px 18px;margin:4px 0 10px;max-width:1100px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:6px}
+.gc{background:#fff;border-radius:12px;box-shadow:0 0 0 1px #E3E6EA,0 2px 6px rgba(34,53,72,.12);padding:16px 16px 12px;position:relative;cursor:pointer}
+.gc .gt{font-size:16px;line-height:1.2;height:38px;overflow:hidden;padding-right:40px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.gc .dots{position:absolute;top:10px;right:12px;border:0;background:none;font-weight:900;font-size:18px;cursor:pointer;letter-spacing:1px;padding:4px 8px}
+.gc .due{margin:8px 0 18px}
+.gc .pc{display:flex;justify-content:space-between}
+.bar{height:4px;background:#D5DADD;border-radius:2px;margin:2px 0 10px}
+.bar i{display:block;height:100%;background:var(--ink2);border-radius:2px}
+.gc .ft{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+.stsel{border:0;background:none;padding:0;cursor:pointer;font-size:14px}
+.pop{position:absolute;right:10px;top:40px;background:#fff;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:10;padding:4px 0;min-width:150px}
+.pop button{display:block;width:100%;border:0;background:none;text-align:left;padding:8px 14px;cursor:pointer}
+.pop button:hover{background:var(--sel)}
+.crumb{padding:18px 22px 0;font-size:14px}
+.dh{background:#fff;border-bottom:1px solid var(--line);padding:0 22px 14px}
+.dh .tl{display:flex;gap:16px;align-items:flex-start;padding-top:12px}
+.dh .tl h1{flex:1}
+.dh .vis{font-family:Arial,Helvetica,sans-serif;font-weight:400;font-size:14px;color:var(--muted);margin-left:8px}
+.facts{display:flex;flex-wrap:wrap;margin-top:12px}
+.facts div{padding:0 16px;border-right:1px solid var(--line)}
+.facts div:first-child{padding-left:0}.facts div:last-child{border:0}
+.facts small{display:block;font-size:14px;margin-bottom:6px}
+.facts span,.facts select{font-size:20px}
+.dgrid{display:flex;gap:24px;padding:18px 22px 60px 10px;align-items:flex-start;flex-wrap:wrap}
+.dgrid .l{flex:1 1 560px;min-width:0}.dgrid .r{flex:0 1 380px}
+.sh{display:flex;align-items:center;gap:14px;padding:14px 22px;font-weight:700;font-size:16px}
+.sh .sp{flex:1}
+.sh button.x{border:0;background:none;cursor:pointer;font-weight:700;font-size:14px}
+.sb{background:#fff;border-radius:10px;padding:10px 16px;margin-bottom:6px}
+.act{border-left:5px solid var(--green);padding:8px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.act.c{border-left-color:#3F8CD0}
+.act small{display:block}
+.r p{margin:4px 0 12px}
+.formp{background:#fff;border-radius:12px;margin:16px 14px 80px;padding:22px 16px}
+.fl{display:block;font-weight:400;margin:18px 0 8px}
+.fl b{color:#BB0000;font-weight:400}
+.fi{width:100%;max-width:1040px;border:1px solid #8996A8;border-radius:4px;padding:4px 8px;min-height:26px;background:#fff}
+textarea.fi{min-height:90px;resize:vertical;display:block}
+.fi.s{max-width:512px}
+.fi[disabled]{background:#F0F1F2;color:var(--muted)}
+.cnt{max-width:1040px;text-align:right;font-size:12px;margin-top:6px}
+.two{display:flex;gap:16px;max-width:1040px}.two>div{flex:1}
+table.t{border-collapse:collapse;width:100%}
+.t th{background:var(--blue);text-align:left;padding:8px 14px;font-weight:700;white-space:nowrap}
+.t td{padding:7px 14px;border-bottom:1px solid var(--line);background:#fff}
+.t tr.cl{cursor:pointer}.t tr.cl:hover td{background:var(--sel)}
+.t td.none{text-align:center}
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border:1px solid #6A7786;border-radius:10px 10px 0 0;padding:8px 22px;display:flex;justify-content:flex-end;gap:8px;z-index:15}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+.dlg{background:#F5F6F7;border-radius:12px;width:min(1380px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.dlg.sm{width:min(720px,100%)}
+.dlg>header{background:#C9CCD0;padding:10px 32px;font-weight:700;font-size:15px}
+.dlg>footer{background:#fff;border-top:1px solid var(--line);padding:10px 56px 10px 16px;display:flex;justify-content:flex-end;gap:10px}
+.dlg .db{overflow:auto;padding:16px 32px;min-height:340px}
+.steps{background:#fff;display:flex;padding:14px 36px;gap:10px;align-items:center;border-bottom:1px solid var(--line)}
+.steps div{display:flex;align-items:center;gap:8px;font-weight:700;flex:1}
+.steps div:last-child{flex:none}
+.steps div b{width:30px;height:30px;border-radius:50%;border:1px solid #8996A8;display:inline-flex;align-items:center;justify-content:center;font-weight:400;flex:none}
+.steps div.on b{background:#000;color:#fff;border-color:#000}
+.steps div::after{content:"";flex:1;height:1px;background:var(--line);min-width:10px}
+.steps div.done::after{background:#000}
+.steps div:last-child::after{display:none}
+.steps small{display:block;font-weight:400;font-size:12px}
+.wc{background:#fff;border-radius:10px;padding:16px}
+.wr{display:flex;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid var(--ink2)}
+.wr.lite{border-bottom-color:var(--line);justify-content:space-between}
+.seg{display:flex;justify-content:center;margin:10px 0}
+.seg button{border:1px solid #8996A8;background:#D5DADD;padding:3px 14px;font-weight:700;cursor:pointer}
+.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 0 0 2px #000 inset}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px 16px;padding:14px 0}
+.filters label{display:block}.filters select,.filters input{display:block;width:100%;height:26px;border:1px solid #8996A8;border-radius:4px;margin-top:6px;background:#fff}
+.fnav{width:340px;flex:none;background:#fff;border-radius:12px;margin:16px 0 16px 4px;padding:8px;align-self:flex-start;position:sticky;top:10px}
+.fnav button{display:block;width:100%;text-align:left;border:0;background:none;font-weight:700;padding:10px 16px;cursor:pointer}
+.fnav button:first-child{background:var(--bg);box-shadow:inset -3px 0 0 var(--ink2)}
+.fsec{margin:22px 22px 0 28px}
+.fsec h2{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fsec h2 .sp{flex:1}
+.fsec h2 button{border:0;background:none;font-size:22px;cursor:pointer}
+.desc{background:#fff;border-radius:16px;box-shadow:0 0 0 1px #E3E6EA,0 1px 4px rgba(34,53,72,.15);padding:6px 20px;margin-bottom:10px}
+.desc summary{font-weight:700;font-size:16px;cursor:pointer;padding:2px 0}
+.tw{border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px #E3E6EA,0 1px 4px rgba(34,53,72,.15)}
+.ib{border:0;background:none;cursor:pointer;font-size:16px;padding:2px 6px}
+.info{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 16px;background:#fff;border-radius:12px;padding:16px;box-shadow:0 0 0 1px #E3E6EA,0 1px 4px rgba(34,53,72,.15)}
+.info small{display:block;font-size:14px;margin-bottom:6px}
+.score{background:#fff;border-radius:12px;box-shadow:0 0 0 1px #E3E6EA;padding:22px 20px;text-align:right;font-weight:700;font-size:20px;margin-top:26px}
+.warn{background:#FEF7D9;border:1px solid #E9D48A;border-radius:8px;padding:8px 14px;margin:0 16px 14px}
+.cal{display:flex;gap:26px;padding:0 16px 80px;overflow-x:auto;align-items:flex-start}
+.col{flex:0 0 206px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:0 14px 8px;min-height:300px}
+.col.drop{outline:2px dashed #0064D9}
+.col h3{margin:4px -14px 8px;padding:0 20px 8px;border-bottom:1px solid var(--line);font-family:inherit;font-weight:700}
+.col h3 small{display:block;font-weight:400;color:var(--muted);font-size:14px;margin-top:4px}
+.col .nh{background:var(--blue);font-weight:700;padding:14px 24px}
+.cp{border-bottom:1px solid var(--line);padding:12px 6px 8px 18px;cursor:grab}
+.cp .n{display:flex;align-items:center;gap:8px}
+.cp .n i{width:22px;height:22px;border-radius:50%;background:#9AA5B1;flex:none}
+.cp .n span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp .rk{font-weight:700;margin-top:18px}.cp .rk span{font-weight:400}
+.toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:var(--ink2);color:#fff;border-radius:8px;padding:10px 16px;z-index:60}
+.err{color:#BB0000;margin:8px 0}
+@media(max-width:900px){.side,.fnav{display:none}.hdr{padding:0 12px}.info{grid-template-columns:repeat(2,minmax(0,1fr))}.body,.ph{padding-left:14px}}
+@media print{.hdr,.sand,.side,.sub,.foot{display:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="toast" id="toast" hidden role="status"></div>
+<script>
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TODAY='2026-11-12';
+const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'–';
+const mdy=d=>{const[y,m,x]=d.split('-');return `${m}/${x}/${y}`};
+
+/* ---------- configuration, from the exported templates ---------- */
+const PSTATE={empdraft:'Goals Settings',unlockedtodlm:'Goals Review',locked:'Goals Completed'};
+const GST=['In Progress','Completed','Paused','Cancelled'];
+const DST=['Not Started','On Track','Behind','Completed','At Risk'];
+const DCOL={'Not Started':'#1D2D3E','On Track':'#B89B00','Behind':'#D9534F','Completed':'#4CAF50','At Risk':'#E41E1E'};
+const MGRAPP=['No selection','Yes','No'];
+const PURPOSE=['🌿 Develop in Current Role','🌟 Prepare for Future role','🎙️ Enhance General skillset'];
+const SCALE=['Unsatisfactory Performance','Needs Improvements','🎯 Achiever','Champions','Ideator','Innovator'];
+const CALCOLS=['Not Rated / Excluded','Unsatisfactory Performance','Needs Improvements','Achiever','Champions','Ideator','Innovator'];
+const TPL={goal:{name:'2026 Individual Goal Form',steps:['Employee Goal Setting','DLM Goals Review']},appr:{name:'2026 Performance Appraisal Form',steps:['DLM Appraisal']}};
+const INTRO=`<div>All goals must be aligned to the organization's strategic goals and linked to the strategic alignment.</div><br><div><strong>Goals:</strong> The establishment of clear, Specific, Measurable, Achievable, Relevant, and Time-bound (SMART) goals will guide our efforts.</div><br><div><strong>Intended Results:</strong> Defined outcomes that should be thoughtfully aligned with our overarching mission; this will be the focus of our goal-setting initiatives.</div><br><div><strong>KPIs:</strong> Key Performance Indicators (KPIs) will serve as the metrics through which we will measure progress and success.</div><br><div>Set a minimum of one (1) goals, ensuring their combined weight totals to 100%. Each goal weight to be within the range of 1% to 50%.</div>`;
+const DINTRO='This is where you create and update your Career Development goals. Click the Add Goal button to get started.<br>Frequently review progress with your manager and celebrate your achievements along the way.';
+
+/* ---------- synthetic data ---------- */
+const P={admin:{name:'Admin Admin',first:'Admin',last:'Admin',title:'Senior ERP Specialist',eid:'99999900',mgr:'gp'},
+ gp:{name:'GP Admin',first:'GP',last:'Admin',title:'',eid:'99999800',mgr:null},
+ hr1:{name:'HR Administrator1',first:'HR',last:'Administrator1',title:'',eid:'99999901',mgr:'admin'},
+ hr2:{name:'HR Administrator2',first:'HR',last:'Administrator2',title:'',eid:'99999902',mgr:'admin'}};
+const ME='admin';
+const reports=u=>Object.keys(P).filter(k=>P[k].mgr===u);
+const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+function seed(){
+ let n=1;const g=(owner,name,weight,x)=>Object.assign({id:'g'+(n++),plan:'perf',owner,name,desc:'',metric:'KPI : Overall SLA achievements rate in %, Quality of output delivered %, Additional support provided beyond regular routines',weight,start:'2026-01-01',due:'2026-12-31',state:'In Progress',done:0,vis:'Public',ms:[],acts:[],audit:[],up:null,updated:TODAY},x||{});
+ const studio='Deliver studio operations assigned tasks using the technical and operational skills of production to help editorial team achieve their ambition effectively and efficiently.';
+ const learn='Focus on personal knowledge growth and assigned learnings (mandatory and self selected) to contribute in achieving business objectives & goals';
+ const proj='Complete the assigned Projects deliverables for the current performance year.';
+ const intro='1 Introduce new product and service inside the network which result into quantifiable overall business impact تقديم منتجات وخدمات جديدة داخل الشبكة والتي نتج عنها تأثير إيجابي ملموس على الشبكة';
+ const goals=[
+  g('admin',studio,12,{done:80,acts:[{n:'test 1',s:'Complete',c:'today'},{n:'Project 1',s:'In Progress',c:'2 days ago'}]}),
+  g('admin',proj,25),g('admin',learn,25),g('admin',intro,5),
+  g('admin','Provide creative ideas and solutions which will improvise and optimize the network operation support quality in a way to achieve an overall efficiency of the function2',13),
+  g('admin',studio,20),
+  g('hr1','Investigate and report new stories immediately for news worthy content as an when the event happen by abiding to journalism codes and ethics',20),
+  g('hr1','Improve the quality of content and services to deepen the engagement with AJMN audiences',20),
+  g('hr1','Present new creative ways to produce and report News & Program content (TV/Online) which is in line with the editorial quality and standards of the network',20),
+  g('hr1',learn,20),g('hr1',proj,20),
+  g('hr2',learn,50),g('hr2',proj,50),
+  {id:'d1',plan:'dev',owner:'admin',name:'English Language Training Course for business writing',desc:'Complete the assigned course and pass the final assessment',start:'2025-01-01',due:'2025-12-31',state:'On Track',done:0,vis:'Public',comps:['Communication','Customer Focus'],mgrapp:'No selection',acts:[],learn:[],comments:[],audit:[],updated:'2025-10-28'},
+  {id:'d2',plan:'dev',owner:'admin',name:'Attendance and Punctuality',desc:'1. No unapproved absences\n2.Demonstrates reliability in adhering to scheduled work hours',start:'2025-01-01',due:'2025-12-31',state:'Completed',done:0,vis:'Public',comps:[],mgrapp:'No selection',acts:[{n:'Attendance on spot',s:'Complete',c:'Oct 26, 2025',fb:1}],learn:[],comments:[],audit:[],updated:'2025-10-28'}
+ ];
+ const f=(id,tpl,emp,step,status,x)=>Object.assign({id,tpl,emp,step,status,assigned:'2026-11-08',start:'2026-11-08',rating:'',comments:'',hist:[{t:'11/08/2026',w:'Form created and routed to '+TPL[tpl].steps[step]}]},x||{});
+ const first=['Amal','Bashir','Carla','Dana','Emad','Farah','Ghazi','Hala','Imran','Jana','Kamal','Lama','Majed','Nadia','Omar','Petra','Qasim','Rima','Sami','Tala','Usama','Vera','Walid','Yara','Zaid'];
+ const last=['Sample','Testuser','Demo','Fictional','Placeholder'];
+ const dist=[2,3,5,14,20,8,4];const cal=[];let k=0;
+ dist.forEach((c,ci)=>{for(let i=0;i<c;i++,k++)cal.push({id:'c'+k,name:first[k%25]+' '+last[(k*3+ci)%5]+' '+(k+1),col:ci,rank:''})});
+ return {who:ME,gtab:'perf',pstate:{admin:'empdraft',hr1:'empdraft',hr2:'empdraft',gp:'empdraft'},goals,seq:100,
+  forms:[f('f1','appr','hr1',0,'inbox'),f('f2','appr','hr2',0,'inbox'),f('f3','goal','hr1',1,'inbox'),f('f4','goal','hr2',0,'enroute'),f('f5','appr','admin',0,'enroute')],
+  cal,calSaved:null,calFinal:false,intro:false};
+}
+let S;try{S=JSON.parse(localStorage.getItem('ajmn-sf-replica'))}catch(x){}
+if(!S||!S.goals)S=seed();
+const U={menu:false,card:null,casc:null,dlg:null,exp:{},ctab:'table',ptab:'reviews',full:false};
+const save=()=>{try{localStorage.setItem('ajmn-sf-replica',JSON.stringify(S))}catch(x){}};
+const G=id=>S.goals.find(g=>g.id===id);
+const plan=(u,p)=>S.goals.filter(g=>g.owner===u&&g.plan===p);
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2800)}
+const aud=(g,w)=>g.audit.push({t:fmt(TODAY),by:P[ME].name,w});
+const opt=(l,v)=>l.map(x=>`<option ${x===v?'selected':''}>${e(x)}</option>`).join('');
+/* what a role may still change once the plan leaves Goals Settings (from the plan's field permissions) */
+const locked=(g,f)=>{if(g.plan!=='perf')return false;const st=S.pstate[g.owner];if(st==='empdraft')return false;const ok=st==='locked'?['state','done','ms','weight']:['state','done','ms'];return !ok.includes(f)};
+const canCreate=u=>{const st=S.pstate[u];return st==='empdraft'||(st==='locked'&&P[u].mgr===ME)};
+const canDelete=u=>S.pstate[u]==='empdraft';
+
+/* ---------- shell ---------- */
+const IC={search:'<circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/>',todo:'<circle cx="10" cy="10" r="7.5"/><path d="M6.5 10.2l2.4 2.4 4.6-5"/>',help:'<path d="M3.5 11V9a6.5 6.5 0 0113 0v2"/><rect x="2.5" y="10.5" width="3" height="5" rx="1"/><rect x="14.5" y="10.5" width="3" height="5" rx="1"/><path d="M16 15.5c0 1.5-2 2-4 2"/>',book:'<path d="M2.5 4.5h6a2 2 0 012 2v9a2 2 0 00-2-2h-6zM17.5 4.5h-5a2 2 0 00-2 2v9a2 2 0 012-2h5z"/>',bell:'<path d="M5 14V9a5 5 0 0110 0v5l1.5 1.5h-13zM8.5 17.5h3"/>'};
+const ico=(k,b)=>`<button class="hico" aria-label="${k}"><svg viewBox="0 0 20 20">${IC[k]}</svg>${b?`<i>${b}</i>`:''}</button>`;
+const MOD={goals:'Goals',perf:'Performance',calib:'Calibration'};
+function shell(mod,inner){
+ return `<div class="sand"><b>Sandbox</b><span>Replica of AJMN’s current SuccessFactors setup · synthetic data</span><span class="sp"></span><a href="./">Talent Suite</a><a href="strategy.html">Strategy Room</a><button data-a="reset">Reset sandbox</button></div>
+ <header class="hdr"><div class="logo" title="Logo placeholder">AJ</div><button class="mod" data-a="menu" aria-haspopup="true">${MOD[mod]} ⌄</button>
+ ${U.menu?`<div class="modmenu">${Object.entries(MOD).map(([k,l])=>`<button data-a="go" data-h="${k}">${l}</button>`).join('')}</div>`:''}
+ <span class="sp"></span><input class="hsearch" placeholder="Search for actions or people" aria-label="Search for actions or people">
+ ${ico('search')}${ico('todo',8)}${ico('help')}${ico('book')}${ico('bell')}<div class="av" title="${e(P[ME].name)}">${ini(P[ME].name)}</div></header>${inner}`;
+}
+function people(){
+ const pp=(k)=>`<button class="pp" data-a="who" data-u="${k}" ${S.who===k?'aria-current="true"':''}><span class="pa">${ini(P[k].name)}</span><span class="pn">${e(P[k].name)}<small>${e(P[k].title)}</small></span></button>`;
+ return `<aside class="side"><h2>People Selector</h2><div class="srch"><input placeholder="Search" aria-label="Search people" data-in="psearch"></div>
+ <label class="chk"><input type="checkbox"> Include inactive users in search results</label>
+ ${pp(ME)}<div class="grp">Manager</div>${pp(P[ME].mgr)}<div class="grp">Direct Reports</div>${reports(ME).map(pp).join('')}</aside>`;
+}
+
+/* ---------- goals: plan pages ---------- */
+function goalsPage(){
+ const u=S.who,dev=S.gtab==='dev',gs=plan(u,dev?'dev':'perf');
+ const cnt=l=>l.map(s=>`<div><b>${gs.filter(g=>g.state===s).length}</b>${s}</div>`).join('');
+ const tw=gs.reduce((a,g)=>a+(+g.weight||0),0);
+ const card=g=>{const od=dev&&g.state!=='Completed'&&g.due<TODAY?Math.round((new Date(TODAY)-new Date(g.due))/864e5):0;
+  return `<div class="gc" data-a="open" data-id="${g.id}"><div class="gt">${e(g.name)}</div><button class="dots" data-a="card" data-id="${g.id}" aria-label="More actions">•••</button>
+  ${U.card===g.id?`<div class="pop"><button data-a="open" data-id="${g.id}">View Details</button><button data-a="edit" data-id="${g.id}">Edit Goal</button>${dev||canDelete(u)?`<button data-a="del" data-id="${g.id}">Delete Goal</button>`:''}</div>`:''}
+  <div class="due">${od?`<b>${od}</b> Days Overdue`:'Due Date: '+fmt(g.due)}</div><div class="pc"><span>% Complete</span><span>${g.done}%</span></div><div class="bar"><i style="width:${g.done}%"></i></div>
+  <div class="ft"><select class="stsel" data-chg="gstate" data-id="${g.id}" aria-label="Status" style="${dev?'color:'+DCOL[g.state]:''}">${opt(dev?DST:GST,g.state)}</select><span>${dev?(g.comps.length?'◈ '+g.comps.length:''):'⚖ '+g.weight+'%'}</span></div></div>`};
+ return shell('goals',`<div class="wrap">${U.full?'':people()}<div class="main">
+ <div class="tabsbar" role="tablist"><button role="tab" aria-selected="${!dev}" data-a="gtab" data-t="perf">Performance Goals</button><button role="tab" aria-selected="${dev}" data-a="gtab" data-t="dev">Development Goals</button></div>
+ <div class="ph"><div class="r1"><h1>${dev?'Career Development Plan':'2026 Individual Goal Plan'}</h1><span title="Switch plan">⌄</span><span class="sp"></span>
+  <button class="btn em" data-a="new" ${dev||canCreate(u)?'':'disabled title="Goals cannot be created in this plan state"'}>Create Goal</button>${dev?'':`<button class="btn" data-a="cascade">Cascade Goal</button>`}<button class="btn" data-a="print">Print to PDF</button><button class="btn" data-a="full" aria-label="Full screen">⛶</button></div>
+  <div class="dt"><span>${dev?'Jan 1, 2025 - Dec 31, 2026':'Jan 1, 2026 - Dec 31, 2026'}</span>${dev?'':`<label>State: <select class="stsel" data-chg="pstate">${Object.entries(PSTATE).map(([k,l])=>`<option value="${k}" ${S.pstate[u]===k?'selected':''}>${l}</option>`).join('')}</select></label>`}</div>
+  <div class="kpis"><div><b>${gs.length}</b>Goals</div>${cnt(dev?DST:GST)}${dev?'':`<div class="w">${tw}%<br>Weight (Total)</div>`}</div></div>
+ <div class="body"><button class="sect" data-a="intro">ⓘ Introduction</button>${S.intro?`<div class="intro">${dev?DINTRO:INTRO}</div>`:''}
+  <div class="sect">⌄ &nbsp;${dev?'Development Goals':'Individual Goals'}</div>
+  <div class="cards">${gs.map(card).join('')}</div>${gs.length?'':'<p>No goals in this plan yet.</p>'}</div></div></div>`);
+}
+
+/* ---------- goals: details ---------- */
+function goalDetail(g){
+ const dev=g.plan==='dev',planName=dev?'Career Development Plan':'2026 Individual Goal Plan',cat=dev?'Development Goals':'Individual Goals';
+ const up=g.up&&G(g.up),down=S.goals.filter(x=>x.up===g.id);
+ const sec=(t,body,right)=>`<div class="sh"><span>⌄</span><span>${t}</span><span class="sp"></span>${right||''}</div>${body}`;
+ const acts=`<div class="sb" style="padding:0;min-height:${dev?130:110}px">${g.acts.map(a=>`<div class="act ${a.s==='Complete'?'c':''}"><span>${e(a.n)}<small>${a.s} · Created: ${e(a.c)}</small>${a.fb?`<small>Feedback (${a.fb})</small>`:''}</span><span>🏆</span></div>`).join('')}</div>`;
+ return shell('goals',`<div class="crumb"><a href="#goals">${planName}</a> / ${cat} / Goal Details</div>
+ <div class="dh"><div class="tl"><h1>${e(g.name)}<span class="vis">(${g.vis})</span></h1>${dev?`<button class="btn em" data-a="edit" data-id="${g.id}">Edit Goal</button><button class="btn" data-a="del" data-id="${g.id}">Delete Goal</button>`:`<button class="btn t" data-a="edit" data-id="${g.id}" title="Edit Goal">•••</button>`}</div>
+ <div>Updated: ${fmt(g.updated)}</div>
+ <div class="facts"><div><small>Status</small><select class="stsel" style="font-size:20px;${dev?'color:'+DCOL[g.state]:''}" data-chg="gstate" data-id="${g.id}">${opt(dev?DST:GST,g.state)}</select></div><div><small>% Complete</small><span>${g.done} <small style="display:inline">%</small></span></div><div><small>${dev?'Start Date':'Start'}</small><span>${fmt(g.start)}</span></div><div><small>${dev?'End Date':'Due'}</small><span>${fmt(g.due)}</span></div>${dev?`<div><small>Competencies</small><span>${g.comps.length}</span></div>`:''}</div></div>
+ <div class="dgrid"><div class="l">
+  ${dev?sec('Metric',`<div class="sb" style="white-space:pre-line">${e(g.desc)||'–'}</div>`):sec('Intended Results',g.desc?`<div class="sb">${e(g.desc)}</div>`:'')+sec('Milestones',g.ms.length?`<div class="tw"><table class="t"><tr><th>Target Date</th><th>Milestone</th><th>Actual Date</th></tr>${g.ms.map(m=>`<tr><td>${fmt(m.t)}</td><td>${e(m.d)}</td><td>${fmt(m.a)}</td></tr>`).join('')}</table></div>`:'',`<button class="x" data-a="edit" data-id="${g.id}">Manage Milestones</button>`)}
+  ${sec(`Linked Activities (${g.acts.length})`,acts,`<button class="x" data-a="act" data-id="${g.id}">＋ Create Activity</button>`)}
+  ${dev?sec('Linked Learning',g.learn.length?`<div class="sb">${g.learn.map(e).join('<br>')}</div>`:'')+sec(`comments (${g.comments.length})`,`<div class="sb">${g.comments.map(c=>`<p><b>${e(c.by)}</b> · ${e(c.t)}<br>${e(c.x)}</p>`).join('')}<form data-f="comment" data-id="${g.id}"><p>Leave a Comment</p><div style="display:flex;gap:8px;align-items:center"><div class="av" style="background:#D5E5F9">${ini(P[ME].name)}</div><input class="fi" name="x" style="max-width:none" maxlength="1000" aria-label="Comment"><button class="btn" aria-label="Send">➤</button></div></form></div>`):''}
+ </div><div class="r">
+  ${sec('More Info',`<div style="padding:0 22px">${dev?`<p>Is the Goal approved by Manager:<br>${e(g.mgrapp)}</p>`:`<p>Key Performance Indicator:<br>${e(g.metric)}</p><p>Weight:<br>${g.weight}%</p>`}</div>`)}
+  ${sec('Goal Audit',`<div style="padding:0 30px"><button class="sh x" style="padding:0;border:0;background:none;cursor:pointer;font-size:14px" data-a="audit" data-id="${g.id}">View Audit History</button></div>`)}
+  ${dev?'':sec('Goal Alignment',`<div style="padding:0 22px">${up?`<p>Aligned Up:</p><div class="pp" style="border:0;padding:4px 0;min-height:0;cursor:default"><span class="pa" style="width:32px;height:32px;font-size:12px">${ini(P[up.owner].name)}</span></div><p>${e(up.name)}</p>`:''}${down.length?`<p>Aligned Down: ${down.length} goal${down.length>1?'s':''}</p>`:''}${!up&&!down.length?'<p>This goal is not aligned to another goal.</p>':''}<button class="sh x" style="padding:0;border:0;background:none;cursor:pointer;font-size:14px" data-a="align" data-id="${g.id}">View Alignment Chart</button></div>`)}
+ </div></div>`);
+}
+
+/* ---------- goals: create / edit ---------- */
+function goalForm(g,isNew){
+ const dev=g.plan==='dev',d=f=>locked(g,f)?'disabled':'';
+ const ta=(id,label,val,max,req,f)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><textarea class="fi" id="${id}" name="${id}" maxlength="${max}" ${d(f||id)} ${req?'required':''}>${e(val)}</textarea><div class="cnt"><span data-cnt="${id}">${max-String(val||'').length}</span> characters left Legal Scan</div>`;
+ const sel=(id,label,list,val,req,f)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><select class="fi s" id="${id}" name="${id}" ${d(f||id)}>${opt(list,val)}</select>`;
+ const dates=`<div class="two"><div><label class="fl" for="start">${dev?'Start Date':'Start'}:</label><input class="fi" type="date" id="start" name="start" value="${g.start}" ${d('start')}></div><div><label class="fl" for="due">${dev?'End Date':'Due'}:</label><input class="fi" type="date" id="due" name="due" value="${g.due}" ${d('due')}></div></div>`;
+ const pct=(id,label,val,req)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><input class="fi s" type="number" id="${id}" name="${id}" min="0" max="100" value="${val}" ${d(id)} ${req?'required':''}>`;
+ const msrow=m=>`<tr><td><input type="date" class="fi" name="mt" value="${m.t||''}" aria-label="Target Date"></td><td><input class="fi" name="md" value="${e(m.d||'')}" aria-label="Milestone"></td><td><input type="date" class="fi" name="ma" value="${m.a||''}" aria-label="Actual Date"></td><td><button type="button" class="ib" data-a="msdel" aria-label="Delete row">🗑</button></td></tr>`;
+ goalForm.msrow=msrow;
+ return shell('goals',`<div class="crumb">${e(P[g.owner].name)} / ${dev?'Career Development Plan':'2026 Individual Goal Plan'} / ${isNew?'Create':'Edit'} Goal</div>
+ <div class="dh"><h1 style="padding-top:14px">${isNew?'Create':'Edit'} ${dev?'Development':'Performance'} Goal</h1></div>
+ <form data-f="goal" data-id="${isNew?'':g.id}" data-plan="${g.plan}" novalidate><div class="formp"><div class="err" id="gerr" hidden></div>
+ ${dev?ta('name','Name',g.name,500,true)+sel('vis','Visibility',['Public','Private'],g.vis,true)+sel('cat','Category',['Development Goals'],'Development Goals')+ta('desc','Metric',g.desc,2000)
+   +`<label class="fl" for="comps">Competencies:</label><select class="fi s" id="comps" name="comps" multiple size="4">${['Communication','Customer Focus','Teamwork','Planning and Organising','Editorial Judgement'].map(c=>`<option ${g.comps.includes(c)?'selected':''}>${c}</option>`).join('')}</select>`
+   +dates+pct('done','% Complete',g.done,true)+sel('state','Status',DST,g.state,true)+`<label class="fl" for="mgrapp">Is the Goal approved by Manager:<b>*</b></label><select class="fi s" id="mgrapp" name="mgrapp" ${P[g.owner].mgr===ME?'':'disabled title="Only the line manager may change this"'}>${opt(MGRAPP,g.mgrapp)}</select>`
+  :ta('name','Goal Description',g.name,500,true)+sel('vis','Visibility',['Public','Private'],g.vis,true)+sel('cat','Goal Type',['Individual Goals'],'Individual Goals',false,'name')+ta('desc','Intended Results',g.desc,2000)+ta('metric','Key Performance Indicator',g.metric,1000,true)
+   +`<label class="fl" for="weight">Weight:<b>*</b></label><input class="fi s" type="number" id="weight" name="weight" min="1" max="50" step="0.1" value="${g.weight}" ${d('weight')} required>`
+   +dates+sel('state','Status',GST,g.state)+pct('done','% Complete',g.done)
+   +`<label class="fl">Milestones: ⓘ</label><div class="tw"><table class="t"><thead><tr><th>Target Date</th><th>Milestone</th><th>Actual Date</th><th>Actions</th></tr></thead><tbody id="msb">${g.ms.map(msrow).join('')||'<tr class="nod"><td colspan="4" class="none">No Data</td></tr>'}</tbody></table></div><p><button type="button" class="btn t" data-a="msadd">Add Row</button></p>`}
+ </div><div class="foot"><button class="btn em">Save</button><button type="button" class="btn t" data-a="back">Cancel</button></div></form>`);
+}
+
+/* ---------- goals: cascade wizard ---------- */
+function cascadeDlg(){
+ const c=U.casc,gs=plan(ME,'perf'),st=['Select Goals','Select Recipients','Edit Goals<small>(Optional)</small>','Cascade'];
+ let b='';
+ if(c.step===0)b=`<h2>1. Select Goals</h2><p>Select one or more goals.</p><label class="wr"><input type="checkbox" data-chg="call" ${gs.every(g=>c.goals.includes(g.id))?'checked':''}> Select All Loaded Goals</label>${gs.map(g=>`<label class="wr"><input type="checkbox" data-chg="cgoal" value="${g.id}" ${c.goals.includes(g.id)?'checked':''}> ${e(g.name)}</label>`).join('')}`;
+ if(c.step===1){const team=reports(ME),hits=Object.keys(P).filter(k=>k!==ME&&c.q&&P[k].name.toLowerCase().includes(c.q.toLowerCase()));
+  b=`<h2>2. Select Recipients</h2><p>Select one or more recipients from your team or via search. Only recipients with correct permissions can be selected.</p><div class="seg"><button data-a="cmode" data-m="team" aria-pressed="${c.mode==='team'}">From My Team</button><button data-a="cmode" data-m="search" aria-pressed="${c.mode==='search'}">Via Search</button></div>
+  ${c.mode==='team'?`<h3>My Team (${c.rec.filter(r=>team.includes(r)).length} selected)</h3><label class="wr"><input type="checkbox" data-chg="crall" ${team.every(t=>c.rec.includes(t))?'checked':''}> Direct Reports</label>${team.map(t=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${t}" ${c.rec.includes(t)?'checked':''}> <span class="pa" style="width:28px;height:28px;border-radius:50%;background:#D5E5F9;color:#1B62C4;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${ini(P[t].name)}</span> <b>${e(P[t].name)}</b></label>`).join('')}`
+  :`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Search Results</h3><input class="fi" style="max-width:190px" placeholder="Search" value="${e(c.q||'')}" data-in="csearch" aria-label="Search recipients"></div>${hits.map(t=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${t}" ${c.rec.includes(t)?'checked':''}> ${e(P[t].name)}</label>`).join('')||'<div class="wr lite" style="justify-content:center">Mapping results will be listed here.</div>'}`}`;}
+ if(c.step===2)b=`<h2>3. Edit Goals</h2><p>Skip this step if you don’t have any changes to make to the selected goals.</p>${c.goals.map(id=>c.ed===id?`<form class="wr lite" data-f="cedit" data-id="${id}"><input class="fi" name="t" value="${e(c.edits[id]||G(id).name)}" style="max-width:none" maxlength="500" aria-label="Goal Description"><button class="btn em">Done</button></form>`:`<div class="wr lite"><span>${e(c.edits[id]||G(id).name)}</span><button class="ib" data-a="cpen" data-id="${id}" aria-label="Edit goal">✎</button></div>`).join('')}`;
+ if(c.step===3)b=`<h2>4. Cascade</h2><p>${c.goals.length} goal${c.goals.length>1?'s':''} will be added to the 2026 Individual Goal Plan of ${c.rec.length} recipient${c.rec.length>1?'s':''}, aligned up to your goals.</p>${c.rec.map(r=>`<div class="wr lite"><b>${e(P[r].name)}</b><span>${c.goals.length} goal${c.goals.length>1?'s':''}</span></div>`).join('')}`;
+ const ok=c.step===0?c.goals.length:c.step===1?c.rec.length:1;
+ return `<div class="mask"><div class="dlg" role="dialog" aria-label="Cascade Goal"><header>Cascade Goal</header><div class="steps">${st.map((s,i)=>`<div class="${i===c.step?'on':''} ${i<c.step?'done':''}"><b>${i+1}</b><span>${s}</span></div>`).join('')}</div>
+ <div class="db"><div class="wc">${b}</div></div><footer>${c.step?'<button class="btn t" data-a="cprev">Previous</button>':''}<button class="btn em" data-a="cnext" ${ok?'':'disabled'}>${c.step===3?'Cascade':'Next'}</button><button class="btn t" data-a="close">Cancel</button></footer></div></div>`;
+}
+
+/* ---------- performance ---------- */
+const formGoals=f=>plan(f.emp,'perf'),formTna=f=>plan(f.emp,'tna');
+function perfPage(box){
+ const sub=`<div class="sub">${[['reviews','Reviews'],['team','Team Overview'],['exec','360 Executive Review']].map(([k,l])=>`<button data-a="ptab" data-t="${k}" ${U.ptab===k?'aria-current="page"':''}>${l}</button>`).join('')}</div>`;
+ if(U.ptab==='team')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">Team Overview</h1><div class="tw"><table class="t"><tr><th>Employee</th><th>Form</th><th>Current Step</th><th>Overall Form Rating</th></tr>${S.forms.filter(f=>P[f.emp].mgr===ME).map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td>${e(P[f.emp].name)}</td><td>${TPL[f.tpl].name}</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td>${e(f.rating)||'–'}</td></tr>`).join('')}</table></div></div>`);
+ if(U.ptab==='exec')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">360 Executive Review</h1><p>This tab is not replicated: no screenshot or template was provided for it.</p></div>`);
+ const rows=S.forms.filter(f=>f.status===box),fl=(l,a)=>`<label>${l}<select><option>${a||'All'}</option></select></label>`;
+ const nv=(k,l,c)=>`<button class="nv ${c||''}" data-a="go" data-h="perf/${k}" ${box===k?'aria-current="page"':''}>${l}</button>`;
+ return shell('perf',sub+`<div class="wrap"><aside class="side" style="width:332px"><h2 style="font-size:24px;padding:24px 8px 14px">My Forms</h2><span class="nv">All Forms</span><span class="nv">In Progress</span>${nv('inbox','Inbox','in')}${nv('enroute','En Route','in')}<span class="nv">Completed</span>${nv('completed','Unfiled','in')}</aside>
+ <div class="main"><div class="ph" style="padding-bottom:10px"><div class="r1"><h1>${{inbox:'Inbox',enroute:'En Route',completed:'Completed'}[box]}</h1><span title="Help">ⓘ</span><span class="sp"></span><button class="btn em">Go</button><button class="btn">Reset</button></div>
+ <div class="filters">${fl('Template:')}${fl('Current Step:')}${fl('Group: ⓘ')}${fl('All or Reports Only:','All Employees')}<label>Employee:<input placeholder="Search for employee" style="font-style:italic;padding:0 8px"></label>${fl('Division/Channel:')}${fl('Department:')}${fl('Bureau:')}${fl('Section:')}${fl('Directorate:')}${fl('Director General:')}${fl('Group:')}</div></div>
+ <div class="body" style="padding-left:16px"><div class="r1" style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><b style="font-size:16px">Forms (${rows.length})</b><span style="flex:1"></span><button class="btn" data-a="mkform">Create Form</button><button class="btn t" disabled>Send to Previous Step</button><button class="btn t" disabled>Final Submission</button><span>⚙</span></div>
+ <div style="overflow-x:auto"><table class="t"><tr><th><input type="checkbox" aria-label="Select all"></th><th>Title</th><th>Employee</th><th>Current Step</th><th>Date Assigned</th><th>Step Due Date</th><th>Form Start Date</th></tr>
+ ${rows.map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td><input type="checkbox" aria-label="Select form" data-a="noop"></td><td>◔ &nbsp;${e(TPL[f.tpl].name)} for ${e(P[f.emp].name)}</td><td>${e(P[f.emp].name)} ▤</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td style="text-align:right">${mdy(f.assigned)}</td><td style="text-align:right">–</td><td style="text-align:right">${mdy(f.start)}</td></tr>`).join('')||'<tr><td colspan="7" class="none">No Data</td></tr>'}</table></div></div></div></div>`);
+}
+function formPage(f){
+ const ap=f.tpl==='appr',p=P[f.emp],gs=formGoals(f),tn=formTna(f),done=f.status==='completed',mine=f.status==='inbox';
+ const secs=ap?[['si','👤 Employee Information'],['sg','🎯 Individual Goals'],['st','🎓 Training Needs'],['so','🏆 Overall Performance Summary'],['ss','Overall Score']]:[['si','👤 Employee Information'],['sg','Individual Goals']];
+ const desc=t=>`<details class="desc"><summary>Description</summary><p>${t}</p></details>`;
+ const row=(g,w)=>`<tr><td>${e(g.name)}</td>${w?`<td style="text-align:right;width:90px">${g.weight}%</td>`:''}<td style="width:150px;white-space:nowrap">${mine?`<button class="ib" data-a="edit" data-id="${g.id}" aria-label="Edit">✎</button><button class="ib" data-a="del" data-id="${g.id}" aria-label="Delete">🗑</button>`:''}<button class="ib" style="float:right" data-a="exp" data-id="${g.id}" aria-label="Details">${U.exp[g.id]?'⌄':'›'}</button></td></tr>${U.exp[g.id]?`<tr><td colspan="3" style="background:var(--bg)">${g.plan==='tna'?`Purpose: ${e(g.purpose)} · Target Date: ${fmt(g.due)}`:`Key Performance Indicator: ${e(g.metric)}<br>Weight: ${g.weight}% · Status: ${g.state} · % Complete: ${g.done}%`}</td></tr>`:''}`;
+ return shell('perf',`<div class="sub"><button aria-current="page" data-a="go" data-h="perf">Reviews</button><button data-a="ptab" data-t="team">Team Overview</button><button data-a="ptab" data-t="exec">360 Executive Review</button></div>
+ <div class="dh"><div class="crumb" style="padding-left:8px"><a href="#perf">My Forms</a> / Form Details</div><div class="tl" style="padding-left:8px"><h1>${e(TPL[f.tpl].name)} for ${e(p.name)}</h1><button class="btn t" data-a="hist" data-id="${f.id}">History</button><button class="btn t">Actions</button><button class="btn t" data-a="print">Print &amp; PDF</button></div>
+ <div style="display:flex;gap:40px;align-items:center;padding:14px 8px 0"><span style="display:flex;gap:12px;align-items:center"><span class="pp" style="border:0;padding:0;min-height:0;width:auto;cursor:default"><span class="pa">${ini(p.name)}</span></span><b>${e(p.name)}</b> ▤</span>${ap?`<span>Overall Score:<br><b style="font-weight:400">${e(f.rating)||'–'}</b></span>`:''}<span>Current step: <b>${done?'Completed':TPL[f.tpl].steps[f.step]}</b></span></div></div>
+ <div class="wrap" style="min-height:0"><nav class="fnav">${secs.map(s=>`<button data-a="jump" data-s="${s[0]}">${s[1]}</button>`).join('')}</nav><form class="main" data-f="pform" data-id="${f.id}" novalidate style="padding-bottom:90px"><div class="err fsec" id="ferr" hidden></div>
+ <section class="fsec" id="si"><h2>👤 Employee Information</h2><div class="info">${[['First Name',p.first],['Last Name',p.last],['Employee ID',p.eid],['Division/Channel','N/A'],['Department','N/A'],['Job Title',p.title||'–'],['Manager',p.mgr?P[p.mgr].name:'–']].map(x=>`<div><small>${x[0]}:</small>${e(x[1])}</div>`).join('')}</div></section>
+ <section class="fsec" id="sg"><h2>${ap?'🎯 ':''}Individual Goals<span class="sp"></span>${mine&&!done?`<button type="button" data-a="fnew" data-id="${f.id}" aria-label="Add goal">＋</button>`:''}</h2>${desc(ap?'🎯 Review outcomes and achievements. 📈 Consider impact. 📝 Record evidence and constructive feedback.':'This section includes Individual Goals only. Goals are populated from the Goal Type: <strong>Individual Goals</strong>.')}
+ <div class="tw"><table class="t"><tr><th>Goal</th>${ap?'':'<th>Weight</th>'}<th>Action</th></tr>${gs.map(g=>row(g,!ap)).join('')||`<tr><td colspan="3" class="none">No Data</td></tr>`}</table></div></section>
+ ${ap?`<section class="fsec" id="st"><h2>🎓 Training Needs<span class="sp"></span>${mine&&!done?`<button type="button" data-a="tna" data-id="${f.id}" aria-label="Add training need">＋</button>`:''}</h2>${desc('🎓 Identify the actual training course or programme. 🧩 Explain the capability gap and expected development outcome.')}
+ <div class="tw"><table class="t"><tr><th>Goal</th><th>Action</th></tr>${tn.map(g=>row(g)).join('')||'<tr><td colspan="2" class="none">No Data</td></tr>'}</table></div></section>
+ <section class="fsec" id="so"><h2>🏆 Overall Performance Summary</h2>${desc('🏆 Review the overall performance outcome and recognise contributions.')}
+ <div class="tw"><table class="t"><tr><th>Name</th><th>Rating</th></tr><tr><td><b>Overall Form Rating:<span style="color:#BB0000">*</span></b> ⓘ</td><td><select class="fi" style="max-width:210px" name="rating" data-chg="frating" data-id="${f.id}" ${mine&&!done?'':'disabled'} aria-label="Overall Form Rating"><option value="">Select One</option>${opt(SCALE,f.rating)}</select></td></tr></table></div>
+ <div class="desc" style="margin-top:10px;padding:10px 16px"><label for="fcm"><b>Section Comments:<span style="color:#BB0000">*</span></b><br>Manager's Comments</label><textarea class="fi" id="fcm" name="comments" maxlength="4000" style="max-width:none;margin-top:8px" ${mine&&!done?'':'disabled'}>${e(f.comments)}</textarea></div></section>
+ <section class="fsec" id="ss"><div class="score">Overall Score: &nbsp;${e(f.rating)||'–'}</div></section>`:''}
+ ${mine&&!done?`<div class="foot"><button class="btn em" name="do" value="next">Next Step</button><button class="btn" name="do" value="close">Save and Close</button><button class="btn" name="do" value="save">Save</button></div>`:''}</form></div>`);
+}
+
+/* ---------- calibration ---------- */
+function calibPage(){
+ const tot=S.cal.length,by=i=>S.cal.filter(c=>c.col===i),pc=n=>(n/tot*100).toFixed(1);
+ const tabs=`<div class="tabsbar" style="background:none;border:0;padding:0 28px">${[['dash','Dashboard'],['list','List View'],['table','Table View']].map(([k,l])=>`<button aria-selected="${U.ctab===k}" data-a="ctab" data-t="${k}">${l}</button>`).join('')}</div>`;
+ let body;
+ if(U.ctab==='table')body=`<div class="warn">⚠ &nbsp;There are ${by(0).length} subjects with one or more of the following rating types: Unrated, Too New To Be Rated.</div><div class="cal">${CALCOLS.map((c,i)=>`<div class="col" data-col="${i}"><h3>${c}<small>${by(i).length} (${pc(by(i).length)}%)</small></h3><div class="nh">Name</div>${by(i).map(p=>`<div class="cp" draggable="${!S.calFinal}" data-pid="${p.id}"><div class="n"><i></i><span>${e(p.name)}</span>▤ ▭</div><div class="rk">Rank ≡ : <span>${p.rank||'- -'}</span></div></div>`).join('')}</div>`).join('')}</div>`;
+ if(U.ctab==='list')body=`<div class="body"><div class="tw"><table class="t"><tr><th>Name</th><th>Overall Form Rating</th><th>Rank</th></tr>${S.cal.map(p=>`<tr><td>${e(p.name)}</td><td><select class="stsel" data-chg="calcol" data-pid="${p.id}" ${S.calFinal?'disabled':''}>${CALCOLS.map((c,i)=>`<option value="${i}" ${p.col===i?'selected':''}>${c}</option>`).join('')}</select></td><td>${p.rank||'- -'}</td></tr>`).join('')}</table></div></div>`;
+ if(U.ctab==='dash')body=`<div class="body"><div class="intro" style="max-width:900px"><h3 style="margin-bottom:14px">Overall Form Rating distribution</h3>${CALCOLS.map((c,i)=>`<div style="display:grid;grid-template-columns:210px 1fr 90px;gap:12px;align-items:center;margin:8px 0"><span>${c}</span><div class="bar" style="height:14px;margin:0"><i style="width:${pc(by(i).length)}%;background:var(--blue-d)"></i></div><span>${by(i).length} (${pc(by(i).length)}%)</span></div>`).join('')}</div></div>`;
+ return shell('calib',`<div style="background:#fff;border-bottom:1px solid var(--line);padding:24px 16px 0"><div style="display:flex;justify-content:space-between;padding:0 26px"><span><a href="#calib">Session List</a> / &nbsp;English Channel</span><span style="letter-spacing:14px">⏷◉▤⎙⇪↺</span></div><h1 style="font-size:34px;padding:14px 26px 22px">English Channel${S.calFinal?' <span class="vis" style="font-size:14px;font-weight:400">(Finalized)</span>':''}</h1>${tabs}</div><div style="padding-top:16px">${body}</div>
+ <div class="foot"><button class="btn em" data-a="calsave" ${U.calDirty?'':'disabled'}>Save</button><button class="btn t" data-a="calfinal" ${S.calFinal?'disabled':''}>Finalize</button><button class="btn t" data-a="calundo" ${U.calDirty?'':'disabled'}>Undo</button></div>`);
+}
+
+/* ---------- dialogs ---------- */
+function dialog(){
+ const d=U.dlg;if(!d)return '';
+ const wrap=(t,b,f,cls)=>`<div class="mask"><div class="dlg ${cls||'sm'}" role="dialog" aria-label="${t}"><header>${t}</header><div class="db" style="min-height:120px">${b}</div><footer>${f||''}<button class="btn t" data-a="close">${f?'Cancel':'Close'}</button></footer></div></div>`;
+ if(d.k==='audit'){const g=G(d.id);return wrap('Goal Audit History',g.audit.length?`<table class="t"><tr><th>Date</th><th>Changed By</th><th>Change</th></tr>${g.audit.slice().reverse().map(a=>`<tr><td>${a.t}</td><td>${e(a.by)}</td><td>${e(a.w)}</td></tr>`).join('')}</table>`:'<p>No changes have been recorded for this goal in the sandbox.</p>')}
+ if(d.k==='align'){const g=G(d.id),up=g.up&&G(g.up),dn=S.goals.filter(x=>x.up===g.id),bx=(x,l)=>`<div class="wc" style="margin:8px 0;border:1px solid var(--line)"><small>${l} · ${e(P[x.owner].name)}</small><br>${e(x.name)}</div>`;return wrap('Alignment Chart',(up?bx(up,'Aligned Up'):'')+bx(g,'This goal')+dn.map(x=>bx(x,'Aligned Down')).join(''))}
+ if(d.k==='hist'){const f=S.forms.find(x=>x.id===d.id);return wrap('History',`<table class="t"><tr><th>Date</th><th>Event</th></tr>${f.hist.map(h=>`<tr><td>${h.t}</td><td>${e(h.w)}</td></tr>`).join('')}</table>`)}
+ if(d.k==='act')return wrap('Create Activity',`<form data-f="act" data-id="${d.id}" id="actf"><label class="fl" for="an">Activity Name:<b>*</b></label><input class="fi" id="an" name="n" required maxlength="200"><label class="fl" for="as">Status:</label><select class="fi s" id="as" name="s"><option>In Progress</option><option>Complete</option></select></form>`,'<button class="btn em" form="actf">Save</button>');
+ if(d.k==='mkform')return wrap('Create Form',`<form data-f="mkform" id="mkf"><label class="fl" for="mt">Template:</label><select class="fi s" id="mt" name="tpl">${Object.entries(TPL).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join('')}</select><label class="fl" for="me">Employee:</label><select class="fi s" id="me" name="emp">${reports(ME).map(r=>`<option value="${r}">${e(P[r].name)}</option>`).join('')}</select></form>`,'<button class="btn em" form="mkf">Create</button>');
+ if(d.k==='tna')return wrap('Create Development Goal',`<form data-f="tna" data-id="${d.id}" id="tnaf"><div class="err" id="terr" hidden></div><label class="fl" for="tn">🎓 Training Goal:<b>*</b></label><textarea class="fi" id="tn" name="name" maxlength="500" required></textarea><div class="cnt"><span data-cnt="tn">500</span> characters left Legal Scan Coaching Advisor</div>
+  <label class="fl" for="tc">Category:</label><select class="fi s" id="tc"><option>🗂️ Training Needs Goals</option></select><label class="fl" for="tp">🛡️ Purpose:</label><select class="fi s" id="tp" name="purpose">${opt(PURPOSE)}</select><label class="fl" for="td">🏁 Target Date:</label><input class="fi s" type="date" id="td" name="due" value="2030-12-31"></form>`,'<button class="btn em" form="tnaf">Save</button>','');
+ return '';
+}
+
+/* ---------- router ---------- */
+function render(){
+ const [a,b,c]=location.hash.slice(1).split('/');let h;
+ if(a==='goal'&&b==='new')h=goalForm({plan:c==='dev'?'dev':'perf',owner:S.who,name:'',desc:'',metric:'',weight:'',start:c==='dev'?'2025-01-01':'2026-01-01',due:'2026-12-31',state:c==='dev'?'Not Started':'In Progress',done:0,vis:'Public',ms:[],comps:[],mgrapp:'No selection'},true);
+ else if(a==='goal'&&G(b))h=c==='edit'?goalForm(G(b)):goalDetail(G(b));
+ else if(a==='form'&&S.forms.find(f=>f.id===b))h=formPage(S.forms.find(f=>f.id===b));
+ else if(a==='perf')h=perfPage(['inbox','enroute','completed'].includes(b)?b:'inbox');
+ else if(a==='calib')h=calibPage();
+ else h=goalsPage();
+ document.getElementById('root').innerHTML=h+(U.casc?cascadeDlg():'')+dialog();
+ save();
+}
+const go=h=>{if(location.hash==='#'+h)render();else location.hash=h};
+window.addEventListener('hashchange',()=>{U.menu=false;U.card=null;render();window.scrollTo(0,0)});
+
+/* ---------- actions ---------- */
+const A={
+ reset:()=>{S=seed();U.calDirty=false;go('goals');toast('Sandbox reset to seed data')},
+ menu:()=>{U.menu=!U.menu;render()},
+ go:el=>{U.menu=false;if(el.dataset.h.startsWith('perf'))U.ptab='reviews';go(el.dataset.h)},
+ who:el=>{S.who=el.dataset.u;render()},
+ gtab:el=>{S.gtab=el.dataset.t;render()},
+ intro:()=>{S.intro=!S.intro;render()},
+ full:()=>{U.full=!U.full;render()},
+ print:()=>window.print(),
+ card:(el,ev)=>{ev.stopPropagation();U.card=U.card===el.dataset.id?null:el.dataset.id;render()},
+ open:(el,ev)=>{if(ev.target.closest('select'))return;go('goal/'+el.dataset.id)},
+ edit:(el,ev)=>{ev.stopPropagation();U.ret=location.hash.slice(1);go('goal/'+el.dataset.id+'/edit')},
+ new:()=>{U.ret=location.hash.slice(1);go('goal/new/'+S.gtab)},
+ fnew:el=>{const f=S.forms.find(x=>x.id===el.dataset.id);S.who=f.emp;U.ret='form/'+f.id;go('goal/new/perf')},
+ back:()=>go(U.ret||'goals'),
+ del:(el,ev)=>{ev.stopPropagation();const g=G(el.dataset.id);if(g.plan==='perf'&&!canDelete(g.owner)){toast('Goals cannot be deleted in the “'+PSTATE[S.pstate[g.owner]]+'” state');return}
+  if(!confirm('Delete this goal? This cannot be undone.'))return;S.goals=S.goals.filter(x=>x.id!==g.id);S.goals.forEach(x=>{if(x.up===g.id)x.up=null});toast('Goal deleted');if(location.hash.startsWith('#goal/'))go('goals');else render()},
+ audit:el=>{U.dlg={k:'audit',id:el.dataset.id};render()},align:el=>{U.dlg={k:'align',id:el.dataset.id};render()},
+ act:el=>{U.dlg={k:'act',id:el.dataset.id};render()},hist:el=>{U.dlg={k:'hist',id:el.dataset.id};render()},
+ mkform:()=>{U.dlg={k:'mkform'};render()},
+ tna:el=>{const f=S.forms.find(x=>x.id===el.dataset.id);if(formTna(f).length>=3){toast('A maximum of 3 training needs is allowed on this form');return}U.dlg={k:'tna',id:f.id};render()},
+ close:()=>{U.dlg=null;U.casc=null;render()},
+ msadd:()=>{const b=document.getElementById('msb');const n=b.querySelector('.nod');if(n)n.remove();b.insertAdjacentHTML('beforeend',goalForm.msrow({}))},
+ msdel:el=>{const b=document.getElementById('msb');el.closest('tr').remove();if(!b.children.length)b.innerHTML='<tr class="nod"><td colspan="4" class="none">No Data</td></tr>'},
+ cascade:()=>{U.casc={step:0,goals:[],rec:[],mode:'team',edits:{},ed:null,q:''};render()},
+ cmode:el=>{U.casc.mode=el.dataset.m;render()},cpen:el=>{U.casc.ed=el.dataset.id;render()},
+ cprev:()=>{U.casc.step--;render()},
+ cnext:()=>{const c=U.casc;if(c.step<3){c.step++;c.ed=null;render();return}
+  c.rec.forEach(r=>c.goals.forEach(id=>{const s=G(id);S.goals.push(Object.assign({},s,{id:'g'+(S.seq++),owner:r,name:c.edits[id]||s.name,done:0,state:'In Progress',acts:[],ms:[],up:id,updated:TODAY,audit:[{t:fmt(TODAY),by:P[ME].name,w:'Goal cascaded from '+P[ME].name}]}))}));
+  U.casc=null;toast(`${c.goals.length} goal${c.goals.length>1?'s':''} cascaded to ${c.rec.length} recipient${c.rec.length>1?'s':''}`);render()},
+ ptab:el=>{U.ptab=el.dataset.t;go('perf')},
+ form:(el,ev)=>{if(ev.target.closest('input'))return;go('form/'+el.dataset.id)},
+ noop:(el,ev)=>ev.stopPropagation(),
+ exp:el=>{U.exp[el.dataset.id]=!U.exp[el.dataset.id];render()},
+ jump:el=>{const s=document.getElementById(el.dataset.s);if(s)s.scrollIntoView({behavior:'smooth'})},
+ ctab:el=>{U.ctab=el.dataset.t;render()},
+ calsave:()=>{U.calDirty=false;U.calSnap=null;toast('Session saved');render()},
+ calundo:()=>{if(U.calSnap){S.cal=JSON.parse(U.calSnap);U.calSnap=null}U.calDirty=false;render()},
+ calfinal:()=>{if(!confirm('Finalize this session? Ratings will be written back to the forms and the session becomes read-only.'))return;S.calFinal=true;U.calDirty=false;toast('Session finalized');render()}
+};
+function calMove(pid,col){const p=S.cal.find(x=>x.id===pid);if(!p||p.col===col||S.calFinal)return;if(!U.calSnap)U.calSnap=JSON.stringify(S.cal);p.col=col;U.calDirty=true;render()}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el){if(U.menu||U.card){U.menu=false;U.card=null;render()}return}const f=A[el.dataset.a];if(f)f(el,ev)});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&(U.dlg||U.casc||U.menu||U.card)){U.dlg=U.casc=U.card=null;U.menu=false;render()}});
+document.addEventListener('input',ev=>{const t=ev.target;const c=t.id&&document.querySelector(`[data-cnt="${t.id}"]`);if(c)c.textContent=t.maxLength-t.value.length;
+ if(t.dataset.in==='csearch'){U.casc.q=t.value;render();const i=document.querySelector('[data-in=csearch]');i.focus();i.setSelectionRange(i.value.length,i.value.length)}});
+document.addEventListener('change',ev=>{const t=ev.target,k=t.dataset.chg;if(!k)return;const c=U.casc;
+ if(k==='gstate'){const g=G(t.dataset.id);aud(g,`Status: ${g.state} → ${t.value}`);g.state=t.value;g.updated=TODAY;render()}
+ if(k==='pstate'){S.pstate[S.who]=t.value;toast('Plan state changed to '+PSTATE[t.value]);render()}
+ if(k==='cgoal'){c.goals=t.checked?[...c.goals,t.value]:c.goals.filter(x=>x!==t.value);render()}
+ if(k==='call'){c.goals=t.checked?plan(ME,'perf').map(g=>g.id):[];render()}
+ if(k==='crec'){c.rec=t.checked?[...c.rec,t.value]:c.rec.filter(x=>x!==t.value);render()}
+ if(k==='crall'){c.rec=t.checked?reports(ME):[];render()}
+ if(k==='frating'){S.forms.find(f=>f.id===t.dataset.id).rating=t.value;const cm=document.getElementById('fcm');if(cm)S.forms.find(f=>f.id===t.dataset.id).comments=cm.value;render()}
+ if(k==='calcol')calMove(t.dataset.pid,+t.value)});
+document.addEventListener('dragstart',ev=>{const p=ev.target.closest&&ev.target.closest('.cp');if(p)ev.dataTransfer.setData('text/plain',p.dataset.pid)});
+document.addEventListener('dragover',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c){ev.preventDefault();c.classList.add('drop')}});
+document.addEventListener('dragleave',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c)c.classList.remove('drop')});
+document.addEventListener('drop',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c){ev.preventDefault();calMove(ev.dataTransfer.getData('text/plain'),+c.dataset.col)}});
+document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target,fd=new FormData(f),k=f.dataset.f;
+ const fail=(id,m)=>{const x=document.getElementById(id);x.textContent=m;x.hidden=false;x.scrollIntoView({block:'center'})};
+ if(k==='goal'){const dev=f.dataset.plan==='dev',isNew=!f.dataset.id;const g=isNew?{id:(dev?'d':'g')+(S.seq++),plan:f.dataset.plan,owner:S.who,acts:[],audit:[],ms:[],learn:[],comments:[],comps:[],up:null,mgrapp:'No selection',done:0,weight:0,metric:'',desc:''}:G(f.dataset.id);
+  const v=n=>fd.has(n)?String(fd.get(n)).trim():g[n];
+  if(!v('name'))return fail('gerr',(dev?'Name':'Goal Description')+' is required.');
+  if(!dev){if(!v('metric'))return fail('gerr','Key Performance Indicator is required.');const w=+v('weight');if(!(w>=1&&w<=50))return fail('gerr','Weight must be within the range of 1% to 50%.');g.weight=w;g.metric=v('metric');
+   if(fd.has('mt')){const t=fd.getAll('mt'),d=fd.getAll('md'),a=fd.getAll('ma');g.ms=t.map((x,i)=>({t:x,d:d[i],a:a[i]})).filter(m=>m.t||m.d||m.a)}else if(!locked(g,'ms'))g.ms=[]}
+  else{g.comps=fd.getAll('comps');if(fd.has('mgrapp'))g.mgrapp=fd.get('mgrapp')}
+  g.name=v('name');g.desc=v('desc');g.vis=v('vis')||g.vis||'Public';g.start=v('start');g.due=v('due');g.state=v('state');g.done=Math.max(0,Math.min(100,+v('done')||0));g.updated=TODAY;
+  aud(g,isNew?'Goal created':'Goal edited');if(isNew)S.goals.push(g);
+  const tw=plan(g.owner,'perf').reduce((a,x)=>a+(+x.weight||0),0);toast(dev||tw===100?'Goal saved':`Goal saved. Total weight is ${tw}%; it must total 100%.`);go(U.ret||'goals')}
+ if(k==='cedit'){U.casc.edits[f.dataset.id]=String(fd.get('t')).trim()||G(f.dataset.id).name;U.casc.ed=null;render()}
+ if(k==='comment'){const x=String(fd.get('x')).trim();if(!x)return;G(f.dataset.id).comments.push({by:P[ME].name,t:fmt(TODAY),x});render()}
+ if(k==='act'){G(f.dataset.id).acts.unshift({n:fd.get('n'),s:fd.get('s'),c:'today'});U.dlg=null;render()}
+ if(k==='mkform'){const tpl=fd.get('tpl');S.forms.unshift({id:'f'+(S.seq++),tpl,emp:fd.get('emp'),step:tpl==='goal'?1:0,status:'inbox',assigned:TODAY,start:TODAY,rating:'',comments:'',hist:[{t:mdy(TODAY),w:'Form created by '+P[ME].name}]});U.dlg=null;toast('Form created');go('perf')}
+ if(k==='tna'){const fm=S.forms.find(x=>x.id===f.dataset.id),name=String(fd.get('name')).trim();if(!name)return fail('terr','Training Goal is required.');
+  S.goals.push({id:'t'+(S.seq++),plan:'tna',owner:fm.emp,name,purpose:fd.get('purpose'),due:fd.get('due'),audit:[]});U.dlg=null;render()}
+ if(k==='pform'){const fm=S.forms.find(x=>x.id===f.dataset.id),act=ev.submitter?ev.submitter.value:'save',ap=fm.tpl==='appr';
+  if(ap){fm.rating=fd.get('rating')||fm.rating;fm.comments=String(fd.get('comments')||'')}
+  if(act==='save'){toast('Form saved');render();return}
+  if(act==='close'){toast('Form saved');go('perf');return}
+  if(ap){if(!fm.rating)return fail('ferr','Overall Form Rating is required before the form can move to the next step.');if(!fm.comments.trim())return fail('ferr','Section Comments are required before the form can move to the next step.')}
+  else{const gs=formGoals(fm),tw=gs.reduce((a,g)=>a+(+g.weight||0),0);if(!gs.length)return fail('ferr','At least one goal is required.');if(tw!==100)return fail('ferr',`The total weight of the goals is ${tw}%. It must total 100%.`);if(gs.some(g=>g.weight<1||g.weight>50))return fail('ferr','Each goal weight must be within the range of 1% to 50%.')}
+  fm.status='completed';fm.hist.push({t:mdy(TODAY),w:(ap?'DLM Appraisal':'DLM Goals Review')+' completed by '+P[ME].name});
+  if(!ap){S.pstate[fm.emp]='locked';fm.hist.push({t:mdy(TODAY),w:'Goal plan state changed to Goals Completed'})}
+  toast('Form completed');go('perf')}
+});
+render();
+</script>
+</body>
+</html>

@@ -17,12 +17,19 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **My delivery plan**: A director sees the deliverable, what must arrive first and the goal it serves.
 - **Strategy tree**: One editable hierarchy from DG priority to deliverable, with owners changed in place.
 - **Record**: Who decided or confirmed what, and when.
+### SuccessFactors replica
+- **Goal plan**: The 2026 Individual Goal Plan with its states, weights, milestones and goal details.
+- **Cascade goals**: A four-step wizard that copies goals to direct reports, aligned up.
+- **Development plan**: Career development goals with statuses, comments and manager approval.
+- **Performance forms**: The 2026 goal form and appraisal form, with training needs and overall rating.
+- **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
 ## Pages
 - **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
+- **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions
 - The answers marked "Prototype · scripted" are seeded, not from a model.
 - Data lives in the browser only; "Reset sandbox" restores the seed.
-- The server serves these two pages and nothing else in the folder.
+- The server serves these three pages and nothing else in the folder.

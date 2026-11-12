@@ -8,7 +8,7 @@ metadata:
   annotations:
     canvas.dev/visibility: team                  # listed for the team — `canvas share private` keeps it to you
     canvas.dev/title: AJMN Talent Suite
-    canvas.dev/description: A clickable sandbox prototype of the Talent Suite and its Strategy Room, for showing management how goals, reviews and strategy decisions would work. Synthetic data only.
+    canvas.dev/description: A clickable sandbox prototype of the Talent Suite and its Strategy Room, beside a replica of the current SuccessFactors setup, for showing management how goals, reviews and strategy decisions would work. Synthetic data only.
     canvas.dev/category: experiment
     canvas.dev/tags: workflow, dashboard, multilingual
   #   canvas.dev/category: editorial                     # one, from the list in .canvas/contracts/

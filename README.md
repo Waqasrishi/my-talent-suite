@@ -1,8 +1,8 @@
 # AJMN Talent Suite
 
-A clickable sandbox prototype of the Talent Suite and its Strategy Room, for showing management how goals, reviews and strategy decisions would work. Synthetic data only.
+A clickable sandbox prototype of the Talent Suite and its Strategy Room, beside a replica of the current SuccessFactors setup, for showing management how goals, reviews and strategy decisions would work. Synthetic data only.
 
-It is two static pages (index.html and strategy.html): no database, no installation.
+It is three static pages (index.html, strategy.html and successfactors.html): no database, no installation.
 
 ## Deploy on the AJMN sandbox server
 
