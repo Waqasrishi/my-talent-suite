@@ -4,7 +4,7 @@
     {
       "name": "talent-suite-static",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),d='/Users/waqasrishi/Documents/talent-suite/';h.createServer((q,r)=>{const p=new URL(q.url,'http://x').pathname;const n=p==='/'?'index.html':p==='/strategy.html'?'strategy.html':p==='/successfactors.html'?'successfactors.html':null;if(!n){r.writeHead(404);return r.end()}f.readFile(d+n,(e,b)=>{if(e){r.writeHead(500);return r.end(String(e))}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});r.end(b)})}).listen(+process.env.PORT||8090,'127.0.0.1')"],
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),d='/Users/waqasrishi/Documents/talent-suite/';h.createServer((q,r)=>{const p=new URL(q.url,'http://x').pathname;const n=p==='/'?'index.html':p==='/strategy.html'?'strategy.html':p==='/successfactors.html'?'successfactors.html':p==='/goals-hub.html'?'goals-hub.html':null;if(!n){r.writeHead(404);return r.end()}f.readFile(d+n,(e,b)=>{if(e){r.writeHead(500);return r.end(String(e))}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});r.end(b)})}).listen(+process.env.PORT||8090,'127.0.0.1')"],
       "port": 8090
     }
   ]

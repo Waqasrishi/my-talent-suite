@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goals Cycle Hub</title>
+<style>
+/* Goals Cycle Hub: cascade goals from strategy pillars down to staff. Fictional data, kept in this browser only. */
+:root{--bg:#F6F7F9;--card:#fff;--ink:#16202B;--muted:#5D6B7A;--line:#E2E6EB;--accent:#0B5CAD;--accent-d:#094C8F;--accent-soft:#E8F1FB;
+ --ok:#1E7B46;--ok-soft:#E6F4EC;--wait:#8A5A00;--wait-soft:#FFF4DE;--bad:#B3261E;--bad-soft:#FDECEA;--ai:#5B3FB0;--ai-soft:#F3F0FB}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0;line-height:1.2}
+h1{font-size:24px}h2{font-size:18px}h3{font-size:15px}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px 18px;padding:10px 20px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.brand{font-weight:700;font-size:16px;white-space:nowrap}
+.brand small{display:block;font-weight:400;font-size:11.5px;color:var(--muted)}
+.nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav button{border:0;background:none;padding:7px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600}
+.nav button[aria-current]{background:var(--accent-soft);color:var(--accent)}
+.sp{flex:1}
+.as{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted)}
+.as select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);max-width:240px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 80px}
+.wide{max-width:none}
+.head{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.head p{margin:4px 0 0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:#C5CDD6}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-d)}
+.btn.ai{background:var(--ai-soft);border-color:#D9D0F2;color:var(--ai)}
+.btn.sm{padding:4px 10px;font-size:13.5px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link{border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0;padding-top:2px}
+.steps li span{flex:1}
+.rows{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.row{display:grid;grid-template-columns:1fr 160px 150px;gap:16px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);cursor:pointer;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0}
+.row:first-child{border-top:0}
+.row:hover{background:#FAFBFC}
+.row b{display:block;font-weight:600}
+.row small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.wait{background:var(--wait-soft);color:var(--wait)}.pill.bad{background:var(--bad-soft);color:var(--bad)}.pill.draft{background:#EEF0F3;color:var(--muted)}
+.bar{height:6px;background:#E7EAEE;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.prog .bar{flex:1}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+/* drawer */
+.mask{position:fixed;inset:0;background:rgba(22,32,43,.35);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:#fff;z-index:41;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.15)}
+.dh{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.dh h2{flex:1}
+.x{border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px}
+.db{padding:18px 20px;overflow:auto;flex:1}
+.df{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.meta{color:var(--muted);font-size:13.5px;margin:4px 0}
+.next{background:var(--accent-soft);border-radius:10px;padding:14px;margin:16px 0}
+.next h3{margin-bottom:6px}
+.next p{margin:0 0 10px}
+.next .btns{display:flex;gap:8px;flex-wrap:wrap}
+.krs{margin:8px 0 0;padding-left:20px}
+.krs li{margin:4px 0}
+details{border-top:1px solid var(--line);padding:10px 0}
+details summary{cursor:pointer;font-weight:600}
+details[open] summary{margin-bottom:8px}
+.hist{list-style:none;margin:0;padding:0;font-size:13.5px}
+.hist li{padding:4px 0;color:var(--muted)}
+.hist b{color:var(--ink);font-weight:600}
+label.f{display:block;font-weight:600;margin:14px 0 6px}
+label.f:first-child{margin-top:0}
+.in{width:100%;border:1px solid #C9D1DA;border-radius:8px;padding:8px 10px;background:#fff}
+textarea.in{min-height:70px;resize:vertical}
+.in[aria-invalid=true]{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
+.err{color:var(--bad);font-size:13.5px;margin-top:4px;font-weight:600}
+.kr{display:flex;gap:8px;margin-bottom:8px}
+.kr .in{flex:1}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.aibar{background:var(--ai-soft);border-radius:10px;padding:10px 12px;margin:14px 0 4px}
+.aibar .r{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.aibar .in{flex:1;min-width:180px}
+.tag{display:inline-block;font-size:11.5px;color:var(--ai);border:1px solid #D9D0F2;background:#fff;border-radius:10px;padding:0 8px;margin-left:6px;font-weight:600;vertical-align:middle}
+.sug{background:#fff;border:1px solid #E1DAF5;border-radius:8px;padding:10px 12px;margin-top:8px}
+.sug b{display:block}
+.sug ul{margin:6px 0;padding-left:18px;font-size:13.5px}
+.sug p{margin:4px 0 8px;font-size:13px;color:var(--muted)}
+.chk{list-style:none;margin:8px 0 0;padding:0}
+.chk li{padding:5px 0;font-size:14px}
+.chk small{display:block;color:var(--muted);font-size:13px;margin-left:22px}
+.note{background:var(--wait-soft);border-radius:8px;padding:8px 12px;font-size:13.5px;margin:10px 0}
+/* strategy map */
+.mapwrap{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:calc(100vh - 170px)}
+.map{position:relative}
+.colh{position:sticky;top:0;z-index:3;display:flex;background:#fff;border-bottom:1px solid var(--line)}
+.colh div{flex:none;padding:10px 14px;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.map svg{position:absolute;left:0;top:0;pointer-events:none}
+.box{position:absolute;background:#fff;border:1px solid #C9D1DA;border-radius:8px;padding:8px 10px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.box:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.box b{font-size:13.5px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.box small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.box .bar{height:4px;margin-top:auto}
+.box.pillar{background:var(--accent);border-color:var(--accent);color:#fff}
+.box.pillar small{color:#DCE8F6}
+.box.pillar.on{box-shadow:0 0 0 3px #9CC2EA}
+.box.ask{border-style:dashed;background:#FBFCFD;cursor:default}
+.box.ask:hover{border-color:#C9D1DA;box-shadow:none}
+.box.wait{border-color:#E3C27A}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:10px 0 0}
+.legend i{display:inline-block;width:14px;height:10px;border:1px solid #C9D1DA;border-radius:3px;vertical-align:middle;margin-right:5px}
+/* dashboard */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px}
+.stat b{display:block;font-size:30px;line-height:1.1}
+.stat span{color:var(--muted);font-size:13.5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lv{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;padding:6px 0;font-size:14px}
+.lv .bar{height:10px}
+.lv em{font-style:normal;color:var(--muted);text-align:right;font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg button{border:0;background:none;padding:6px 12px;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--accent)}
+.foot{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:10px 16px;z-index:60;max-width:90vw}
+@media(max-width:760px){.row{grid-template-columns:1fr;gap:8px}.stats,.two{grid-template-columns:1fr}.lv{grid-template-columns:110px 1fr 60px}.top{padding:10px 16px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script>
+/* ---------- fictional organisation ---------- */
+const LEVELS=['Corporate strategy','Executive Directors','Directors','Managers','Section Heads','Staff'];
+const PEOPLE={
+ ed1:{name:'Omar Rahman',title:'Executive Director, Operations',lv:1,mgr:null},
+ ed2:{name:'Sara Nasser',title:'Executive Director, Digital',lv:1,mgr:null},
+ d1:{name:'Marco Silva',title:'Director, Studio Operations',lv:2,mgr:'ed1'},
+ d2:{name:'Hana Yousef',title:'Director, Digital Products',lv:2,mgr:'ed2'},
+ m1:{name:'Daniel Okafor',title:'Manager, Broadcast Engineering',lv:3,mgr:'d1'},
+ m2:{name:'Rana Aziz',title:'Manager, Studio Production',lv:3,mgr:'d1'},
+ m3:{name:'Leo Martins',title:'Manager, Audience Growth',lv:3,mgr:'d2'},
+ s1:{name:'Nadia Karim',title:'Section Head, Playout',lv:4,mgr:'m1'},
+ s2:{name:'Yusuf Ali',title:'Section Head, Studio Crew',lv:4,mgr:'m2'},
+ t1:{name:'Mei Chen',title:'Broadcast Engineer',lv:5,mgr:'s1'},
+ t2:{name:'Tomas Ruiz',title:'Playout Technician',lv:5,mgr:'s1'},
+ t3:{name:'Aisha Bello',title:'Floor Manager',lv:5,mgr:'s2'},
+ t4:{name:'Priya Nair',title:'Audience Analyst',lv:5,mgr:'m3'}};
+const KEY='ajmn-goals-hub-v1',TODAY=new Date().toISOString().slice(0,10);
+function seed(){
+ const g=(id,owner,parent,title,krs,x)=>Object.assign({id,owner,parent,title,desc:'',krs:krs.map(t=>({t})),status:'approved',progress:0,contrib:[],via:null,by:null,back:'',updates:[],hist:[{at:'2026-01-15',by:owner,w:'Goal approved'}]},x||{});
+ return {as:'d1',seq:100,
+  pillars:[{id:'p1',name:'Grow trusted digital audiences'},{id:'p2',name:'Operational excellence'},{id:'p3',name:'Invest in our people'}],
+  goals:[
+   g('g1','ed1','p2','Cut unplanned studio downtime across all channels',['Unplanned downtime below 30 minutes a month by Q4','Mean time to restore under 15 minutes'],{progress:40}),
+   g('g2','ed2','p1','Double weekly active users on digital platforms',['Weekly active users from 1.2M to 2.4M by December','Returning visitors up 30%'],{progress:25}),
+   g('g3','ed1','p3','Build a skilled, adaptable operations workforce',['Every operations employee completes two learning paths','Internal moves fill 30% of open roles'],{progress:15}),
+   g('g4','d2','g2','Launch a personalised homepage in three markets',['Live in 3 markets by Q3','Click-through on recommendations above 8%'],{progress:30,hist:[{at:'2026-02-03',by:'d2',w:'Submitted for approval'},{at:'2026-02-05',by:'ed2',w:'Approved'}]}),
+   g('g5','m3','g4','Grow newsletter sign-ups by 40%',['Sign-ups from 50k to 70k by Q4','Welcome series open rate above 45%'],{status:'submitted',hist:[{at:'2026-11-10',by:'m3',w:'Submitted for approval'}]}),
+   g('g6','m1','g1','Keep playout incidents under three a month',['Playout incidents at most 3 a month','All incidents reviewed within 5 working days'],{progress:55,via:'push',by:'d1',hist:[{at:'2026-03-02',by:'d1',w:'Pushed down by Marco Silva'}]})],
+  reqs:[{id:'r1',goal:'g1',to:'d1',by:'ed1',status:'open',result:null,at:'2026-11-01'},{id:'r2',goal:'g4',to:'m3',by:'d2',status:'done',result:'g5',at:'2026-11-02'}]};
+}
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(x){}
+if(!S||!S.goals||!PEOPLE[S.as])S=seed();
+const U={page:'mine',dr:null,form:null,ai:null,err:{},map:null,scope:'all'};
+/* storage can fail (private mode, quota): say so instead of losing changes silently */
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));U.saveErr=false}catch(x){if(!U.saveErr){U.saveErr=true;setTimeout(render)}}};
+/* another tab changed the data: take its copy, so this tab's next save does not overwrite it */
+window.addEventListener('storage',ev=>{if(ev.key!==KEY||!ev.newValue)return;try{const n=JSON.parse(ev.newValue);if(n&&n.goals){S=n;if(U.dr&&U.dr.k==='goal'&&!G(U.dr.id))U.dr=null;render();toast('Updated with changes from another tab')}}catch(x){}});
+
+/* ---------- helpers ---------- */
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=id=>PEOPLE[id],ME=()=>S.as,G=id=>S.goals.find(g=>g.id===id),PL=id=>S.pillars.find(p=>p.id===id);
+const isPillar=id=>!!PL(id);
+const reports=id=>Object.keys(PEOPLE).filter(k=>PEOPLE[k].mgr===id);
+const below=id=>reports(id).flatMap(r=>[r,...below(r)]);
+const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
+const parentName=id=>isPillar(id)?PL(id).name:G(id)?G(id).title:'';
+const rootPillar=g=>{for(let x=g,i=0;x&&i<20;i++){if(isPillar(x.parent))return x.parent;x=G(x.parent)}return null};
+const mine=id=>S.goals.filter(g=>g.owner===id||g.contrib.includes(id));
+const children=id=>S.goals.filter(g=>g.parent===id&&g.status!=='draft');
+const openReqs=id=>S.reqs.filter(r=>r.goal===id&&r.status==='open');
+const hist=(g,w)=>g.hist.push({at:TODAY,by:ME(),w});
+const STATUS={draft:['Draft','draft'],submitted:['Waiting for approval','wait'],approved:['Approved','ok'],returned:['Sent back','bad']};
+const pill=s=>`<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
+const prog=(n,g)=>g&&!g.updates.length&&!n?`<div class="prog"><div class="bar"></div>No update yet</div>`:`<div class="prog"><div class="bar"><i style="width:${n}%"></i></div>${n}%</div>`;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
+/* who can still receive a goal passed down: direct reports with no request for it and no goal under it yet */
+const passable=(g,by)=>reports(by).filter(r=>!S.reqs.some(q=>q.goal===g.id&&q.to===r)&&!S.goals.some(x=>x.parent===g.id&&x.owner===r));
+const canEditStrategy=()=>P(ME()).lv===1;
+/* every action is checked here, not only by hiding its button */
+const canSee=g=>!!g&&(g.status!=='draft'||g.owner===ME()||g.contrib.includes(ME()));
+const may={approve:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),sendback:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),
+ edit:g=>g.owner===ME()&&(g.status==='draft'||g.status==='returned'||(g.status==='approved'&&g.via==='push')),
+ delete:g=>g.owner===ME()&&g.status==='draft',push:g=>g.status==='approved'&&(g.owner===ME()||g.contrib.includes(ME())),
+ progress:g=>g.status==='approved'&&(g.owner===ME()||g.contrib.includes(ME()))};
+const denied=()=>toast('You cannot do that on this goal.');
+const descendants=id=>S.goals.filter(g=>g.parent===id).flatMap(g=>[g.id,...descendants(g.id)]);
+const chainOf=g=>{const c=[];for(let x=g,i=0;x&&!isPillar(x.parent)&&i<20;i++){x=G(x.parent);if(x)c.unshift(x)}return c};
+
+/* ---------- actions on goals ---------- */
+function submitGoal(g){if(!P(g.owner).mgr){g.status='approved';hist(g,'Approved (no manager above)')}else{g.status='submitted';g.back='';hist(g,'Submitted for approval to '+P(P(g.owner).mgr).name)}
+ const r=S.reqs.find(q=>q.result===g.id&&q.status==='open');if(r)r.status='done'}
+function passDown(g,how){const to=passable(g,ME());if(!to.length)return 0;
+ to.forEach(r=>{if(how==='adapt')S.reqs.push({id:'r'+(S.seq++),goal:g.id,to:r,by:ME(),status:'open',result:null,at:TODAY});
+  else S.goals.push({id:'g'+(S.seq++),owner:r,parent:g.id,title:g.title,desc:g.desc,krs:g.krs.map(k=>({t:k.t})),status:'approved',progress:0,contrib:[],via:'push',by:ME(),back:'',updates:[],hist:[{at:TODAY,by:ME(),w:'Pushed down by '+P(ME()).name}]})});
+ hist(g,(how==='adapt'?'Asked to adapt: ':'Pushed as it is to: ')+to.map(r=>P(r).name).join(', '));return to.length}
+
+/* ---------- next steps for the person viewing ---------- */
+function nextSteps(){const me=ME(),out=[];
+ S.reqs.filter(r=>r.to===me&&r.status==='open').forEach(r=>{const d=r.result&&G(r.result);out.push({t:`${P(r.by).name} asked you to adapt “${G(r.goal).title}” for your area.`,b:d?'Continue':'Start',a:'adapt',id:r.id})});
+ mine(me).filter(g=>g.owner===me&&(g.status==='draft'||g.status==='returned')&&!S.reqs.some(r=>r.result===g.id&&r.status==='open')).forEach(g=>out.push({t:g.status==='returned'?`“${g.title}” was sent back${g.back?': '+g.back:''}.`:`“${g.title}” is still a draft.`,b:'Finish and submit',a:'edit',id:g.id}));
+ S.goals.filter(g=>g.status==='submitted'&&P(g.owner).mgr===me).forEach(g=>out.push({t:`${P(g.owner).name} submitted “${g.title}” for your approval.`,b:'Review',a:'open',id:g.id}));
+ mine(me).filter(g=>g.status==='approved'&&passable(g,me).length).forEach(g=>out.push({t:`Pass “${g.title}” down to your team.`,b:'Open',a:'open',id:g.id}));
+ return out}
+
+/* ---------- pages ---------- */
+function pageMine(){const me=ME(),st=nextSteps(),gs=mine(me),rep=reports(me).length;
+ return `<div class="wrap"><div class="head"><div><h1>My goals</h1><p>${e(P(me).name)} · ${e(P(me).title)}</p></div><span class="sp"></span><button class="btn pri" data-a="new">${rep?'Add a goal for me or my team':'Add a goal'}</button></div>
+ <div class="card"><h2 style="margin-bottom:10px">Next steps</h2>${st.length?`<ul class="steps">${st.map(s=>`<li><span>${e(s.t)}</span><button class="btn sm ${s.a==='adapt'||s.a==='edit'?'pri':''}" data-a="${s.a}" data-id="${s.id}">${s.b}</button></li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nothing is waiting on you.</p>'}</div>
+ <div class="rows">${gs.map(g=>`<button class="row" data-a="open" data-id="${g.id}"><span><b>${e(g.title)}</b><small>Supports: ${e(parentName(g.parent))}${g.owner!==me?' · contributor':''}${g.via==='push'?' · pushed down by '+e(P(g.by).name):''}</small></span>${prog(g.progress,g)}<span>${pill(g.status)}</span></button>`).join('')||'<div class="empty">You have no goals yet.</div>'}</div></div>`}
+
+function layout(){const W=210,H=74,CW=260,RH=90,TOP=46,nodes=[],edges=[];let row=0;
+ const kids=id=>[...S.goals.filter(g=>g.parent===id&&g.status!=='draft').map(g=>({k:'g',id:g.id,lv:P(g.owner).lv})),...openReqs(id).map(r=>({k:'r',id:r.id,lv:P(r.to).lv}))];
+ const place=(n,depthLv)=>{const ks=n.k==='g'||n.k==='p'?kids(n.id):[];let y;
+  if(!ks.length)y=row++;else{const ys=ks.map(c=>{edges.push([n,c]);return place(c)});y=(ys[0]+ys[ys.length-1])/2}
+  n.y=y;nodes.push(n);return y};
+ S.pillars.forEach(p=>{place({k:'p',id:p.id,lv:0});row+=.35});
+ nodes.forEach(n=>{n.x=16+n.lv*CW;n.top=TOP+12+n.y*RH});
+ return {nodes,edges,W,H,CW,width:16+LEVELS.length*CW,height:TOP+24+Math.max(row,1)*RH}}
+function pageMap(){const L=layout(),sel=U.map;
+ const box=n=>{const st=`left:${n.x}px;top:${n.top}px;width:${L.W}px;height:${L.H}px`;
+  if(n.k==='p'){const p=PL(n.id);return `<button class="box pillar ${sel===p.id?'on':''}" style="${st}" data-a="pillar" data-id="${p.id}"><small>Pillar</small><b>${e(p.name)}</b></button>`}
+  if(n.k==='r'){const r=S.reqs.find(x=>x.id===n.id);return `<div class="box ask" style="${st}"><b>Asked to adapt</b><small>${e(P(r.to).name)}</small><small>since ${fmt(r.at)}</small></div>`}
+  const g=G(n.id);return `<button class="box ${g.status!=='approved'?'wait':''}" style="${st}" data-a="open" data-id="${g.id}"><b>${e(g.title)}</b><small>${e(P(g.owner).name)}${g.status!=='approved'?' · '+STATUS[g.status][0]:''}</small><div class="bar"><i style="width:${g.progress}%"></i></div></button>`};
+ const line=([a,b])=>{const x1=a.x+L.W,y1=a.top+L.H/2,x2=b.x,y2=b.top+L.H/2,m=(x1+x2)/2;return `<path d="M${x1} ${y1} C${m} ${y1} ${m} ${y2} ${x2} ${y2}" fill="none" stroke="#B9C3CE" stroke-width="1.5" ${b.k==='r'?'stroke-dasharray="4 4"':''}/>`};
+ return `<div class="wrap wide"><div class="head"><div><h1>Strategy map</h1><p>From each pillar down to staff, left to right. Select a pillar to ${canEditStrategy()?'edit it or add a goal under it':'see its goals'}; select a goal to open it.</p></div></div>
+ <div class="mapwrap"><div class="map" style="width:${L.width}px;height:${L.height}px"><div class="colh" style="width:${L.width}px">${LEVELS.map(l=>`<div style="width:${L.CW}px">${l}</div>`).join('')}</div>
+ <svg width="${L.width}" height="${L.height}" aria-hidden="true">${L.edges.map(line).join('')}</svg>${L.nodes.map(box).join('')}</div></div>
+ <div class="legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Pillar</span><span><i></i>Approved goal</span><span><i style="border-color:#E3C27A"></i>Waiting for approval or sent back</span><span><i style="border-style:dashed"></i>Asked to adapt, not done yet</span><span>Drafts are not shown.</span></div></div>`}
+
+function pageDash(){const me=ME(),team=U.scope==='team',ppl=team?[me,...below(me)]:Object.keys(PEOPLE),gs=S.goals.filter(g=>ppl.includes(g.owner)),ap=gs.filter(g=>g.status==='approved');
+ const has=p=>ap.some(g=>g.owner===p),avg=l=>l.length?Math.round(l.reduce((s,g)=>s+g.progress,0)/l.length):0,cov=ppl.filter(has).length;
+ const waits=[...S.reqs.filter(r=>r.status==='open'&&ppl.includes(r.to)).map(r=>({who:r.to,t:`Adapt “${G(r.goal).title}”`,since:r.at})),
+  ...gs.filter(g=>g.status==='submitted').map(g=>({who:P(g.owner).mgr,t:`Approve “${g.title}” from ${P(g.owner).name}`,id:g.id})),
+  ...gs.filter(g=>g.status==='returned'||g.status==='draft').map(g=>canSee(g)?{who:g.owner,t:`Finish “${g.title}”`,id:g.id}:{who:g.owner,t:'Finish a draft goal'})];
+ const lv=[1,2,3,4,5].map(l=>{const at=ppl.filter(p=>P(p).lv===l);return at.length?`<div class="lv"><span>${LEVELS[l]}</span><div class="bar"><i style="width:${Math.round(at.filter(has).length/at.length*100)}%"></i></div><em>${at.filter(has).length} of ${at.length}</em></div>`:''}).join('');
+ const pl=S.pillars.map(p=>{const l=ap.filter(g=>rootPillar(g)===p.id);return `<div class="lv"><span>${e(p.name)}</span><div class="bar"><i style="width:${avg(l)}%"></i></div><em>${l.length?avg(l)+'%':'no goals'}</em></div>`}).join('');
+ return `<div class="wrap"><div class="head"><div><h1>Dashboard</h1></div><span class="sp"></span><div class="seg"><button data-a="scope" data-s="all" aria-pressed="${!team}">Everyone</button><button data-a="scope" data-s="team" aria-pressed="${team}">Me and my team</button></div></div>
+ <div class="stats"><div class="stat"><b>${ap.length}</b><span>approved goals${gs.length>ap.length?` · ${gs.length-ap.length} in progress`:''}</span></div><div class="stat"><b>${ppl.length?Math.round(cov/ppl.length*100):0}%</b><span>of people have an approved goal (${cov} of ${ppl.length})</span></div><div class="stat"><b>${avg(ap)}%</b><span>average progress on approved goals</span></div></div>
+ <div class="two"><div class="card"><h2 style="margin-bottom:8px">Coverage by level</h2>${lv||'<p class="muted">No one in this view.</p>'}</div><div class="card"><h2 style="margin-bottom:8px">Progress by pillar</h2>${pl}</div></div>
+ <div class="card"><h2 style="margin-bottom:6px">Waiting on</h2>${waits.length?`<ul class="steps">${waits.map(w=>`<li><span><b>${e(P(w.who).name)}</b> · ${e(w.t)}</span>${w.id?`<button class="btn sm" data-a="open" data-id="${w.id}">Open</button>`:w.since?`<span class="muted small" style="flex:none">since ${fmt(w.since)}</span>`:''}</li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nobody is waiting on anything.</p>'}</div></div>`}
+
+/* ---------- drawer: one goal ---------- */
+function drawerGoal(g){const me=ME(),own=g.owner===me,mgr=P(g.owner).mgr===me,contrib=g.contrib.includes(me),to=passable(g,me),down=[...S.goals.filter(x=>x.parent===g.id&&canSee(x)),...openReqs(g.id)];
+ let next='';
+ if(own&&(g.status==='draft'||g.status==='returned'))next=`<div class="next"><h3>${g.status==='returned'?'Sent back':'Not submitted yet'}</h3>${g.back?`<p>“${e(g.back)}”</p>`:''}<p>Finish it and submit it to ${P(g.owner).mgr?e(P(P(g.owner).mgr).name):'approve it'}.</p><div class="btns"><button class="btn pri" data-a="edit" data-id="${g.id}">Edit and submit</button><button class="btn" data-a="delete" data-id="${g.id}">Delete draft</button></div></div>`;
+ else if(mgr&&g.status==='submitted')next=`<div class="next"><h3>Your approval</h3><p>${e(P(g.owner).name)} submitted this goal.</p><label class="f" for="backmsg" style="font-weight:400">If you send it back, say what to change</label><textarea class="in" id="backmsg" maxlength="400"></textarea><div class="btns" style="margin-top:10px"><button class="btn pri" data-a="approve" data-id="${g.id}">Approve</button><button class="btn" data-a="sendback" data-id="${g.id}">Send back</button></div></div>`;
+ else if(g.status==='approved'&&(own||contrib)&&to.length)next=`<div class="next"><h3>Pass it down to your team</h3><p>Goes to ${to.map(r=>e(P(r).name)).join(', ')}.</p><div class="btns"><button class="btn pri" data-a="adaptdown" data-id="${g.id}">Ask them to adapt it</button><button class="btn" data-a="push" data-id="${g.id}">Push it as it is</button></div><p class="small muted" style="margin:10px 0 0">Adapt: each person writes their own version for your approval. Push: it lands with each of them as an approved goal.</p></div>`;
+ else if(own&&g.status==='submitted')next=`<div class="next"><h3>Waiting for approval</h3><p style="margin:0">With ${e(P(P(g.owner).mgr).name)}.</p></div>`;
+ const canUpd=g.status==='approved'&&(own||contrib);
+ return `<div class="dh"><div style="flex:1">${pill(g.status)}<h2 style="margin-top:8px">${e(g.title)}</h2><div class="meta">${e(P(g.owner).name)} · ${e(P(g.owner).title)}</div></div><button class="x" data-a="close" aria-label="Close">×</button></div>
+ <div class="db"><div class="meta">Supports: <b>${e(parentName(g.parent))}</b>${isPillar(g.parent)?' (pillar)':' · '+e(P(G(g.parent).owner).name)}</div>
+ ${(()=>{const c=chainOf(g),pl=rootPillar(g);return pl?`<div class="meta small">Path to strategy: ${[e(PL(pl).name)+' (pillar)',...c.map(x=>e(x.title)+' · '+e(P(x.owner).name))].join(' › ')} › <b>this goal</b></div>`:'<div class="note">This goal does not trace back to a pillar.</div>'})()}
+ ${g.via==='push'?`<div class="meta">Pushed down by ${e(P(g.by).name)}${own&&g.status==='approved'?` · <button class="link" data-a="edit" data-id="${g.id}">Adjust this goal</button> <span class="small">(it goes back to ${e(P(P(g.owner).mgr).name)} for approval)</span>`:''}</div>`:''}
+ ${g.contrib.length?`<div class="meta">Contributors: ${g.contrib.map(c=>e(P(c).name)).join(', ')}</div>`:''}
+ <div style="margin-top:14px">${prog(g.progress,g)}</div>
+ <h3 style="margin-top:16px">Key results</h3><ul class="krs">${g.krs.map(k=>`<li>${e(k.t)}</li>`).join('')}</ul>${g.desc?`<p class="muted">${e(g.desc)}</p>`:''}
+ ${next}
+ ${canUpd?`<details ${next?'':'open'}><summary>Update progress</summary><div style="display:flex;gap:10px;align-items:center"><input type="range" id="pval" min="0" max="100" step="5" value="${g.progress}" style="flex:1" aria-label="Progress"><output id="pout">${g.progress}%</output></div><input class="in" id="pnote" placeholder="What changed? (optional)" maxlength="200" style="margin-top:8px"><p style="margin:8px 0 0"><button class="btn sm pri" data-a="progress" data-id="${g.id}">Save progress</button></p>${g.updates.length?`<ul class="hist" style="margin-top:10px">${g.updates.slice().reverse().map(u=>`<li><b>${u.pct}%</b> · ${fmt(u.at)} · ${e(P(u.by).name)}${u.note?' · '+e(u.note):''}</li>`).join('')}</ul>`:''}</details>`:''}
+ <details><summary>Passed down (${down.length})</summary>${down.length?`<ul class="hist">${down.map(x=>x.goal?`<li><b>${e(P(x.to).name)}</b> · asked to adapt, not done yet</li>`:`<li><b>${e(P(x.owner).name)}</b> · <button class="link" data-a="open" data-id="${x.id}">${e(x.title)}</button> · ${STATUS[x.status][0]}${x.via==='push'?' · pushed':''}</li>`).join('')}</ul>`:'<p class="muted small" style="margin:0">Not passed down yet.</p>'}</details>
+ <details><summary>History</summary><ul class="hist">${g.hist.slice().reverse().map(h=>`<li>${fmt(h.at)} · <b>${e(P(h.by).name)}</b> · ${e(h.w)}</li>`).join('')}</ul></details></div>`}
+
+/* ---------- drawer: create, adapt or edit ---------- */
+function parentOptions(owner){const m=P(owner).mgr,ups=m?S.goals.filter(g=>g.status==='approved'&&(g.owner===m||g.contrib.includes(m))):[];return [...ups.map(g=>[g.id,g.title]),...(P(owner).lv===1||!ups.length?S.pillars.map(p=>[p.id,'Pillar · '+p.name]):[])]}
+function openForm(o){U.form=Object.assign({id:null,req:null,owner:ME(),parent:'',title:'',krs:[''],desc:'',contrib:[],hint:''},o);if(!U.form.parent){const op=parentOptions(U.form.owner);U.form.parent=op.length?op[0][0]:''}U.ai=null;U.err={};U.dr={k:'form'};render()}
+function drawerForm(){const f=U.form,me=ME(),g=f.id&&G(f.id),team=reports(me),forOther=f.owner!==me,ops=parentOptions(f.owner),req=f.req&&S.reqs.find(r=>r.id===f.req),peers=Object.keys(PEOPLE).filter(k=>k!==f.owner&&P(k).lv===P(f.owner).lv),er=U.err;
+ const title=req?'Adapt a goal for your area':g?(g.status==='approved'?'Adjust this goal':'Edit goal'):'Add a goal';
+ const ai=U.ai;
+ return `<div class="dh"><h2>${title}</h2><button class="x" data-a="close" aria-label="Close">×</button></div><div class="db">
+ ${req?`<div class="note">${e(P(req.by).name)} asked you to adapt: <b>${e(G(req.goal).title)}</b></div>`:''}
+ ${!f.id&&!req&&team.length?`<label class="f" for="fowner">Whose goal is this?</label><select class="in" id="fowner" data-ff="owner"><option value="${me}">Mine</option>${team.map(r=>`<option value="${r}" ${f.owner===r?'selected':''}>${e(P(r).name)} · ${e(P(r).title)}</option>`).join('')}</select>${forOther?'<div class="hint">It goes straight to them as an approved goal, marked as pushed down by you.</div>':''}`:''}
+ ${req?'':`<label class="f" for="fparent">Supports</label><select class="in" id="fparent" data-ff="parent">${ops.map(([v,l])=>`<option value="${v}" ${v===f.parent?'selected':''}>${e(l)}</option>`).join('')}</select>`}
+ <label class="f" for="ftitle">Goal</label><input class="in" id="ftitle" data-ff="title" maxlength="200" value="${e(f.title)}" placeholder="An outcome, for example: Cut playout incidents to under three a month" ${er.title?'aria-invalid="true"':''}>${er.title?`<div class="err">${er.title}</div>`:''}
+ <div class="aibar"><div class="r"><button class="btn sm ai" data-a="aisuggest">✦ Suggest goals for me</button><button class="btn sm ai" data-a="aireview">✦ Review my draft</button><input class="in" data-ff="hint" value="${e(f.hint)}" placeholder="Priorities, in a few words (optional)" aria-label="Priorities for suggestions" maxlength="120"></div>
+ ${ai?`<div style="margin-top:6px"><span class="tag" style="margin-left:0">Prototype · scripted, not from a model</span></div>`+(ai.kind==='suggest'?ai.items.map((s,i)=>`<div class="sug"><b>${e(s.title)}</b><ul>${s.krs.map(k=>`<li>${e(k)}</li>`).join('')}</ul><p>${e(s.why)}</p><button class="btn sm" data-a="aiuse" data-i="${i}">Use this</button></div>`).join(''):`<ul class="chk">${ai.checks.map(c=>`<li>${c.ok?'✅':'⚠️'} ${e(c.label)}${c.tip?`<small>${e(c.tip)}</small>`:''}</li>`).join('')}</ul>`)+`<p style="margin:8px 0 0"><button class="link small" data-a="aiclose">Hide</button></p>`:''}</div>
+ <label class="f">Key results</label>${f.krs.map((k,i)=>`<div class="kr"><input class="in" data-ff="kr" data-i="${i}" value="${e(k)}" maxlength="200" placeholder="Measurable: a number, a percentage or a date" aria-label="Key result ${i+1}" ${er.krs&&!i?'aria-invalid="true"':''}>${f.krs.length>1?`<button class="x" data-a="krdel" data-i="${i}" aria-label="Remove key result ${i+1}">×</button>`:''}</div>`).join('')}${er.krs?`<div class="err">${er.krs}</div>`:''}
+ ${f.krs.length<5?'<button class="link" data-a="kradd">+ Add another</button>':''}
+ <details ${f.desc||f.contrib.length?'open':''} style="margin-top:14px"><summary>More details</summary><label class="f" for="fdesc">Description</label><textarea class="in" id="fdesc" data-ff="desc" maxlength="1000">${e(f.desc)}</textarea>
+ <label class="f">Contributors <span class="muted small" style="font-weight:400">(people at the same level)</span></label>${peers.map(p=>`<label style="display:block;margin:4px 0"><input type="checkbox" data-ff="contrib" value="${p}" ${f.contrib.includes(p)?'checked':''}> ${e(P(p).name)} <span class="muted small">${e(P(p).title)}</span></label>`).join('')||'<p class="muted small" style="margin:0">No one else at this level.</p>'}</details></div>
+ <div class="df"><button class="btn" data-a="close">Cancel</button>${forOther||(g&&g.status==='approved')?'':`<button class="btn" data-a="fsave" data-d="1">Save draft</button>`}<button class="btn pri" data-a="fsave">${forOther?'Push to '+e(P(f.owner).name.split(' ')[0]):P(f.owner).mgr?'Submit for approval':'Save'}</button></div>`}
+function readForm(t){const f=U.form,k=t.dataset.ff;if(!f||!k)return;
+ if(k==='kr')f.krs[+t.dataset.i]=t.value;else if(k==='contrib')f.contrib=t.checked?[...new Set([...f.contrib,t.value])]:f.contrib.filter(x=>x!==t.value);else f[k]=t.value;
+ if(k==='owner'){f.contrib=[];const op=parentOptions(f.owner);f.parent=op.length?op[0][0]:'';render()}}
+function saveForm(draft){const f=U.form,me=ME(),krs=f.krs.map(x=>x.trim()).filter(Boolean),title=f.title.trim(),err={};
+ if(!title)err.title='Add a goal.';if(!krs.length&&!draft)err.krs='Add at least one key result.';
+ if(!f.parent&&!f.req)err.title=(err.title?err.title+' ':'')+'Choose what it supports.';
+ const req0=f.req&&S.reqs.find(r=>r.id===f.req),g0=f.id&&G(f.id),par0=req0?req0.goal:f.parent;
+ if(req0&&req0.to!==me||g0&&!may.edit(g0)||!g0&&f.owner!==me&&!reports(me).includes(f.owner)){U.dr=null;U.form=null;render();denied();return}
+ if(draft&&g0&&g0.status==='approved'){toast('An approved goal cannot be saved as a draft. Submit it for approval.');return}
+ if(par0&&!req0&&(!parentOptions(f.owner).some(([v])=>v===par0)||par0===f.id||(f.id&&descendants(f.id).includes(par0))))err.title=(err.title?err.title+' ':'')+'Choose what it supports from the list.';
+ U.err=err;if(Object.keys(err).length){render();const x=document.querySelector('[aria-invalid=true]');if(x)x.focus();return}
+ const req=f.req&&S.reqs.find(r=>r.id===f.req),parent=req?req.goal:f.parent;let g=f.id&&G(f.id);
+ if(!g){g={id:'g'+(S.seq++),owner:f.owner,parent,title,desc:'',krs:[],status:'draft',progress:0,contrib:[],via:null,by:null,back:'',updates:[],hist:[]};S.goals.push(g);hist(g,f.owner!==me?'Created by '+P(me).name:'Created');if(req)req.result=g.id}
+ Object.assign(g,{title,desc:f.desc.trim(),parent,krs:krs.map(t=>({t})),contrib:f.contrib});
+ if(f.owner!==me&&!f.id){g.status='approved';g.via='push';g.by=me;hist(g,'Pushed down by '+P(me).name);toast('Goal pushed to '+P(f.owner).name)}
+ else if(draft){g.status=g.status==='approved'?'approved':'draft';hist(g,'Saved as draft');toast('Draft saved')}
+ else{if(g.status==='approved')hist(g,'Adjusted by the owner');submitGoal(g);toast(g.status==='approved'?'Goal saved':'Submitted to '+P(P(g.owner).mgr).name)}
+ U.form=null;U.ai=null;U.dr={k:'goal',id:g.id};render()}
+
+/* ---------- AI goal design: scripted in this sandbox ---------- */
+const LIB={
+ p1:[['Grow the {a} audience on digital platforms',['Weekly active users up 20% by Q4','Returning visitors up 15% by December'],'more people reaching our journalism every week'],
+  ['Make {a} content easier to find',['Search click-through above 30% by Q3','Average time to first click under 8 seconds'],'more visits that turn into regular use'],
+  ['Publish {a} stories faster',['Median time from filing to publishing under 20 minutes','90% of breaking stories live within 10 minutes'],'audiences coming to us first']],
+ p2:[['Reduce unplanned outages in {a}',['Unplanned outage minutes below 30 a month by Q4','Mean time to restore under 15 minutes'],'less downtime across the channels'],
+  ['Standardise maintenance across {a}',['Preventive maintenance done on 95% of schedule','Zero repeat faults on the same equipment within 30 days'],'fewer failures before they happen'],
+  ['Strengthen fault handling in {a}',['100% of the team trained on the fault runbook by Q2','Two fault drills held every quarter'],'faster, calmer recovery when something breaks']],
+ p3:[['Build core skills across {a}',['Every team member completes two learning paths by Q4','Skills gaps in the team plan reduced by half'],'a workforce ready for new formats'],
+  ['Grow future leaders in {a}',['Two successors named for each key role','Four internal moves or stretch assignments this year'],'more roles filled from inside'],
+  ['Make {a} a place people stay',['Voluntary turnover below 8%','Engagement score up 5 points in the next survey'],'keeping the skills we invest in']]};
+function aiSuggest(){const f=U.form,o=f.owner,parentId=f.req?S.reqs.find(r=>r.id===f.req).goal:f.parent,par=isPillar(parentId)?null:G(parentId),pl=par?rootPillar(par):parentId,area=(P(o).title.split(',')[1]||P(o).title).trim(),own=mine(o).map(g=>g.title.toLowerCase());
+ const lv=P(o).lv,scope=lv>=5?' (your own work)':lv===4?' (your section)':'';let items=(LIB[pl]||LIB.p2).map(([t,k,w])=>({title:t.replace('{a}',area)+scope,krs:k,why:`Supports “${par?par.title:PL(pl).name}” through ${w}.`}));
+ const h=f.hint.trim();if(h)items=[{title:`${h[0].toUpperCase()+h.slice(1)} in ${area}`,krs:items[0].krs,why:`Built from your priority “${h}”. Supports “${par?par.title:PL(pl).name}”.`},...items.slice(0,2)];
+ return items.filter(s=>!own.includes(s.title.toLowerCase())).slice(0,3)}
+function aiReview(){const f=U.form,t=f.title.trim(),krs=f.krs.map(x=>x.trim()).filter(Boolean),lv=P(f.owner).lv,low=t.toLowerCase(),c=[];
+ const act=/^(attend|hold|do|work on|help|support|participate|join|try|complete training|be )/i.test(t);
+ c.push(!t?{ok:false,label:'There is no goal yet',tip:'Start with the result you want, not the task.'}:act?{ok:false,label:'Reads as an activity, not an outcome',tip:'Say what will be different when it is done, for example “Cut … to …”.'}:{ok:true,label:'Reads as an outcome'});
+ const vague=krs.filter(k=>!/\d|%/.test(k));c.push(!krs.length?{ok:false,label:'No key results yet',tip:'Add one to three measurable key results.'}:vague.length?{ok:false,label:`${vague.length} key result(s) have no number, percentage or date`,tip:'For example: “… from 50k to 70k by Q4”.'}:{ok:true,label:'Key results are measurable'});
+ if(krs.length>3)c.push({ok:false,label:'More than three key results',tip:'Keep the ones that matter most.'});
+ const broad=/all channels|whole network|company-wide|across the network|every market/i.test(t);c.push(lv>=4&&broad?{ok:false,label:'The scope looks too wide for your level',tip:'Narrow it to what your section or your own work controls.'}:{ok:true,label:'Scope fits your level'});
+ const parentId=f.req?S.reqs.find(r=>r.id===f.req).goal:f.parent;c.push(parentId?{ok:true,label:'Supports “'+parentName(parentId)+'”'}:{ok:false,label:'Not linked to a goal above',tip:'Choose what it supports.'});
+ const words=s=>new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>3)),tw=words(t),dup=mine(f.owner).find(g=>g.id!==f.id&&tw.size&&[...words(g.title)].filter(w=>tw.has(w)).length/tw.size>=.5);
+ c.push(dup?{ok:false,label:'Overlaps a goal you already have',tip:'“'+dup.title+'”'}:{ok:true,label:'No overlap with your other goals'});return c}
+
+/* ---------- drawer: pillar ---------- */
+function drawerPillar(p){const gs=S.goals.filter(g=>g.parent===p.id&&g.status!=='draft'),ed=canEditStrategy();
+ return `<div class="dh"><div style="flex:1"><span class="pill ok">Pillar</span><h2 style="margin-top:8px">${e(p.name)}</h2></div><button class="x" data-a="close" aria-label="Close">×</button></div><div class="db">
+ ${ed?`<label class="f" for="pname">Pillar name</label><div style="display:flex;gap:8px"><input class="in" id="pname" value="${e(p.name)}" maxlength="120"><button class="btn" data-a="prename" data-id="${p.id}">Save</button></div>
+ <div class="next"><h3>Add a goal under this pillar</h3><p>It becomes one of your goals as ${e(P(ME()).title)}.</p><button class="btn pri" data-a="pgoal" data-id="${p.id}">Add a goal</button></div>`:`<p class="muted">Pillars are managed by the Executive Directors.</p>`}
+ <h3 style="margin-top:14px">Goals under it (${gs.length})</h3><ul class="hist">${gs.map(g=>`<li><b>${e(P(g.owner).name)}</b> · <button class="link" data-a="open" data-id="${g.id}">${e(g.title)}</button></li>`).join('')||'<li>None yet.</li>'}</ul>
+ ${ed?`<details><summary>Add a pillar</summary><div style="display:flex;gap:8px"><input class="in" id="pnew" maxlength="120" placeholder="Pillar name"><button class="btn" data-a="padd">Add</button></div></details>`:''}</div>`}
+
+/* ---------- render ---------- */
+function render(){const me=ME(),dr=U.dr,was=!!document.querySelector('.drawer'),af=document.activeElement,keep=af&&af.closest&&af.closest('.drawer')&&af.dataset&&af.dataset.ff?{ff:af.dataset.ff,i:af.dataset.i}:null;
+ const nav=[['mine','My goals'],['map','Strategy map'],['dash','Dashboard']];
+ let page=U.page==='map'?pageMap():U.page==='dash'?pageDash():pageMine();
+ let d='';if(dr){const inner=dr.k==='form'?drawerForm():dr.k==='pillar'&&PL(dr.id)?drawerPillar(PL(dr.id)):dr.k==='goal'&&G(dr.id)?drawerGoal(G(dr.id)):'';if(inner)d=`<div class="mask" data-a="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">${inner}</aside>`;else U.dr=null}
+ document.getElementById('app').innerHTML=`<header class="top"><div class="brand">Goals Cycle Hub<small>Sample data · fictional people</small></div><nav class="nav" aria-label="Pages">${nav.map(([k,l])=>`<button data-a="page" data-p="${k}" ${U.page===k?'aria-current="page"':''}>${l}</button>`).join('')}</nav><span class="sp"></span>
+ <label class="as">Viewing as <select data-a="as">${Object.keys(PEOPLE).map(k=>`<option value="${k}" ${k===me?'selected':''}>${e(P(k).name)} · ${e(LEVELS[P(k).lv].replace(/s$/,''))}</option>`).join('')}</select></label><button class="btn sm" data-a="reset">Reset</button></header>
+ ${U.saveErr?'<div class="wrap" style="padding-bottom:0"><div class="note" role="alert">Changes could not be saved in this browser. They will be lost when you reload. Check that site data is allowed, then try again.</div></div>':''}${page}<div class="foot"><a href="./">Talent Suite</a> · <a href="strategy.html">Strategy Room</a> · <a href="successfactors.html">SuccessFactors replica</a> · Data stays in this browser.</div>${d}`;
+ const dw=document.querySelector('.drawer');
+ if(dw&&keep){const x=dw.querySelector(`[data-ff="${keep.ff}"]${keep.i!=null?`[data-i="${keep.i}"]`:''}`);if(x)x.focus()}
+ else if(dw&&!was)(dw.querySelector('.dh .x')||dw).focus();
+ else if(!dw&&was&&U.opener){const o=document.querySelector(U.opener);if(o)o.focus()}
+ save()}
+
+/* ---------- events ---------- */
+const A={
+ page:el=>{U.page=el.dataset.p;U.dr=null;render();window.scrollTo(0,0)},
+ reset:()=>{if(!confirm('Reset the hub to the example cycle? Everything entered here is cleared.'))return;S=seed();U.dr=U.form=null;render();toast('Example cycle restored')},
+ open:el=>{if(!canSee(G(el.dataset.id)))return denied();U.dr={k:'goal',id:el.dataset.id};U.form=null;render()},
+ close:()=>{U.dr=null;U.form=null;U.ai=null;U.map=null;render()},
+ new:()=>openForm({}),
+ adapt:el=>{const r=S.reqs.find(x=>x.id===el.dataset.id);if(!r||r.to!==ME()||r.status!=='open')return denied();const d=r.result&&G(r.result);openForm(d?{id:d.id,req:r.id,owner:d.owner,parent:d.parent,title:d.title,krs:d.krs.map(k=>k.t).concat(d.krs.length?[]:['']),desc:d.desc,contrib:d.contrib}:{req:r.id,parent:r.goal})},
+ edit:el=>{const g=G(el.dataset.id);if(!g||!may.edit(g))return denied();const r=S.reqs.find(q=>q.result===g.id&&q.status==='open');openForm({id:g.id,req:r?r.id:null,owner:g.owner,parent:g.parent,title:g.title,krs:g.krs.length?g.krs.map(k=>k.t):[''],desc:g.desc,contrib:g.contrib})},
+ delete:el=>{if(!may.delete(G(el.dataset.id)||{}))return denied();if(!confirm('Delete this draft?'))return;const id=el.dataset.id;S.goals=S.goals.filter(g=>g.id!==id);S.reqs.forEach(r=>{if(r.result===id)r.result=null});U.dr=null;render();toast('Draft deleted')},
+ approve:el=>{const g=G(el.dataset.id);if(!g||!may.approve(g))return denied();g.status='approved';g.back='';hist(g,'Approved');render();toast('Approved')},
+ sendback:el=>{const g=G(el.dataset.id);if(!g||!may.sendback(g))return denied();const m=document.getElementById('backmsg').value.trim();if(!m){document.getElementById('backmsg').setAttribute('aria-invalid','true');document.getElementById('backmsg').focus();toast('Say what to change before sending it back');return}g.status='returned';g.back=m;hist(g,'Sent back: '+m);render();toast('Sent back to '+P(g.owner).name)},
+ adaptdown:el=>{if(!may.push(G(el.dataset.id)||{}))return denied();const n=passDown(G(el.dataset.id),'adapt');render();toast(`Asked ${n} ${n===1?'person':'people'} to adapt it`)},
+ push:el=>{if(!may.push(G(el.dataset.id)||{}))return denied();const n=passDown(G(el.dataset.id),'push');render();toast(`Pushed to ${n} ${n===1?'person':'people'}`)},
+ progress:el=>{const g=G(el.dataset.id);if(!g||!may.progress(g))return denied();const v=+document.getElementById('pval').value,n=document.getElementById('pnote').value.trim();g.progress=v;g.updates.push({at:TODAY,by:ME(),pct:v,note:n});hist(g,'Progress set to '+v+'%');render();toast('Progress saved')},
+ fsave:el=>saveForm(!!el.dataset.d),
+ kradd:()=>{U.form.krs.push('');render();const x=document.querySelectorAll('[data-ff=kr]');x[x.length-1].focus()},
+ krdel:el=>{U.form.krs.splice(+el.dataset.i,1);render()},
+ aisuggest:()=>{U.ai={kind:'suggest',items:aiSuggest()};render()},
+ aireview:()=>{U.ai={kind:'review',checks:aiReview()};render()},
+ aiuse:el=>{const s=U.ai.items[+el.dataset.i];U.form.title=s.title;U.form.krs=s.krs.slice();U.ai=null;U.err={};render();toast('Filled in. Change anything before you submit.')},
+ aiclose:()=>{U.ai=null;render()},
+ pillar:el=>{U.map=el.dataset.id;U.dr={k:'pillar',id:el.dataset.id};render()},
+ prename:el=>{if(!canEditStrategy())return denied();const v=document.getElementById('pname').value.trim();if(!v)return;PL(el.dataset.id).name=v;render();toast('Pillar renamed')},
+ padd:()=>{if(!canEditStrategy())return denied();const v=document.getElementById('pnew').value.trim();if(!v)return;S.pillars.push({id:'p'+(S.seq++),name:v});render();toast('Pillar added')},
+ pgoal:el=>{if(!canEditStrategy())return denied();openForm({parent:el.dataset.id})},
+ scope:el=>{U.scope=el.dataset.s;render()}};
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el||el.tagName==='SELECT')return;const f=A[el.dataset.a];if(f){ev.preventDefault();if(!document.querySelector('.drawer')&&el.tagName==='BUTTON')U.opener=`[data-a="${el.dataset.a}"]`+(el.dataset.id?`[data-id="${el.dataset.id}"]`:'')+(el.dataset.p?`[data-p="${el.dataset.p}"]`:'');f(el,ev)}});
+document.addEventListener('input',ev=>{const t=ev.target;if(t.id==='pval')document.getElementById('pout').textContent=t.value+'%';if(t.dataset.ff&&t.dataset.ff!=='owner')readForm(t)});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset.a==='as'){S.as=t.value;U.dr=U.form=U.ai=null;render();toast('Viewing as '+P(t.value).name)}else if(t.dataset.ff==='owner'||t.dataset.ff==='parent'||t.dataset.ff==='contrib')readForm(t)});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&U.dr){U.dr=U.form=U.ai=null;U.map=null;render();return}
+ const dw=document.querySelector('.drawer');if(ev.key==='Tab'&&dw){const f=[...dw.querySelectorAll('button,input,select,textarea,summary,[href]')].filter(x=>!x.disabled&&x.offsetParent!==null);if(!f.length)return;
+  if(ev.shiftKey&&(document.activeElement===f[0]||!dw.contains(document.activeElement))){ev.preventDefault();f[f.length-1].focus()}else if(!ev.shiftKey&&document.activeElement===f[f.length-1]){ev.preventDefault();f[0].focus()}}});
+render();
+</script>
+</body>
+</html>

@@ -40,15 +40,25 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Performance forms**: The 2026 goal form, which moves the goal plan between its states, and the appraisal form with up to three training needs and an overall rating.
 - **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
+### Goals Cycle Hub
+- **My goals**: Next steps with one button each, then the person's goals with what each supports, its progress and its status.
+- **Pass goals down**: Ask the direct team to adapt a goal, or push it to them as it is; a pushed goal can be adjusted and goes back for approval.
+- **Approval**: Submit, send back with a comment, revise, resubmit and approve.
+- **Strategy map**: Pillars to staff as connected boxes, one column per level, with open adapt requests shown dashed.
+- **Dashboard**: Approved goals, coverage by level, progress by pillar and who is waiting on what, for everyone or one team.
+- **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
+
 ## Pages
 - **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
+- **Goals Cycle Hub**: /goals-hub.html — Cascade goals from strategy pillars down to staff, with approvals and a strategy map.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions
 - The answers marked "Prototype · scripted" are seeded, not from a model.
 - Data lives in the browser only; "Reset sandbox" restores the seed.
-- The server serves these three pages and nothing else in the folder.
+- The server serves these four pages and nothing else in the folder.
+- The Goals Cycle Hub checks every action against the viewer's role in the page, but with no backend those checks can be bypassed by editing browser storage.
 - The SuccessFactors replica talks to a simulated SAP adapter in the page; role codes such as ED are SAP codes relative to the goal owner, not job titles.
 - A 100% weight total is off until confirmed and can be switched on under Tests and parity. Entry limits by step are set in the Admin Center.
 - User screens, admin previews and the adapter's checks all read the published configuration, never the draft.
