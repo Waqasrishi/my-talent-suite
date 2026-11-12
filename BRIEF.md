@@ -40,30 +40,31 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Performance forms**: The 2026 goal form, which moves the goal plan between its states, and the appraisal form with up to three training needs and an overall rating.
 - **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
-### Goals Cycle Hub
-- **Measured key results**: Each key result is a number from a start to a target (higher or lower is better), done or not done, or a list of milestones, with an optional weight.
-- **Progress calculated**: Goal progress is the weighted result of its key results, or the average of the goals aligned to it; no data, behind start and exceeded are shown as such.
-- **Check-ins**: Owners record current values, how it is going and a note; a check-in older than 30 days shows as overdue.
-- **Goal cycles**: Switch between the 2025 and 2026 cycles; closed cycles are read-only.
-- **Goal types and weights**: Organisation, team and individual goals, with a due date inside the cycle and a weight; your weights are checked against 100%.
-- **Outbound and inbound alignment**: Link a goal to the goals it supports, in any department, and accept or reject links to yours with a reason.
-- **Approval and changes**: Submit, send back, revise and approve; editing an approved goal sends it back for approval and asks the owners of aligned goals to review theirs.
-- **Archive**: Archive and unarchive approved goals instead of deleting them; goals aligned to an archived goal are flagged.
-- **All goals**: Search, filter by department, type, approval and health, sort, and export the same list to CSV.
-- **Strategy map and dashboard**: Pillars to staff as connected boxes, health of goals, coverage by level, progress by pillar, unaligned goals and who is waiting on what.
+### AJMN People (the connected platform)
+- **Homepage**: A greeting, quick actions, Needs Attention cards built from your real tasks, and tiles for every area, marked when an area is not set up.
+- **One shell**: Search, notifications, an application launcher, your demo persona and cycle, a sidebar and breadcrumbs on every screen; every screen has its own address.
+- **Goals and strategy**: Measured key results, check-ins, cycles, inbound and outbound alignment, approvals, archive, a goal list with CSV export, and a strategy map that can focus one goal's path to its pillar.
+- **Performance appraisal**: Self-assessment, manager review, calibration, employee acknowledgement and an HR appeal, with ratings kept separate from achievement, weights checked against 100%, and a snapshot of goals once the manager review is submitted.
+- **Training needs**: The manager records up to three per appraisal; each becomes a record in the Training Needs Assessment plan, linked to a course in the sample catalogue.
+- **Two form themes**: Broadcast Light and Executive Gold show the same record.
+- **Continuous performance**: Activities and feedback requests linked to goals.
+- **Team, approvals and reports**: A manager's team view, one list of everything waiting on you, and reports that open the records behind each figure.
+- **Admin Center**: Application registry with addresses for external applications, workflow steps, training-need rules, rating decimals, section numbering and the default theme.
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
 - **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
-- **Goals Cycle Hub**: /goals-hub.html — Measured goals with check-ins, cycles and inbound and outbound alignment, from strategy pillars down to staff.
+- **AJMN People**: /goals-hub.html — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions
 - The answers marked "Prototype · scripted" are seeded, not from a model.
 - Data lives in the browser only; "Reset sandbox" restores the seed.
 - The server serves these four pages and nothing else in the folder.
-- The Goals Cycle Hub checks every action against the viewer's role in the page, but with no backend those checks can be bypassed by editing browser storage.
+- AJMN People checks every action against the demo persona's role in the page, but with no backend those checks are a demonstration, not access control: the sample data is in the page and can be changed in browser storage.
+- Achievement percentages never become ratings; the overall rating is rating × weight ÷ 100, rounded to the configured decimals, and missing ratings give no score.
+- Succession & Career and HR Services show as not configured; Learning is a sample catalogue with no learning system behind it.
 - The SuccessFactors replica talks to a simulated SAP adapter in the page; role codes such as ED are SAP codes relative to the goal owner, not job titles.
 - A 100% weight total is off until confirmed and can be switched on under Tests and parity. Entry limits by step are set in the Admin Center.
 - User screens, admin previews and the adapter's checks all read the published configuration, never the draft.
