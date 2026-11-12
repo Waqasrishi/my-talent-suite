@@ -213,6 +213,30 @@ code{font:12px ui-monospace,Menlo,Consolas,monospace;background:#EEF0F2;border-r
 [dir=rtl] .note{border-left:1px solid var(--line);border-right:4px solid var(--blue-d)}
 [dir=rtl] .pp::after{content:"‹"}
 [dir=rtl] .facts div{border-right:0;border-left:1px solid var(--line)}
+/* Admin Center */
+.adm{max-width:1320px}.adm .fi{max-width:none}
+.asrch{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:8px 0 6px}
+.cath{margin:22px 0 10px;font-weight:700}.cath small{color:var(--muted);font-weight:400}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tool{background:#fff;border-radius:12px;box-shadow:0 0 0 1px #E3E6EA,0 2px 6px rgba(34,53,72,.1);padding:12px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;position:relative}
+.tool:hover{box-shadow:0 0 0 2px var(--blue-d)}
+.tool.off{cursor:default;background:#FAFAFB}.tool.off .tic{background:#EEF0F2;color:var(--muted)}.tool.off b{color:var(--muted)}.tool.off:hover{box-shadow:0 0 0 1px #E3E6EA}
+.tic{width:40px;height:40px;border-radius:10px;background:var(--sel);color:var(--hdr);display:flex;align-items:center;justify-content:center;flex:none}
+.tic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}.tx small{color:var(--muted);font-size:12.5px}
+.badge.ok{background:#F1F9F3;border-color:#BFE0C8}
+.star{border:0;background:none;font-size:20px;cursor:pointer;color:#B88700;padding:0 4px;line-height:1}
+.rm{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.rmb{background:#fff;border:1px solid #8996A8;border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:3px;min-width:150px;max-width:220px}
+.rmb small{color:var(--muted);font-size:12px}.rmb span{font-size:12.5px}
+.rmb.on{border:2px solid var(--ink2);background:var(--sel)}.rmb.end{border-style:dashed}.rmb.off{opacity:.55;border-style:dotted}
+.rma{align-self:center;font-style:normal;color:var(--muted);font-size:20px}
+[dir=rtl] .rma{transform:scaleX(-1)}
+/* AI services */
+.badge.ai{background:#F4F1FB;border-color:#CFC4EC}.badge.sapb{background:#EBF1FA;border-color:#B7CBEA}.badge.ver{background:#FFF1F0;border-color:#E7A9A4}
+.chip{border:1px solid #B7CBEA;background:#EBF1FA;border-radius:10px;padding:0 8px;font-size:12px;cursor:pointer;margin-inline-start:6px}
+details summary{cursor:pointer}
+@media print{.noprint{display:none!important}}
 </style>
 </head>
 <body>
@@ -229,8 +253,8 @@ const RW=['E','EM','EM+','EX','ED','EH','EY','F','OP','OC','Cascader'],RR=['E','
 const CORE=['name','desc','metric','weight','start','due','ms'],FL=[...CORE,'state','done'];
 const fp=(core,extra)=>{const o={};CORE.forEach(f=>o[f]=core[f]||core._||[]);o.state=[...new Set([...(core.state||core._||[]),...extra])];o.done=extra;return o};
 const ACT0={'change-state':['EH'],'private-access':RR,'cascade-pull':CA,'cascade-push':CP,'cascade-align':CA,'unalign-parent':['E'],'unalign-child':['E'],move:RO};
-const TEMPLATE={id:14,type:'Business',start:'2026-01-01',due:'2026-12-31',
- fields:{name:{max:500,req:1,cu:'push-down'},desc:{max:2000,cu:'push-down'},metric:{max:1000,req:1,cu:'push-down'},weight:{req:1,cu:'regular'},start:{cu:'push-down'},due:{cu:'push-down'},state:{cu:'regular'},done:{cu:'regular'},ms:{sap:'milestones',cu:'push-down'}},
+const PLAN14={id:14,type:'Business',start:'2026-01-01',due:'2026-12-31',
+ fields:{name:{max:500,req:true,cu:'push-down',label:{en:'Goal Description',ar:'إسم الهدف'}},desc:{max:2000,req:false,cu:'push-down',label:{en:'Intended Results',ar:'وصف الهدف'}},metric:{max:1000,req:true,cu:'push-down',label:{en:'Key Performance Indicator',ar:'القياس'}},weight:{req:true,cu:'regular',label:{en:'Weight',ar:'الوزن'}},start:{req:false,cu:'push-down',label:{en:'Start',ar:'تاريخ البدء'}},due:{req:false,cu:'push-down',label:{en:'Due',ar:'تاريخ الإنتهاء'}},state:{cu:'regular',label:{en:'Status',ar:'الحالة'}},done:{cu:'regular',label:{en:'% Complete',ar:'نسبة الإنجاز'}},ms:{sap:'milestones',cu:'push-down',label:{en:'Milestones',ar:'المعالم الرئيسية للهدف'}}},
  status:[{v:'Not Started',en:'In Progress',ar:'يُعمل عليها حالياً',c:'#3B9909'},{v:'On Track',en:'Completed',ar:'مكتملة',c:'#2585BC',trigger:true},{v:'Behind',en:'Paused',ar:'متوقف مؤقتًا',c:'#D68C0C'},{v:'Completed',en:'Cancelled',ar:'تم الإلغاء',c:'#C10B0B'}],
  states:{
   empdraft:{en:'Goals Settings',ar:'وضع الأهداف',actEn:'Send Back to Employee',actAr:'إرجاع إلى الموظف',to:['locked'],
@@ -239,14 +263,12 @@ const TEMPLATE={id:14,type:'Business',start:'2026-01-01',due:'2026-12-31',
    act:{...ACT0,'create-row':[],'delete-row':[],'move-row':[],create:[],delete:[],share:[]},read:fp({_:RR.filter(r=>r!=='EC')},[...RW,'EC']),write:fp({state:['E'],ms:['E']},RW)},
   locked:{en:'Goals Completed',ar:'اكتمال الهدف',actEn:'Lock',actAr:'قفل',to:['unlockedtodlm','empdraft'],
    act:{...ACT0,'create-row':RO,'delete-row':RO,'move-row':RO,create:['EM'],delete:[],share:[]},read:fp({_:RR},[...RW,'EC']),write:fp({state:RO,ms:RO,weight:RO},RW)}}};
-const ST=TEMPLATE.status,LIMITS={goals:{min:1,max:50},tna:{min:0,max:3}};
 const DST=['Not Started','On Track','Behind','Completed','At Risk'];
 const DCOL={'Not Started':'#1D2D3E','On Track':'#B89B00','Behind':'#D9534F','Completed':'#4CAF50','At Risk':'#E41E1E'};
 const MGRAPP=['No selection','Yes','No'];
 const PURPOSE=['🌿 Develop in Current Role','🌟 Prepare for Future role','🎙️ Enhance General skillset'];
 const SCALE=['Unsatisfactory Performance','Needs Improvements','🎯 Achiever','Champions','Ideator','Innovator'];
 const CALCOLS=['Not Rated / Excluded','Unsatisfactory Performance','Needs Improvements','Achiever','Champions','Ideator','Innovator'];
-const TPL={goal:{name:'2026 Individual Goal Form',steps:['Employee Goal Setting','DLM Goals Review']},appr:{name:'2026 Performance Appraisal Form',steps:['DLM Appraisal']}};
 const INTRO={en:`<div>All goals must be aligned to the organization's strategic goals and linked to the strategic alignment.</div><br><div><strong>Goals:</strong> The establishment of clear, Specific, Measurable, Achievable, Relevant, and Time-bound (SMART) goals will guide our efforts.</div><br><div><strong>Intended Results:</strong> Defined outcomes that should be thoughtfully aligned with our overarching mission; this will be the focus of our goal-setting initiatives.</div><br><div><strong>KPIs:</strong> Key Performance Indicators (KPIs) will serve as the metrics through which we will measure progress and success.</div><br><div>Set a minimum of one (1) goals, ensuring their combined weight totals to 100%. Each goal weight to be within the range of 1% to 50%.</div>`,
  ar:`<div>على جميع الأهداف ان تكون متوافقة مع الأهداف الاستراتيجية للمؤسسة، ومرتبطة بالمنظور الاستراتيجي (بطاقة الأداء المتوازن).</div><br><div><strong>الأهداف:</strong> إنشاء أهداف واضحة، محددة، قابلة للقياس والتحقيق، ذات صلة، ومحددة زمنياً (SMART) ستساعد في توجيه الجهود المبذولة.</div><br><div><strong>النتائج المطلوبة:</strong> هي النتائج المحددة التي يجب أن تكون مرتبطة بعناية مع رؤيتنا العامة؛ وسيكون هذا محور مبادراتنا في تحديد الأهداف.</div><br><div><strong>مؤشرات الأداء الرئيسية (KPIs):</strong> ستكون مؤشرات الأداء الرئيسية (KPIs) هي المقاييس التي سنقيس من خلالها التقدم والنجاح.</div><br><div>قم بتحديد على الأقل خمسة (5) أهداف، مع التأكد أن يكون مجموع وزنها 100%. يجب أن يكون وزن كل هدف في نطاق 10% إلى 25%</div>`};
 const DINTRO='This is where you create and update your Career Development goals. Click the Add Goal button to get started.<br>Frequently review progress with your manager and celebrate your achievements along the way.';
@@ -259,10 +281,30 @@ const STRAT=[{id:'p1',lvl:'DG priority',title:'Grow trusted digital audiences',o
  {id:'o2',lvl:'ED objective',title:'Build a skilled, adaptable workforce',owner:'Executive Director, Human Capital',pub:true,up:'p2'},
  {id:'d2',lvl:'Director deliverable',title:'Self-service learning catalogue live for all staff',owner:'Director, Learning',pub:true,up:'o2'}];
 
+/* seed configuration, from the AJMN exports: plan 14 XML, ZIP 55 (goal form), ZIP 54 (appraisal), ZIP 56 (role readiness).
+   The exports carry no route map: step ids come from the form XML, step names and owners are assumed. */
+const SEEDCFG=()=>JSON.parse(JSON.stringify({goalPlan:PLAN14,
+ ai:{strategyLink:true,sources:true,features:{goalCreate:{on:false,roles:['E','EM']},writing:{on:false,roles:['EM','EH']},translate:{on:false,roles:['EM','EH']},analyzer:{on:false,roles:['EM','EH']},insights:{on:false,roles:['EM']},joule:{on:false,roles:['E','EM','EH']}}},
+ routeMaps:{
+  rm_goal:{name:'2026 Individual Goal Form route map',src:'ZIP 55 references step ids 1 and 2; names and owners are assumed.',donePlanState:'locked',deletePlanState:'empdraft',steps:[
+   {id:'1',name:'Employee Goal Setting',owner:'E',kind:'Modify',planState:'empdraft',next:'2',back:''},{id:'2',name:'DLM Goals Review',owner:'EM',kind:'Modify',planState:'unlockedtodlm',next:'done',back:'1'}]},
+  rm_appr:{name:'2026 Performance Appraisal route map',src:'ZIP 54 references step ids 2 and 4 for the rating; the steps, names and owners are assumed.',donePlanState:'',deletePlanState:'',steps:[
+   {id:'1',name:'Employee Self-Assessment',owner:'E',kind:'Modify',planState:'',next:'2',back:''},{id:'2',name:'Manager Evaluation',owner:'EM',kind:'Modify',planState:'',next:'4',back:'1'},
+   {id:'4',name:'HR Representation - Calibration',owner:'EH',kind:'Modify',planState:'',next:'5',back:'2'},{id:'5',name:'Employee Signature',owner:'E',kind:'Signature',planState:'',next:'done',back:'4'}]},
+  rm_rra:{name:'Role Readiness Assessment route map',src:'ZIP 56 references step id E1; its name and owner are assumed.',donePlanState:'',deletePlanState:'',steps:[{id:'E1',name:'Assessment',owner:'EM',kind:'Modify',planState:'',next:'done',back:''}]}},
+ forms:{
+  goal:{zip:55,name:'2026 Individual Goal Form',routeMap:'rm_goal',required:[],sections:[{id:'goals',type:'goals',plan:14,name:'Individual Goals',min:1,max:50,byStep:{},inRating:false,autosync:true,showWeight:true}]},
+  appr:{zip:54,name:'2026 Performance Appraisal Form',routeMap:'rm_appr',rate:{roles:['EM','EX','EH','EHM','EMM'],steps:['2','4']},
+   required:[{field:'rating',step:'2',role:'*',msg:''},{field:'comments',step:'2',role:'*',msg:''},{field:'rating',step:'4',role:'*',msg:''},{field:'comments',step:'4',role:'*',msg:''}],
+   sections:[{id:'goals',type:'goals',plan:14,name:'🎯 Individual Goals',min:1,max:50,byStep:{},inRating:true,autosync:true,showWeight:false},{id:'tna',type:'tna',plan:2004,name:'🎓 Training Needs',min:0,max:3,byStep:{},inRating:false,autosync:true},{id:'summary',type:'summary',name:'🏆 Overall Performance Summary'}]},
+  rra:{zip:56,name:'Role Readiness Assessment Form',routeMap:'rm_rra',required:[],sections:[{id:'dev',type:'dev',plan:2005,name:'Development Goals',min:null,max:null,byStep:{},inRating:true,autosync:false},{id:'comp',type:'other',name:'Competencies'},{id:'skills',type:'other',name:'Skills'}]}}}));
+let TEMPLATE,ST,TPL,RMAP;
+function useCfg(){const c=S.config.pub;TEMPLATE=c.goalPlan;ST=TEMPLATE.status;TPL=c.forms;RMAP=c.routeMaps}
+
 /* ---------- localized resources for the goal plan (labels marked SAP come from the export) ---------- */
 const L={en:{
  plan14:'2026 Individual Goal Plan',cat:'Individual Goals',cat_l:'Goal Type',f_name:'Goal Description',f_desc:'Intended Results',f_metric:'Key Performance Indicator',f_weight:'Weight',f_start:'Start',f_due:'Due',f_state:'Status',f_done:'% Complete',f_ms:'Milestones',f_vis:'Visibility',ms_t:'Target Date',ms_d:'Milestone',ms_a:'Actual Date',
- tab_perf:'Performance Goals',tab_dev:'Development Goals',create:'Create Goal',assign:'Assign a linked goal',print:'Print to PDF',state:'State',goals:'Goals',wtotal:'Weight (Total)',intro:'Introduction',none:'No goals in this plan yet.',due_date:'Due Date',
+ tab_perf:'Performance Goals',tab_dev:'Development Goals',create:'Create Goal',aicreate:'Create with AI',assign:'Assign a linked goal',print:'Print to PDF',state:'State',goals:'Goals',wtotal:'Weight (Total)',intro:'Introduction',none:'No goals in this plan yet.',due_date:'Due Date',
  view:'View Details',edit:'Edit Goal',del:'Delete Goal',share:'Share (make public)',unshare:'Unshare (make private)',link:'Link existing goals',prio:'Link to a published priority',chart:'View Alignment Chart',audit:'View Audit History',
  pub:'Public',priv:'Private',masked:'Goal details not available to your role',hidden:'{0} goal(s) in this plan are not visible to you.',
  signed:'Signed in as',failnext:'Fail next save',parity:'Tests and parity',
@@ -272,7 +314,7 @@ const L={en:{
  help_unlockedtodlm:'Goals Review: name, measure and weight are read-only. The employee can update status and existing milestones. Adding, deleting or reordering milestone rows, creating, deleting and sharing carry blank roles in the template and stay off until verified.',
  help_locked:'Goals Completed: name and measure are read-only. Employee, manager and matrix manager can change weight, status and milestones, including rows. Only the manager (EM) can create a goal. Nobody can delete.',
  manual:'Only HR (role code EH) changes the state by hand. The Individual Goal Form also moves it: step 1 sets Goals Settings, step 2 sets Goals Review, completion sets Goals Completed, deleting the form resets Goals Settings.',
- ready:'Ready to Submit',ready_ok:'Nothing is blocking submission of the Individual Goals section.',ready_bad:'{0} item(s) to fix before the form can move on:',fixit:'Fix',
+ ready:'Ready to Submit',ready_ok:'Nothing is blocking submission.',ready_bad:'{0} item(s) to fix before this can move on:',i_sect:'“{0}” needs {1} to {2} entries at this step; it has {3}.',i_req:'{0} is required at this step.',e_req:'This field is required',fixit:'Fix',
  i_count:'The section needs between 1 and 50 goals; this plan has {0}.',i_missing_name:'A goal has no name.',i_missing_metric:'“{0}” has no measure of success.',i_missing_weight:'“{0}” has no weight.',i_total:'Total weight is {0}%; the configured rule requires 100%.',i_range:'“{0}” has a weight outside 1% to 50%.',i_tna_max:'Training Needs allows at most 3 entries.',i_tna_min:'Add at least one training need (manager minimum is switched on).',
  w_info:'Total assigned weight is {0}%. A 100% total is not enforced in the parity baseline.',
  newdraft:'You have an unsaved draft of a new goal.',cont:'Continue draft',dbadge:'Unsaved draft',
@@ -304,7 +346,7 @@ const L={en:{
  st_changed:'Plan state changed to {0}'},
 ar:{
  plan14:'خطة الأهداف الوظيفية 2026',cat:'1. أهداف العمل',cat_l:'الفئة',f_name:'إسم الهدف',f_desc:'وصف الهدف',f_metric:'القياس',f_weight:'الوزن',f_start:'تاريخ البدء',f_due:'تاريخ الإنتهاء',f_state:'الحالة',f_done:'نسبة الإنجاز',f_ms:'المعالم الرئيسية للهدف',f_vis:'الظهور',ms_t:'تاريخ الهدف',ms_d:'المعالم الرئيسية للهدف',ms_a:'تاريخ تحقيق الهدف الفعلي',
- tab_perf:'أهداف الأداء',tab_dev:'أهداف التطوير',create:'إنشاء هدف',assign:'إسناد هدف مرتبط',print:'طباعة PDF',state:'الحالة',goals:'الأهداف',wtotal:'الوزن (الإجمالي)',intro:'مقدمة',none:'لا توجد أهداف في هذه الخطة بعد.',due_date:'تاريخ الإنتهاء',
+ tab_perf:'أهداف الأداء',tab_dev:'أهداف التطوير',create:'إنشاء هدف',aicreate:'إنشاء باستخدام الذكاء الاصطناعي',assign:'إسناد هدف مرتبط',print:'طباعة PDF',state:'الحالة',goals:'الأهداف',wtotal:'الوزن (الإجمالي)',intro:'مقدمة',none:'لا توجد أهداف في هذه الخطة بعد.',due_date:'تاريخ الإنتهاء',
  view:'عرض التفاصيل',edit:'تعديل الهدف',del:'حذف الهدف',share:'مشاركة (جعله عاماً)',unshare:'إلغاء المشاركة (جعله خاصاً)',link:'ربط أهداف موجودة',prio:'ربط بأولوية منشورة',chart:'عرض مخطط المواءمة',audit:'عرض سجل التغييرات',
  pub:'عام',priv:'خاص',masked:'تفاصيل الهدف غير متاحة لدورك',hidden:'{0} هدف في هذه الخطة غير ظاهر لك.',
  signed:'الدخول باسم',failnext:'إفشال الحفظ التالي',parity:'الاختبارات والمطابقة',
@@ -314,7 +356,7 @@ ar:{
  help_unlockedtodlm:'مراجعة الأهداف: الاسم والقياس والوزن للقراءة فقط. يستطيع الموظف تحديث الحالة والمعالم الموجودة. إضافة صفوف المعالم أو حذفها أو إعادة ترتيبها، والإنشاء والحذف والمشاركة، أدوارها فارغة في القالب وتبقى معطلة حتى التحقق.',
  help_locked:'اكتمال الهدف: الاسم والقياس للقراءة فقط. يستطيع الموظف والمدير ومدير المصفوفة تغيير الوزن والحالة والمعالم وصفوفها. المدير فقط (EM) ينشئ هدفاً. لا أحد يحذف.',
  manual:'الموارد البشرية فقط (الرمز EH) تغيّر الحالة يدوياً. نموذج الأهداف الفردية يغيّرها أيضاً: الخطوة 1 تضع «وضع الأهداف»، الخطوة 2 «مراجعة الأهداف»، الإكمال «اكتمال الهدف»، وحذف النموذج يعيد «وضع الأهداف».',
- ready:'جاهز للإرسال',ready_ok:'لا شيء يمنع إرسال قسم الأهداف الفردية.',ready_bad:'{0} بند يجب إصلاحه قبل انتقال النموذج:',fixit:'إصلاح',
+ ready:'جاهز للإرسال',ready_ok:'لا شيء يمنع الإرسال.',ready_bad:'{0} بند يجب إصلاحه قبل الانتقال:',i_sect:'«{0}» يحتاج من {1} إلى {2} إدخالات في هذه الخطوة؛ فيه {3}.',i_req:'{0} مطلوب في هذه الخطوة.',e_req:'هذا الحقل مطلوب',fixit:'إصلاح',
  i_count:'يحتاج القسم من 1 إلى 50 هدفاً؛ في هذه الخطة {0}.',i_missing_name:'هدف بلا اسم.',i_missing_metric:'«{0}» بلا مقياس نجاح.',i_missing_weight:'«{0}» بلا وزن.',i_total:'مجموع الأوزان {0}%؛ القاعدة المفعّلة تتطلب 100%.',i_range:'وزن «{0}» خارج 1% إلى 50%.',i_tna_max:'الاحتياجات التدريبية لا تتجاوز 3 إدخالات.',i_tna_min:'أضف احتياجاً تدريبياً واحداً على الأقل (حد المدير مفعّل).',
  w_info:'مجموع الأوزان المسندة {0}%. لا يُفرض مجموع 100% في خط الأساس.',
  newdraft:'لديك مسودة غير محفوظة لهدف جديد.',cont:'متابعة المسودة',dbadge:'مسودة غير محفوظة',
@@ -344,7 +386,7 @@ ar:{
  c_pd:'يُنسخ من هدفك: الاسم والوصف والقياس والتواريخ والمعالم (push-down). يُنسخ الوزن مرة واحدة؛ الحالة والتقدم يبدآن من جديد (regular).',
  prev:'السابق',next:'التالي',c_go:'إسناد',c_done:'أُنشئ {0} هدف مرتبط',c_replay:'عولج هذا الطلب من قبل. لم تُنشأ أهداف إضافية.',c_fail:'لم يصل الإسناد إلى الخادم. اختيارك محفوظ. إعادة المحاولة ترسل الطلب نفسه، فلا يُنشأ شيء مرتين.',
  st_changed:'تغيرت حالة الخطة إلى {0}'}};
-const tr=(k,...a)=>{let s=(L[S.lang]||L.en)[k]??L.en[k]??k;a.forEach((v,i)=>s=s.split('{'+i+'}').join(v));return s};
+const tr=(k,...a)=>{const fl=k.slice(0,2)==='f_'&&TEMPLATE&&TEMPLATE.fields[k.slice(2)];let s=(fl&&fl.label&&fl.label[lg()])||((L[S.lang]||L.en)[k]??L.en[k]??k);a.forEach((v,i)=>s=s.split('{'+i+'}').join(v));return s};
 const lg=()=>S.lang==='ar'?'ar':'en';
 const stLabel=v=>{const s=ST.find(x=>x.v===v);return s?s[lg()]:v};
 const stOpts=v=>ST.map(s=>`<option value="${s.v}" ${s.v===v?'selected':''}>${e(s[lg()])}</option>`).join('');
@@ -352,11 +394,11 @@ const pn=k=>TEMPLATE.states[k][lg()];
 const sapId=f=>TEMPLATE.fields[f].sap||f;
 
 /* ---------- synthetic data ---------- */
-const P={admin:{name:'Admin Admin',first:'Admin',last:'Admin',title:'Senior ERP Specialist',eid:'99999900',mgr:'gp',hr:'hrbp'},
+const P={admin:{name:'Admin Admin',first:'Admin',last:'Admin',title:'Senior ERP Specialist',eid:'99999900',mgr:'gp',hr:'hrbp',admin:true},
  gp:{name:'GP Admin',first:'GP',last:'Admin',title:'',eid:'99999800',mgr:null,hr:'hrbp'},
  hr1:{name:'HR Administrator1',first:'HR',last:'Administrator1',title:'',eid:'99999901',mgr:'admin',hr:'hrbp',matrix:'pm'},
  hr2:{name:'HR Administrator2',first:'HR',last:'Administrator2',title:'',eid:'99999902',mgr:'admin',hr:'hrbp'},
- hrbp:{name:'HR Representative',first:'HR',last:'Representative',title:'HR Business Partner (fictional)',eid:'99999903',mgr:'gp'},
+ hrbp:{name:'HR Representative',first:'HR',last:'Representative',title:'HR Business Partner (fictional)',eid:'99999903',mgr:'gp',admin:true},
  pm:{name:'Project Lead',first:'Project',last:'Lead',title:'Matrix manager (fictional)',eid:'99999904',mgr:'gp',hr:'hrbp'},
  peer:{name:'Peer Colleague',first:'Peer',last:'Colleague',title:'Senior Specialist (fictional)',eid:'99999905',mgr:'gp',hr:'hrbp'}};
 let ME='admin';
@@ -378,25 +420,31 @@ function seed(){
   g('hr1','Improve the quality of content and services to deepen the engagement with AJMN audiences',20),
   g('hr1','Present new creative ways to produce and report News & Program content (TV/Online) which is in line with the editorial quality and standards of the network',20),
   g('hr1',learn,20),g('hr1',proj,20),
-  g('hr2',learn,50),g('hr2',proj,50,{metric:''}),
+  g('hr2',learn,50),g('hr2',proj,50),g('pm','Deliver the cross-team project plan milestones',60),g('pm','Document project lessons learned',40,{metric:''}),
   {id:'d1',plan:'dev',owner:'admin',name:'English Language Training Course for business writing',desc:'Complete the assigned course and pass the final assessment',start:'2025-01-01',due:'2025-12-31',state:'On Track',done:0,vis:'Public',comps:['Communication','Customer Focus'],mgrapp:'No selection',acts:[],learn:[],comments:[],audit:[],updated:'2025-10-28'},
   {id:'d2',plan:'dev',owner:'admin',name:'Attendance and Punctuality',desc:'1. No unapproved absences\n2.Demonstrates reliability in adhering to scheduled work hours',start:'2025-01-01',due:'2025-12-31',state:'Completed',done:0,vis:'Public',comps:[],mgrapp:'No selection',acts:[{n:'Attendance on spot',s:'Complete',c:'Oct 26, 2025',fb:1}],learn:[],comments:[],audit:[],updated:'2025-10-28'}
  ];
- const f=(id,tpl,emp,step,x)=>Object.assign({id,tpl,emp,step,status:'active',assigned:'2026-11-08',start:'2026-11-08',rating:'',comments:'',hist:[{t:'11/08/2026',w:'Form created and routed to '+TPL[tpl].steps[step]}]},x||{});
+ const f=(id,tpl,emp,step,x)=>Object.assign({id,tpl,emp,step,status:'active',assigned:'2026-11-08',start:'2026-11-08',rating:'',comments:'',hist:[{t:'11/08/2026',w:'Form created (seed data)'}]},x||{});
  const first=['Amal','Bashir','Carla','Dana','Emad','Farah','Ghazi','Hala','Imran','Jana','Kamal','Lama','Majed','Nadia','Omar','Petra','Qasim','Rima','Sami','Tala','Usama','Vera','Walid','Yara','Zaid'];
  const last=['Sample','Testuser','Demo','Fictional','Placeholder'];
  const dist=[2,3,5,14,20,8,4];const cal=[];let k=0;
  dist.forEach((c,ci)=>{for(let i=0;i<c;i++,k++)cal.push({id:'c'+k,name:first[k%25]+' '+last[(k*3+ci)%5]+' '+(k+1),col:ci,rank:''})});
  const pstate={};Object.keys(P).forEach(u=>pstate[u]='empdraft');pstate.hr1='unlockedtodlm';
- return {me:'admin',lang:'en',who:'admin',gtab:'perf',pstate,goals,seq:100,drafts:{},reqs:{},cfg:{strictWeights:false,tnaMin:false},
-  forms:[f('f1','appr','hr1',0),f('f2','appr','hr2',0),f('f3','goal','hr1',1),f('f4','goal','hr2',0),f('f5','appr','admin',0)],
+ return {me:'admin',lang:'en',who:'admin',gtab:'perf',pstate,goals,seq:100,drafts:{},reqs:{},cfg:{strictWeights:false},adm:{fav:['forms','routes','launch','aiadmin'],recent:[]},ailog:[],
+  evid:[{id:'e1',emp:'hr1',type:'Continuous Performance achievement',title:'Election night live coverage',date:'2026-03-18',text:'Coordinated the overnight results desk; all 14 scheduled bulletins aired on time.',roles:['E','EM','EM+','EH']},
+   {id:'e2',emp:'hr1',type:'Continuous Performance feedback',title:'Feedback from the Arabic desk editor',date:'2026-06-02',text:'Fact-checking turnaround improved after the new checklist was introduced.',roles:['E','EM','EM+','EH']},
+   {id:'e3',emp:'hr1',type:'Mid-year review note',title:'Mid-year check-in',date:'2026-07-10',text:'Agreed to prioritise the archive migration; two story ideas were adopted.',roles:['E','EM','EH']},
+   {id:'e4',emp:'hr1',type:'HR case note',title:'Confidential HR note',date:'2026-08-01',text:'Restricted to the HR representative (fictional).',roles:['EH']},
+   {id:'e5',emp:'hr2',type:'Continuous Performance feedback',title:'Feedback from a colleague',date:'2026-05-14',text:'Helpful during the learning catalogue pilot.',roles:['E','EM','EH']}],
+  config:{pub:SEEDCFG(),draft:null,ver:[{n:1,at:'2026-11-12T09:00',by:'Seed',note:'Seed configuration from the AJMN exports: plan 14, ZIP 54, ZIP 55, ZIP 56',changes:[],cfg:SEEDCFG()}]},
+  forms:[f('f1','appr','hr1','2'),f('f2','appr','hr2','2'),f('f3','goal','hr1','2'),f('f4','goal','hr2','1'),f('f5','appr','admin','2')],
   cal,calSaved:null,calFinal:false,intro:false};
 }
-let S;try{S=JSON.parse(localStorage.getItem('ajmn-sf-replica-v2'))}catch(x){}
-if(!S||!S.goals||!S.drafts||!P[S.me])S=seed();
-ME=S.me;
+let S;try{S=JSON.parse(localStorage.getItem('ajmn-sf-replica-v3'))}catch(x){}
+if(!S||!S.goals||!S.drafts||!S.config||!S.adm||!S.evid||!S.config.pub.ai||!P[S.me])S=seed();
+ME=S.me;useCfg();
 const U={menu:false,card:null,casc:null,dlg:null,exp:{},ctab:'table',ptab:'reviews',full:false,failNext:false,ferr:null,ai:null,focus:null};
-const save=()=>{try{localStorage.setItem('ajmn-sf-replica-v2',JSON.stringify(S))}catch(x){}};
+const save=()=>{try{localStorage.setItem('ajmn-sf-replica-v3',JSON.stringify(S))}catch(x){}};
 const G=id=>S.goals.find(g=>g.id===id);
 const plan=(u,p)=>S.goals.filter(g=>g.owner===u&&g.plan===p);
 const wsum=gs=>Math.round(gs.reduce((a,g)=>a+(+g.weight||0),0)*10)/10;
@@ -438,17 +486,16 @@ const SAP={
     const need=[nw.some(i=>!old.includes(i))&&'create-row',old.some(i=>!nw.includes(i))&&'delete-row',!same(nw.filter(i=>old.includes(i)),old.filter(i=>nw.includes(i)))&&'move-row'].filter(Boolean);
     for(const act of need){const c=can(a,o,act);if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:act,why:c.why,state:st}}}}
   const m=Object.assign({},cur||{},nx),errors=[],T=TEMPLATE.fields,chk=f=>isNew||f in p;
-  if(chk('name')){if(!m.name)errors.push({f:'name',k:'e_name'});else if(m.name.length>T.name.max)errors.push({f:'name',k:'e_long'})}
-  if(chk('desc')&&(m.desc||'').length>T.desc.max)errors.push({f:'desc',k:'e_long'});
-  if(chk('metric')){if(!m.metric)errors.push({f:'metric',k:'e_metric'});else if(m.metric.length>T.metric.max)errors.push({f:'metric',k:'e_long'})}
-  if(chk('weight')){const w=m.weight;if(w===''||w==null||isNaN(w))errors.push({f:'weight',k:'e_weight'});else if(w<0||w>100)errors.push({f:'weight',k:'e_weight_range'});else if(S.cfg.strictWeights&&(w<1||w>50))errors.push({f:'weight',k:'e_weight_1_50'})}
+  const emp=f=>f==='weight'?(m.weight===''||m.weight==null||isNaN(m.weight)):!m[f];
+  ['name','desc','metric','weight','start','due'].forEach(f=>{if(!chk(f))return;if(T[f].req&&emp(f))errors.push({f,k:L.en['e_'+f]?'e_'+f:'e_req',msg:(T[f].msg||{})[lg()]||''});else if(T[f].max&&String(m[f]||'').length>T[f].max)errors.push({f,k:'e_long'})});
+  if(chk('weight')&&!emp('weight')){const w=m.weight;if(w<0||w>100)errors.push({f:'weight',k:'e_weight_range'});else if(S.cfg.strictWeights&&(w<1||w>50))errors.push({f:'weight',k:'e_weight_1_50'})}
   if(chk('done')&&'done' in m&&(isNaN(m.done)||m.done<0||m.done>100))errors.push({f:'done',k:'e_done'});
   if(chk('state')&&m.state&&!ST.some(s=>s.v===m.state))errors.push({f:'state',k:'e_state'});
   if(errors.length)return{ok:false,code:'VALIDATION',errors};
   if(U.failNext){U.failNext=false;return{ok:false,code:'NETWORK',intact:!isNew,savedAt:cur&&cur.updated}}
   const warn=[];if(m.start&&m.due&&m.start>m.due)warn.push('w_dates');if((m.ms||[]).some(x=>x.t&&((m.start&&x.t<m.start)||(m.due&&x.t>m.due))))warn.push('w_ms');
   let g;
-  if(isNew){g=Object.assign({id:'g'+(S.seq++),plan:'perf',planId:TEMPLATE.id,owner:o,desc:'',start:'',due:'',state:'Not Started',done:0,vis:p.vis==='Private'?'Private':'Public',ms:[],acts:[],audit:[],up:null,prio:null},nx);S.goals.push(g);aud(g,'Goal created',a)}
+  if(isNew){g=Object.assign({id:'g'+(S.seq++),plan:'perf',planId:TEMPLATE.id,owner:o,desc:'',start:'',due:'',state:'Not Started',done:0,vis:p.vis==='Private'?'Private':'Public',ms:[],acts:[],audit:[],up:null,prio:null},nx);if(p.aiAssist)g.ai=true;S.goals.push(g);aud(g,p.aiAssist?'Goal created with AI assistance (simulated)':'Goal created',a)}
   else{g=cur;Object.keys(nx).forEach(f=>{aud(g,f==='state'?`state: ${g.state} → ${nx.state}`:f==='weight'||f==='done'?`${f}: ${g[f]} → ${nx[f]}`:sapId(f)+' changed',a);g[f]=nx[f]})}
   g.updated=TODAY;delete S.drafts[key];return{ok:true,goal:g,warn}},
  remove(a,id){const g=G(id);if(!g)return{ok:false,code:'NOT_FOUND'};
@@ -477,49 +524,105 @@ const SAP={
  chart(a,id){const g=G(id),ups=[];for(let x=g;x&&x.up&&ups.length<10;){x=G(x.up);if(x)ups.unshift(x)}
   const src=[g,...ups.slice().reverse()].find(x=>x.prio),strat=[];for(let n=src&&STRAT.find(s=>s.id===src.prio);n;n=STRAT.find(s=>s.id===n.up))if(n.pub)strat.unshift({lvl:n.lvl,title:n.title,owner:n.owner});
   return{strat,ups:ups.map(x=>view(a,x)),self:view(a,g),downs:S.goals.filter(x=>x.up===id).map(x=>view(a,x))}},
- addTna(a,fid,p){const f=form(fid),n=String(p.name||'').trim();if(!f)return{ok:false,code:'NOT_FOUND'};
-  if(plan(f.emp,'tna').length>=LIMITS.tna.max)return{ok:false,code:'SECTION_MAX',section:'Training Needs',max:LIMITS.tna.max};
+ addTna(a,fid,p){const f=form(fid),n=String(p.name||'').trim();if(!f)return{ok:false,code:'NOT_FOUND'};const s=secOf(f.tpl,'tna');if(!s)return{ok:false,code:'NOT_FOUND'};
+  const l=limitsOf(s,f.step);if(l.max!=null&&plan(f.emp,'tna').length>=l.max)return{ok:false,code:'SECTION_MAX',section:s.name,max:l.max};
   if(!n)return{ok:false,code:'VALIDATION',errors:[{f:'name',k:'e_tna'}]};if(n.length>500)return{ok:false,code:'VALIDATION',errors:[{f:'name',k:'e_long'}]};
   S.goals.push({id:'t'+(S.seq++),plan:'tna',planId:2004,owner:f.emp,name:n,purpose:p.purpose||'',due:p.due||'',vis:'Private',audit:[]});return{ok:true}},
- /* section rules belong to the form sections, not to the plan */
- check(o,tpl){const iss=[],gs=plan(o,'perf'),tn=plan(o,'tna'),tw=wsum(gs);
-  if(gs.length<LIMITS.goals.min||gs.length>LIMITS.goals.max)iss.push({k:'i_count',a:[gs.length]});
-  gs.forEach(g=>['name','metric','weight'].forEach(f=>{if(g[f]===''||g[f]==null)iss.push({k:'i_missing_'+f,id:g.id,f,a:[g.name||'']})}));
-  if(S.cfg.strictWeights){if(tw!==100)iss.push({k:'i_total',a:[tw]});gs.forEach(g=>{if(g.weight!==''&&(g.weight<1||g.weight>50))iss.push({k:'i_range',id:g.id,f:'weight',a:[g.name]})})}
-  if(tpl==='appr'){if(tn.length>LIMITS.tna.max)iss.push({k:'i_tna_max'});if(S.cfg.tnaMin&&tn.length<1)iss.push({k:'i_tna_min'})}
+ /* section limits and required fields come from the published form template, for the form's current workflow step */
+ check(o,tpl,stepId,a,f){const F=TPL[tpl],iss=[],gs=plan(o,'perf'),tw=wsum(gs),rl=a?rolesOf(a,o):null;
+  F.sections.forEach(s=>{if(!COUNT[s.type])return;const n=plan(o,COUNT[s.type]).length,l=limitsOf(s,stepId);
+   if((l.min!=null&&n<l.min)||(l.max!=null&&n>l.max))iss.push({k:'i_sect',sec:s.id,a:[s.name,l.min??0,l.max??'∞',n],msg:l.msg})});
+  if(secOf(tpl,'goals')){const rq=['name','metric','weight'].filter(x=>TEMPLATE.fields[x].req);gs.forEach(g=>rq.forEach(x=>{if(g[x]===''||g[x]==null)iss.push({k:'i_missing_'+x,id:g.id,f:x,a:[g.name||'']})}));
+   if(S.cfg.strictWeights){if(tw!==100)iss.push({k:'i_total',a:[tw]});gs.forEach(g=>{if(g.weight!==''&&(g.weight<1||g.weight>50))iss.push({k:'i_range',id:g.id,f:'weight',a:[g.name]})})}}
+  if(stepId!=null)(F.required||[]).forEach(r=>{if(r.step!==stepId||(r.role!=='*'&&rl&&!rl.includes(r.role)))return;const lab=RQF[r.field]||r.field;
+   if(r.field==='rating'||r.field==='comments'){if(f&&!String(f[r.field]||'').trim())iss.push({k:'i_req',fld:r.field,el:r.field==='rating'?'frt':'fcm',a:[lab],msg:r.msg})}
+   else if(r.field.startsWith('tna.')){const q=r.field.slice(4);if(plan(o,'tna').some(g=>!g[q]))iss.push({k:'i_req',sec:'tna',a:[lab],msg:r.msg})}});
   return iss},
- formCreate(a,tpl,emp){if(tpl==='goal'&&S.forms.some(f=>f.tpl==='goal'&&f.emp===emp&&f.status!=='completed'))return{ok:false,code:'FORM_EXISTS'};
-  const f={id:'f'+(S.seq++),tpl,emp,step:0,status:'active',assigned:TODAY,start:TODAY,rating:'',comments:'',hist:[{t:mdy(TODAY),w:'Form created by '+P[a].name}]};S.forms.unshift(f);
-  if(tpl==='goal'){S.pstate[emp]='empdraft';f.hist.push({t:mdy(TODAY),w:'Goal plan state set to empdraft (step 1)'})}return{ok:true,form:f}},
+ enter(f,st){f.step=st.id;f.assigned=TODAY;const w=stepActor(f);f.hist.push({t:mdy(TODAY),w:`Routed to ${st.name} · ${w?P[w].name:'no owner'}`});
+  if(st.planState){S.pstate[f.emp]=st.planState;f.hist.push({t:mdy(TODAY),w:'Goal plan state set to '+st.planState})}},
+ formCreate(a,tpl,emp){if(!TPL[tpl]||!P[emp])return{ok:false,code:'NOT_FOUND'};if(tpl==='goal'&&S.forms.some(f=>f.tpl==='goal'&&f.emp===emp&&f.status!=='completed'))return{ok:false,code:'FORM_EXISTS',emp};
+  const f={id:'f'+(S.seq++),tpl,emp,step:'',status:'active',assigned:TODAY,start:TODAY,rating:'',comments:'',ver:curVer(),hist:[{t:mdy(TODAY),w:`Form launched by ${P[a].name} on configuration version ${curVer()}`}]};S.forms.unshift(f);this.enter(f,RMAP[TPL[tpl].routeMap].steps[0]);return{ok:true,form:f}},
  formNext(a,fid){const f=form(fid);if(!f||f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};
-  const iss=this.check(f.emp,f.tpl);if(iss.length)return{ok:false,code:'SECTION',issues:iss};
-  if(f.tpl==='goal'&&f.step===0){f.step=1;f.assigned=TODAY;S.pstate[f.emp]='unlockedtodlm';f.hist.push({t:mdy(TODAY),w:'Employee Goal Setting completed by '+P[a].name},{t:mdy(TODAY),w:'Goal plan state set to unlockedtodlm (step 2)'});return{ok:true,step:1}}
-  f.status='completed';f.hist.push({t:mdy(TODAY),w:TPL[f.tpl].steps[f.step]+' completed by '+P[a].name});
-  if(f.tpl==='goal'){S.pstate[f.emp]='locked';f.hist.push({t:mdy(TODAY),w:'Goal plan state set to locked (form completed)'})}return{ok:true,done:true}},
- formPrev(a,fid){const f=form(fid);if(!f||f.tpl!=='goal'||f.step!==1||f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};
-  f.step=0;f.assigned=TODAY;S.pstate[f.emp]='empdraft';f.hist.push({t:mdy(TODAY),w:'Sent to previous step by '+P[a].name},{t:mdy(TODAY),w:'Goal plan state set to empdraft (step 1)'});return{ok:true}},
- formDelete(a,fid){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};if(P[f.emp].mgr!==a&&P[f.emp].hr!==a)return{ok:false,code:'ACTION_DENIED',action:'delete-form',why:'norole',state:S.pstate[f.emp]};
-  S.forms=S.forms.filter(x=>x!==f);if(f.tpl==='goal')S.pstate[f.emp]='empdraft';return{ok:true}}
+  const iss=this.check(f.emp,f.tpl,f.step,a,f);if(iss.length)return{ok:false,code:'SECTION',issues:iss};
+  const rm=rmOf(f),st=fstep(f),nx=rm.steps.find(s=>s.id===st.next);f.hist.push({t:mdy(TODAY),w:`${st.name} ${st.kind==='Signature'?'signed':'completed'} by ${P[a].name}`});
+  if(nx){this.enter(f,nx);return{ok:true,step:nx.id,owner:stepActor(f)}}
+  f.status='completed';if(rm.donePlanState){S.pstate[f.emp]=rm.donePlanState;f.hist.push({t:mdy(TODAY),w:'Goal plan state set to '+rm.donePlanState+' (form completed)'})}return{ok:true,done:true}},
+ formPrev(a,fid){const f=form(fid);if(!f||f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};const bk=rmOf(f).steps.find(s=>s.id===fstep(f).back);if(!bk)return{ok:false,code:'NO_PREVIOUS_STEP'};
+  f.hist.push({t:mdy(TODAY),w:'Sent to previous step by '+P[a].name});this.enter(f,bk);return{ok:true}},
+ formDelete(a,fid){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};if(P[f.emp].mgr!==a&&P[f.emp].hr!==a&&!isAdmin(a))return{ok:false,code:'ACTION_DENIED',action:'delete-form',why:'norole',state:S.pstate[f.emp]};
+  const d=rmOf(f).deletePlanState;S.forms=S.forms.filter(x=>x!==f);if(d)S.pstate[f.emp]=d;return{ok:true}},
+ launch(a,tpl,emps){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};if(!emps.length)return{ok:false,code:'NO_EMPLOYEES'};return{ok:true,forms:emps.map(u=>this.formCreate(a,tpl,u))}},
+ /* AI services: the feature switch and role eligibility come from the published configuration and are checked,
+    with the record permission, before any input is read or any output produced. Responses are scripted. */
+ ai(a,feat,o,fn){const c=S.config.pub.ai.features[feat],log=code=>{S.ailog.unshift({at:new Date().toISOString(),by:P[a].name,feat,owner:P[o]?P[o].name:'',code});S.ailog=S.ailog.slice(0,25)};
+  if(!c||!c.on){log('AI_DISABLED');return{ok:false,code:'AI_DISABLED',feat}}if(!hit(c.roles,a,o)){log('AI_NOT_ELIGIBLE');return{ok:false,code:'AI_NOT_ELIGIBLE',feat}}
+  if(U.aiFail){U.aiFail=false;log('AI_TIMEOUT');return{ok:false,code:'AI_TIMEOUT',feat}}const r=fn();log(r.ok?'OK':r.code);return r},
+ aiGoal(a,o,brief,answer){return this.ai(a,'goalCreate',o,()=>{const c=can(a,o,'create');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'create',why:c.why,state:S.pstate[o]};
+  const b=String(brief||'').trim().replace(/\s+/g,' '),ans=String(answer||'').trim().replace(/\s+/g,' '),num=x=>/\d/.test(x),cut=x=>x.replace(/[.\s]+$/,'');if(b.length<4)return{ok:false,code:'VALIDATION',errors:[{f:'brief',k:'e_req'}]};
+  if(!num(b)&&!ans)return{ok:true,sim:true,ask:'What result would show this goal is achieved, and by when? Give a number, a percentage or a date.'};
+  const src=ans||b,proposed=!num(src),name=cut(b[0].toUpperCase()+b.slice(1)).slice(0,200);
+  const metric=proposed?`${cut(src)}. Proposed target: 90% achieved by ${fmt(TEMPLATE.due)} (proposal: confirm or change)`:`${cut(src[0].toUpperCase()+src.slice(1))}${/20\d\d|\bby\b|\bQ[1-4]\b/i.test(src)?'':' by '+fmt(TEMPLATE.due)}, evidenced by [report or system]`;
+  let prio=null;if(S.config.pub.ai.strategyLink&&can(a,o,'cascade-align').ok){const w=(b+' '+ans).toLowerCase().split(/[^a-z]+/).filter(x=>x.length>4);let best=0;STRAT.filter(n=>n.pub).forEach(n=>{const sc=w.filter(x=>n.title.toLowerCase().includes(x)).length;if(sc&&sc>=best){best=sc;prio=n.id}})}
+  return{ok:true,sim:true,draft:{name,metric:metric.slice(0,TEMPLATE.fields.metric.max)},proposed,prio}})},
+ mayRate(a,f){const F=TPL[f.tpl];if(f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};if(!F.rate||!F.rate.steps.includes(f.step)||!hit(F.rate.roles,a,f.emp))return{ok:false,code:'FORM_FIELD_READ_ONLY'};return{ok:true}},
+ formField(a,fid,field,val){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};const p=this.mayRate(a,f);if(!p.ok)return p;
+  if(field==='rating'){if(val&&!SCALE.includes(val))return{ok:false,code:'VALIDATION',errors:[{f:'rating',k:'e_state'}]};f.rating=val||''}else if(field==='comments')f.comments=String(val||'').slice(0,4000);else return{ok:false,code:'NOT_FOUND'};return{ok:true}},
+ aiText(a,fid,act,text){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};
+  return this.ai(a,act==='translate'?'translate':act==='analyze'?'analyzer':'writing',f.emp,()=>{const p=this.mayRate(a,f);if(!p.ok)return p;const t=String(text||'').trim();if(!t)return{ok:false,code:'VALIDATION',errors:[{f:'comments',k:'e_req'}]};return Object.assign({ok:true,sim:true},aiSim(act,t))})},
+ evidence(a,id){id=String(id);
+  if(id.startsWith('plan:')){const o=id.slice(5);if(!P[o])return{ok:false,code:'NOT_FOUND'};const gs=plan(o,'perf').filter(g=>visible(a,g)&&canR(a,o,'done'));if(!gs.length)return{ok:false,code:'EVIDENCE_DENIED'};
+   return{ok:true,item:{id,emp:o,type:'Goal plan progress',title:'2026 Individual Goal Plan',date:TODAY,lines:gs.map(g=>`${canR(a,o,'name')?g.name:'(goal name not available to your role)'}: ${g.done}% · ${stLabel(g.state)}`)}}}
+  const x=S.evid.find(y=>y.id===id);if(!x)return{ok:false,code:'NOT_FOUND'};if(!hit(x.roles,a,x.emp))return{ok:false,code:'EVIDENCE_DENIED'};return{ok:true,item:x}},
+ aiInsights(a,fid){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};
+  return this.ai(a,'insights',f.emp,()=>{if(f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};
+   const o=f.emp,ev=S.evid.filter(x=>x.emp===o&&hit(x.roles,a,o)),gs=plan(o,'perf').filter(g=>visible(a,g)&&canR(a,o,'done')),avg=gs.length?Math.round(gs.reduce((s,g)=>s+(+g.done||0),0)/gs.length):0,has=t=>ev.some(x=>x.type.toLowerCase().includes(t)),idle=gs.filter(g=>!+g.done).length;
+   const observations=ev.map(x=>({text:`${x.title}: ${x.text}`,src:x.id}));if(gs.length)observations.push({text:`Average completion across ${gs.length} goal(s) is ${avg}%.`,src:'plan:'+o});
+   const missing=[!has('achievement')&&'No Continuous Performance achievement on record',!has('feedback')&&'No Continuous Performance feedback on record',!has('review')&&'No mid-year review note',idle&&`${idle} goal(s) have no progress update`].filter(Boolean),enough=ev.length>=2;
+   let comment=null;if(enough){const ti=ev.map(x=>x.title).join('; ');comment={en:`Evidence reviewed this year: ${ti}. Average goal completion is ${avg}%. [Add your own assessment before applying.]`,ar:`الأدلة التي تمت مراجعتها هذا العام: ${ti}. متوسط إنجاز الأهداف ${avg}%. [أضف تقييمك قبل التطبيق.]`};PAIRS.push(comment)}
+   return{ok:true,sim:true,observations,missing,enough,comment}})},
+ aiJoule(a,gid,act){const g=G(gid);if(!g||g.plan!=='perf')return{ok:false,code:'NOT_FOUND'};
+  return this.ai(a,'joule',g.owner,()=>{const o=g.owner;if(!visible(a,g)||!canR(a,o,'name'))return{ok:false,code:'NOT_VISIBLE'};
+   if(act==='missing'){const fl=canR(a,o,'metric')?suggest(g.name,g.metric,g.due).flags:[];return{ok:true,sim:true,text:fl.length?'The measure of success lacks: '+fl.map(k=>tr(k)).join(', ')+'.':'The measure has a number, a unit, a deadline, a baseline and an evidence source.'}}
+   return{ok:true,sim:true,text:`“${g.name.slice(0,110)}” is ${g.done}% complete and shown as ${stLabel(g.state)}. Weight ${g.weight===''?'not set':g.weight+'%'}, due ${fmt(g.due)}. ${g.ms.length} milestone(s), ${S.goals.filter(x=>x.up===g.id).length} linked goal(s)${g.up?', aligned up to another goal':''}.`}})},
+ /* configuration: edits go to the draft; users, previews and validation read only what is published */
+ draft(){if(!S.config.draft)S.config.draft=copy(S.config.pub);return S.config.draft},
+ adminSet(a,path,val){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};const ks=path.split('.');let o=this.draft();for(const k of ks.slice(0,-1)){if(o[k]==null)o[k]={};o=o[k]}o[ks[ks.length-1]]=val;return{ok:true}},
+ adminEdit(a,fn){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};fn(this.draft());return{ok:true}},
+ discard(a){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};S.config.draft=null;return{ok:true}},
+ publish(a,note){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};const c=S.config,d=c.draft;if(!d||same(d,c.pub))return{ok:false,code:'NO_CHANGES'};
+  const errors=validateCfg(d);if(errors.length)return{ok:false,code:'CONFIG_INVALID',errors};if(!String(note||'').trim())return{ok:false,code:'NOTE_REQUIRED'};
+  const n=curVer()+1;c.ver.push({n,at:new Date().toISOString(),by:P[a].name,note:String(note).trim(),changes:diffCfg(c.pub,d),cfg:copy(d)});c.pub=d;c.draft=null;useCfg();return{ok:true,n}},
+ restore(a,n){if(!isAdmin(a))return{ok:false,code:'NOT_ADMIN'};const v=S.config.ver.find(x=>x.n===n);if(!v)return{ok:false,code:'NOT_FOUND'};S.config.draft=copy(v.cfg);return{ok:true}}
 };
-const stepActor=f=>f.tpl==='goal'&&f.step===0?f.emp:P[f.emp].mgr;
-const boxOf=f=>{const mine=f.emp===ME||P[f.emp].mgr===ME;return f.status==='completed'?(mine?'completed':null):stepActor(f)===ME?'inbox':mine?'enroute':null};
+const COUNT={goals:'perf',tna:'tna',dev:'dev'},copy=x=>JSON.parse(JSON.stringify(x)),isAdmin=a=>!!P[a].admin,curVer=()=>S.config.ver[S.config.ver.length-1].n;
+const rmOf=f=>RMAP[TPL[f.tpl].routeMap],fstep=f=>{const r=rmOf(f);return r.steps.find(s=>s.id===f.step)||r.steps[0]},stepName=f=>f.status==='completed'?'Completed':fstep(f).name;
+const ownerOf=(role,emp)=>role==='E'?emp:role==='EM'?P[emp].mgr:role==='EMM'?(P[emp].mgr&&P[P[emp].mgr].mgr):role==='EH'?P[emp].hr:role==='EX'?P[emp].matrix:null;
+/* a step whose owner role resolves to nobody falls to the line manager */
+const stepActor=f=>ownerOf(fstep(f).owner,f.emp)||P[f.emp].mgr;
+const involved=f=>f.emp===ME||P[f.emp].mgr===ME||rmOf(f).steps.some(s=>ownerOf(s.owner,f.emp)===ME);
+const boxOf=f=>f.status==='completed'?(involved(f)?'completed':null):stepActor(f)===ME?'inbox':involved(f)?'enroute':null;
+const limitsOf=(s,stepId)=>{const b=(s.byStep&&s.byStep[stepId])||{};return{min:b.min??s.min,max:b.max??s.max,msg:b.msg||''}};
+const secOf=(tpl,type)=>TPL[tpl].sections.find(s=>s.type===type);
+const ruleText=(s,stepId)=>{const l=limitsOf(s,stepId);return l.min==null&&l.max==null?'no entry limit':l.max==null?`at least ${l.min} entries`:`${l.min??0} to ${l.max} entries`};
+const reqAt=(F,stepId)=>(F.required||[]).filter(r=>r.step===stepId);
 function why(r){const stn=r.state?pn(r.state):'';
  if(r.code==='FIELD_READ_ONLY')return tr('d_field',r.fields.map(f=>tr('f_'+f)).join(', '),stn);
  if(r.code==='ACTION_DENIED')return tr('d_action_'+r.why,r.action,stn);
  if(r.code==='NETWORK')return tr('d_net');
+ const AIW={AI_DISABLED:'This AI feature is switched off in the published configuration.',AI_NOT_ELIGIBLE:'Your role is not eligible for this AI feature on this record.',AI_TIMEOUT:'The AI service did not respond in time (simulated). Nothing was changed; try again.',EVIDENCE_DENIED:'You are not permitted to see this evidence.',FORM_FIELD_READ_ONLY:'You cannot change this field at this step.',NOT_VISIBLE:'You cannot see this goal.',NOT_YOUR_STEP:'This form is not at a step you own.'};if(AIW[r.code])return AIW[r.code];
  if(r.code==='SECTION_MAX')return `A maximum of ${r.max} entries is allowed in the ${r.section} section of this form.`;
- if(r.code==='VALIDATION')return r.errors.map(x=>tr(x.k)).join(' · ');
+ if(r.code==='VALIDATION')return r.errors.map(x=>x.msg||tr(x.k)).join(' · ');
  return tr('d_generic',r.code)}
 
 /* ---------- shell ---------- */
 const IC={search:'<circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/>',todo:'<circle cx="10" cy="10" r="7.5"/><path d="M6.5 10.2l2.4 2.4 4.6-5"/>',help:'<path d="M3.5 11V9a6.5 6.5 0 0113 0v2"/><rect x="2.5" y="10.5" width="3" height="5" rx="1"/><rect x="14.5" y="10.5" width="3" height="5" rx="1"/><path d="M16 15.5c0 1.5-2 2-4 2"/>',book:'<path d="M2.5 4.5h6a2 2 0 012 2v9a2 2 0 00-2-2h-6zM17.5 4.5h-5a2 2 0 00-2 2v9a2 2 0 012-2h5z"/>',bell:'<path d="M5 14V9a5 5 0 0110 0v5l1.5 1.5h-13zM8.5 17.5h3"/>'};
 const ico=(k,b)=>`<button class="hico" aria-label="${k}"><svg viewBox="0 0 20 20">${IC[k]}</svg>${b?`<i>${b}</i>`:''}</button>`;
-const MOD={goals:'Goals',perf:'Performance',calib:'Calibration'};
+const MOD={goals:'Goals',perf:'Performance',calib:'Calibration',admin:'Admin Center'};
 function shell(mod,inner){
  return `<div class="sand"><b>Sandbox</b><span>Replica of AJMN’s current SuccessFactors setup · synthetic data · simulated SAP adapter</span><span class="sp"></span>
  <label>${tr('signed')} <select data-chg="me">${Object.keys(P).map(k=>`<option value="${k}" ${k===ME?'selected':''}>${e(P[k].name)}</option>`).join('')}</select></label>
  <span class="lng"><button data-a="lang" data-l="en" aria-pressed="${S.lang!=='ar'}">English</button><button data-a="lang" data-l="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button></span>
- <label><input type="checkbox" data-chg="fail" ${U.failNext?'checked':''}> ${tr('failnext')}</label><a href="#parity">${tr('parity')}</a>
+ <label><input type="checkbox" data-chg="fail" ${U.failNext?'checked':''}> ${tr('failnext')}</label><label><input type="checkbox" data-chg="aifail" ${U.aiFail?'checked':''}> Fail next AI call</label><a href="#parity">${tr('parity')}</a>
  <a href="./">Talent Suite</a><a href="strategy.html">Strategy Room</a><button data-a="reset">Reset sandbox</button></div>
  <header class="hdr"><div class="logo" title="Logo placeholder">AJ</div><button class="mod" data-a="menu" aria-haspopup="true">${MOD[mod]} ⌄</button>
  ${U.menu?`<div class="modmenu">${Object.entries(MOD).map(([k,l])=>`<button data-a="go" data-h="${k}">${l}</button>`).join('')}</div>`:''}
@@ -535,10 +638,11 @@ function people(){
 }
 
 /* ---------- goals: plan pages ---------- */
-function ready(o,tpl){const iss=SAP.check(o,tpl),tw=wsum(plan(o,'perf'));
+function ready(o,tpl,stepId,f){const iss=SAP.check(o,tpl,stepId,f?stepActor(f):null,f),tw=wsum(plan(o,'perf'));
+ const lnk=i=>i.id?`<a href="#goal/${i.id}/edit" data-a="fix" data-id="${i.id}" data-f="${i.f}">${tr('fixit')}: ${tr('f_'+i.f)}</a>`:i.el?`<a href="#" data-a="foc" data-f="${i.el}">${tr('fixit')}</a>`:i.sec&&f?`<a href="#" data-a="jump" data-s="s_${i.sec}">${tr('fixit')}</a>`:'';
  return `<div class="ready ${iss.length?'bad':''}" id="fready"><b>${iss.length?'⚠':'✓'} ${tr('ready')}</b> <span>${iss.length?tr('ready_bad',iss.length):tr('ready_ok')}</span>
- ${iss.length?`<ul>${iss.map(i=>`<li>${e(tr(i.k,...(i.a||[]).map(x=>String(x).slice(0,70))))} ${i.id?`<a href="#goal/${i.id}/edit" data-a="fix" data-id="${i.id}" data-f="${i.f}">${tr('fixit')}: ${tr('f_'+i.f)}</a>`:''}</li>`).join('')}</ul>`:''}
- ${S.cfg.strictWeights?'':`<div class="lk">${tr('w_info',tw)}</div>`}</div>`}
+ ${iss.length?`<ul>${iss.map(i=>`<li>${e(i.msg||tr(i.k,...(i.a||[]).map(x=>String(x).slice(0,70))))} ${lnk(i)}</li>`).join('')}</ul>`:''}
+ ${S.cfg.strictWeights||!secOf(tpl,'goals')?'':`<div class="lk">${tr('w_info',tw)}</div>`}</div>`}
 function goalsPage(){
  const u=S.who,dev=S.gtab==='dev',st=S.pstate[u],all=plan(u,dev?'dev':'perf'),gs=dev?all:all.filter(g=>visible(ME,g)),hid=all.length-gs.length;
  const cnt=dev?DST.map(s=>`<div><b>${gs.filter(g=>g.state===s).length}</b>${s}</div>`).join(''):ST.map(s=>`<div><b>${gs.filter(g=>g.state===s.v).length}</b>${e(s[lg()])}</div>`).join('');
@@ -553,7 +657,7 @@ function goalsPage(){
  return shell('goals',`<div class="wrap">${U.full?'':people()}<div class="main">
  <div class="tabsbar" role="tablist"><button role="tab" aria-selected="${!dev}" data-a="gtab" data-t="perf">${tr('tab_perf')}</button><button role="tab" aria-selected="${dev}" data-a="gtab" data-t="dev">${tr('tab_dev')}</button></div>
  <div class="ph"><div class="r1"><h1>${dev?'Career Development Plan':tr('plan14')}</h1><span title="Switch plan">⌄</span><span class="sp"></span>
-  <button class="btn em" data-a="new" ${cc.ok?'':`disabled title="${e(why({code:'ACTION_DENIED',action:'create',why:cc.why,state:st}))}"`}>${dev?'Create Goal':tr('create')}</button>${dev?'':`<button class="btn" data-a="cascade" ${el.length?'':'disabled'}>${tr('assign')}</button>`}<button class="btn" data-a="print">${dev?'Print to PDF':tr('print')}</button><button class="btn" data-a="full" aria-label="Full screen">⛶</button></div>
+  <button class="btn em" data-a="new" ${cc.ok?'':`disabled title="${e(why({code:'ACTION_DENIED',action:'create',why:cc.why,state:st}))}"`}>${dev?'Create Goal':tr('create')}</button>${!dev&&cc.ok&&aiOk(ME,'goalCreate',u)?`<button class="btn" data-a="aigo">✦ ${tr('aicreate')}</button>`:''}${dev?'':`<button class="btn" data-a="cascade" ${el.length?'':'disabled'}>${tr('assign')}</button>`}<button class="btn" data-a="print">${dev?'Print to PDF':tr('print')}</button><button class="btn" data-a="full" aria-label="Full screen">⛶</button></div>
   <div class="dt"><span>${dev?'Jan 1, 2025 - Dec 31, 2026':fmt(TEMPLATE.start)+' - '+fmt(TEMPLATE.due)}</span>${stRow}</div>
   <div class="kpis"><div><b>${gs.length}</b>${dev?'Goals':tr('goals')}</div>${cnt}${dev?'':`<div class="w">${tw}%<br>${tr('wtotal')}</div>`}</div></div>
  <div class="body">${dev?'':`<div class="note"><div>${tr('help_'+st)}</div><div>${tr('roles',rl.length?rl.join(', '):tr('noroles'))} · ${tr('manual')}</div></div>${rl.includes('E')||rl.includes('EM')?ready(u,'goal'):''}
@@ -580,7 +684,7 @@ function goalDetail(g){
  return shell('goals',`<div class="crumb"><a href="#goals">${planName}</a> / ${cat} / Goal Details</div>
  <div class="dh"><div class="tl"><h1>${e(r('name')?g.name:tr('masked'))}<span class="vis">(${dev?g.vis:tr(g.vis==='Private'?'priv':'pub')})</span></h1>${dev?`<button class="btn em" data-a="edit" data-id="${g.id}">Edit Goal</button><button class="btn" data-a="del" data-id="${g.id}">Delete Goal</button>`
   :`<button class="btn em" data-a="edit" data-id="${g.id}">${tr('edit')}</button>${can(ME,o,'share').ok?`<button class="btn" data-a="share" data-id="${g.id}">${tr(g.vis==='Public'?'unshare':'share')}</button>`:''}${can(ME,o,'delete').ok?`<button class="btn" data-a="del" data-id="${g.id}">${tr('del')}</button>`:''}`}</div>
- <div>Updated: ${fmt(g.updated)}${!dev&&S.drafts[g.id]?` <span class="badge">${tr('dbadge')}</span>`:''}</div>
+ <div>Updated: ${fmt(g.updated)}${g.ai?' <span class="badge ai">Enhanced by AI</span>':''}${!dev&&S.drafts[g.id]?` <span class="badge">${tr('dbadge')}</span>`:''}</div>
  <div class="facts"><div><small>${dev?'Status':tr('f_state')}</small>${dev?`<select class="stsel" style="font-size:20px;color:${DCOL[g.state]}" data-chg="gstate" data-id="${g.id}">${opt(DST,g.state)}</select>`:`<select class="stsel" style="font-size:20px" data-chg="gstate" data-id="${g.id}" ${sw?'':'disabled'}>${stOpts(g.state)}</select>`}</div><div><small>${dev?'% Complete':tr('f_done')}</small><span>${g.done} <small style="display:inline">%</small></span></div><div><small>${dev?'Start Date':tr('f_start')}</small><span>${r('start')?fmt(g.start):'–'}</span></div><div><small>${dev?'End Date':tr('f_due')}</small><span>${r('due')?fmt(g.due):'–'}</span></div>${dev?`<div><small>Competencies</small><span>${g.comps.length}</span></div>`:''}</div></div>
  <div class="dgrid"><div class="l">
   ${dev?sec('Metric',`<div class="sb" style="white-space:pre-line">${e(g.desc)||'–'}</div>`):sec(tr('f_desc'),g.desc&&r('desc')?`<div class="sb">${e(g.desc)}</div>`:'')+sec(tr('f_ms'),g.ms.length&&r('ms')?`<div class="tw"><table class="t"><tr><th>${tr('ms_t')}</th><th>${tr('ms_d')}</th><th>${tr('ms_a')}</th></tr>${g.ms.map(m=>`<tr><td>${fmt(m.t)}</td><td>${e(m.d)}</td><td>${fmt(m.a)}</td></tr>`).join('')}</table></div>`:'',`<button class="x" data-a="edit" data-id="${g.id}">Manage Milestones</button>`)}
@@ -588,6 +692,7 @@ function goalDetail(g){
   ${dev?sec('Linked Learning',g.learn.length?`<div class="sb">${g.learn.map(e).join('<br>')}</div>`:'')+sec(`comments (${g.comments.length})`,`<div class="sb">${g.comments.map(c=>`<p><b>${e(c.by)}</b> · ${e(c.t)}<br>${e(c.x)}</p>`).join('')}<form data-f="comment" data-id="${g.id}"><p>Leave a Comment</p><div style="display:flex;gap:8px;align-items:center"><div class="av" style="background:#D5E5F9">${ini(P[ME].name)}</div><input class="fi" name="x" style="max-width:none" maxlength="1000" aria-label="Comment"><button class="btn" aria-label="Send">➤</button></div></form></div>`):''}
  </div><div class="r">
   ${sec('More Info',`<div style="padding:0 22px">${dev?`<p>Is the Goal approved by Manager:<br>${e(g.mgrapp)}</p>`:`<p>${tr('f_metric')}:<br>${r('metric')?e(g.metric)||'–':'–'}</p><p>${tr('f_weight')}:<br>${r('weight')?(g.weight===''?'–':g.weight+'%'):'–'}</p><p>${tr('stored')}:<br><code>${e(g.state)}</code>${so&&so.trigger?' <code>trigger-completion=true</code>':''} · <code>plan ${g.planId||TEMPLATE.id}</code> · <code>${S.pstate[o]}</code></p>`}</div>`)}
+  ${dev?'':jouleBox(g)}
   ${sec('Goal Audit',`<div style="padding:0 30px"><button class="lnk" data-a="audit" data-id="${g.id}">${dev?'View Audit History':tr('audit')}</button></div>`)}
   ${dev?'':sec(tr('al'),alignBody(g))}
  </div></div>`);
@@ -616,27 +721,28 @@ function msRow(m,w,ops){const d=w?'':'disabled';
 function perfForm(g,isNew){
  const o=g.owner,st=S.pstate[o],key=isNew?'new:'+o:g.id,dr=S.drafts[key],v=Object.assign({},g,dr?dr.v:{}),E=U.ferr&&U.ferr.key===key?U.ferr:null,errs=E&&E.errors||[];
  const w=f=>isNew||canW(ME,o,f),ro=f=>w(f)?'':'disabled',lock=f=>w(f)?'':`<div class="lk">🔒 ${tr('ro_field',pn(st))}</div>`;
- const err=f=>{const x=errs.find(y=>y.f===f);return x?`<div class="ferr" id="e-${f}">${tr(x.k)}</div>`:''},inv=f=>errs.some(y=>y.f===f)?`aria-invalid="true" aria-describedby="e-${f}"`:'';
+ const err=f=>{const x=errs.find(y=>y.f===f);return x?`<div class="ferr" id="e-${f}">${e(x.msg||tr(x.k))}</div>`:''},inv=f=>errs.some(y=>y.f===f)?`aria-invalid="true" aria-describedby="e-${f}"`:'';
  const ta=(f,req,extra)=>{const max=TEMPLATE.fields[f].max;return `<label class="fl" for="${f}">${tr('f_'+f)}:${req?'<b>*</b>':''}</label><textarea class="fi" id="${f}" name="${f}" maxlength="${max}" ${ro(f)} ${inv(f)}>${e(v[f])}</textarea><div class="cnt">${extra||''}<span data-cnt="${f}">${max-String(v[f]||'').length}</span> ${tr('chars')}</div>${err(f)}${lock(f)}`};
  const ops={add:isNew||can(ME,o,'create-row').ok,del:isNew||can(ME,o,'delete-row').ok,mv:isNew||can(ME,o,'move-row').ok};perfForm.ops=ops;
- const wf=FL.filter(w),oth=wsum(plan(o,'perf').filter(x=>x.id!==g.id)),ai=U.ai&&U.ai.key===key?U.ai:null;
- const top=E?(E.code==='VALIDATION'?`<div class="ebox" role="alert"><b>${tr('e_title',errs.length)}</b><ul>${errs.map(x=>`<li><a href="#" data-a="foc" data-f="${x.f}">${tr('f_'+x.f)}: ${tr(x.k)}</a></li>`).join('')}</ul></div>`
+ const aig=isNew&&U.aig&&U.aig.key===key&&aiOk(ME,'goalCreate',o)?U.aig:null,wf=FL.filter(w),oth=wsum(plan(o,'perf').filter(x=>x.id!==g.id)),ai=U.ai&&U.ai.key===key?U.ai:null;
+ const top=E?(E.code==='VALIDATION'?`<div class="ebox" role="alert"><b>${tr('e_title',errs.length)}</b><ul>${errs.map(x=>`<li><a href="#" data-a="foc" data-f="${x.f}">${tr('f_'+x.f)}: ${e(x.msg||tr(x.k))}</a></li>`).join('')}</ul></div>`
    :`<div class="ebox" role="alert"><b>${e(why(E))}</b>${E.code==='NETWORK'?`<div>${E.intact?tr('d_intact',fmt(E.savedAt)):tr('d_nothing')}</div><p><button class="btn em">${tr('retry')}</button></p>`:''}</div>`):'';
  return shell('goals',`<div class="crumb">${e(P[o].name)} / ${tr('plan14')} / ${tr(isNew?'ed_new':'ed_edit')}</div>
  <div class="dh"><h1 style="padding-top:14px">${tr(isNew?'ed_new':'ed_edit')}</h1></div>
  <form data-f="goal" data-id="${isNew?'':g.id}" data-plan="perf" data-key="${key}" data-owner="${o}" novalidate><div class="formp">
  <div class="note">${tr('ed_state',e(pn(st)),st,isNew||wf.length===FL.length?tr('ed_all'):wf.length?wf.map(f=>tr('f_'+f)).join(', '):tr('ed_none'))}</div>
  <div class="note dr" id="dbar" ${dr?'':'hidden'}><span id="dstat">${dr?tr('draft',new Date(dr.at).toLocaleTimeString()):''}</span> ${isNew?tr('draft_new'):tr('draft_saved',fmt(g.updated))} <button type="button" class="lnk" data-a="ddrop">${tr('discard')}</button></div>
+ ${aig?aiBrief(aig):''}${aig&&aig.res?aiDraftNote(aig.res):''}
  ${top}
- ${ta('name',true)}
+ ${ta('name',TEMPLATE.fields.name.req)}
  <label class="fl" for="vis">${tr('f_vis')}:</label>${isNew?`<select class="fi s" id="vis" name="vis"><option value="Public" ${v.vis!=='Private'?'selected':''}>${tr('pub')}</option><option value="Private" ${v.vis==='Private'?'selected':''}>${tr('priv')}</option></select>`:`<input class="fi s" id="vis" value="${tr(g.vis==='Private'?'priv':'pub')}" disabled><div class="lk">${tr('vis_note')}</div>`}
  <label class="fl" for="cat">${tr('cat_l')}:</label><input class="fi s" id="cat" value="${tr('cat')}" disabled>
- ${ta('desc')}
- ${ta('metric',true,w('metric')?`<button type="button" class="lnk" data-a="ai" style="float:inline-start">✦ ${tr('ai_btn')}</button>`:'')}
+ ${ta('desc',TEMPLATE.fields.desc.req)}
+ ${ta('metric',TEMPLATE.fields.metric.req,w('metric')?`<button type="button" class="lnk" data-a="ai" style="float:inline-start">✦ ${tr('ai_btn')}</button>`:'')}
  ${ai?`<div class="aibox"><b>${tr('ai_title')}</b> <span class="badge">${tr('ai_tag')}</span><p>${ai.flags.length?tr('ai_missing')+' '+ai.flags.map(k=>tr(k)).join(' · '):tr('ai_ok')}</p>${ai.flags.length?`<blockquote>${e(ai.text)}</blockquote><button type="button" class="btn em" data-a="aiok">${tr('ai_apply')}</button> `:''}<button type="button" class="btn t" data-a="aino">${tr('ai_dismiss')}</button></div>`:''}
- <label class="fl" for="weight">${tr('f_weight')} (%):<b>*</b></label><input class="fi s" type="number" id="weight" name="weight" min="0" max="100" step="0.1" value="${e(v.weight)}" ${ro('weight')} ${inv('weight')}>${err('weight')}${lock('weight')}
+ <label class="fl" for="weight">${tr('f_weight')} (%):${TEMPLATE.fields.weight.req?'<b>*</b>':''}</label><input class="fi s" type="number" id="weight" name="weight" min="0" max="100" step="0.1" value="${e(v.weight)}" ${ro('weight')} ${inv('weight')}>${err('weight')}${lock('weight')}
  <div class="lk" id="wtot" data-oth="${oth}" aria-live="polite">${wtText(oth,+v.weight||0)}</div>
- <div class="two"><div><label class="fl" for="start">${tr('f_start')}:</label><input class="fi" type="date" id="start" name="start" value="${e(v.start)}" ${ro('start')}>${lock('start')}</div><div><label class="fl" for="due">${tr('f_due')}:</label><input class="fi" type="date" id="due" name="due" value="${e(v.due)}" ${ro('due')}>${lock('due')}</div></div>
+ <div class="two"><div><label class="fl" for="start">${tr('f_start')}:</label><input class="fi" type="date" id="start" name="start" value="${e(v.start)}" ${ro('start')}>${err('start')}${lock('start')}</div><div><label class="fl" for="due">${tr('f_due')}:</label><input class="fi" type="date" id="due" name="due" value="${e(v.due)}" ${ro('due')}>${err('due')}${lock('due')}</div></div>
  <label class="fl" for="state">${tr('f_state')}:</label><select class="fi s" id="state" name="state" ${ro('state')}>${stOpts(v.state)}</select>${lock('state')}<div class="lk" id="trg" ${v.state==='On Track'?'':'hidden'}>${tr('trig')}</div>
  <label class="fl" for="done">${tr('f_done')}:</label><input class="fi s" type="number" id="done" name="done" min="0" max="100" value="${e(v.done)}" ${ro('done')} ${inv('done')}>${err('done')}${lock('done')}
  <label class="fl">${tr('f_ms')}: ⓘ</label>${w('ms')?'<input type="hidden" name="msw" value="1">':''}<div class="tw"><table class="t"><thead><tr><th>${tr('ms_t')}</th><th>${tr('ms_d')}</th><th>${tr('ms_a')}</th><th>${tr('actions')}</th></tr></thead><tbody id="msb">${(v.ms||[]).map(m=>msRow(m,w('ms'),ops)).join('')||`<tr class="nod"><td colspan="4" class="none">${tr('nodata')}</td></tr>`}</tbody></table></div>
@@ -676,7 +782,7 @@ function cascadeDlg(){
 const formGoals=f=>plan(f.emp,'perf'),formTna=f=>plan(f.emp,'tna');
 function perfPage(box){
  const sub=`<div class="sub">${[['reviews','Reviews'],['team','Team Overview'],['exec','360 Executive Review']].map(([k,l])=>`<button data-a="ptab" data-t="${k}" ${U.ptab===k?'aria-current="page"':''}>${l}</button>`).join('')}</div>`;
- if(U.ptab==='team')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">Team Overview</h1><div class="tw"><table class="t"><tr><th>Employee</th><th>Form</th><th>Current Step</th><th>Overall Form Rating</th></tr>${S.forms.filter(f=>P[f.emp].mgr===ME).map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td>${e(P[f.emp].name)}</td><td>${TPL[f.tpl].name}</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td>${e(f.rating)||'–'}</td></tr>`).join('')}</table></div></div>`);
+ if(U.ptab==='team')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">Team Overview</h1><div class="tw"><table class="t"><tr><th>Employee</th><th>Form</th><th>Current Step</th><th>Overall Form Rating</th></tr>${S.forms.filter(f=>P[f.emp].mgr===ME).map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td>${e(P[f.emp].name)}</td><td>${TPL[f.tpl].name}</td><td>${e(stepName(f))}</td><td>${e(f.rating)||'–'}</td></tr>`).join('')}</table></div></div>`);
  if(U.ptab==='exec')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">360 Executive Review</h1><p>This tab is not replicated: no screenshot or template was provided for it.</p></div>`);
  const rows=S.forms.filter(f=>boxOf(f)===box),fl=(l,a)=>`<label>${l}<select><option>${a||'All'}</option></select></label>`;
  const nv=(k,l,c)=>`<button class="nv ${c||''}" data-a="go" data-h="perf/${k}" ${box===k?'aria-current="page"':''}>${l}</button>`;
@@ -685,29 +791,34 @@ function perfPage(box){
  <div class="filters">${fl('Template:')}${fl('Current Step:')}${fl('Group: ⓘ')}${fl('All or Reports Only:','All Employees')}<label>Employee:<input placeholder="Search for employee" style="font-style:italic;padding:0 8px"></label>${fl('Division/Channel:')}${fl('Department:')}${fl('Bureau:')}${fl('Section:')}${fl('Directorate:')}${fl('Director General:')}${fl('Group:')}</div></div>
  <div class="body" style="padding-left:16px"><div class="r1" style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><b style="font-size:16px">Forms (${rows.length})</b><span style="flex:1"></span><button class="btn" data-a="mkform" ${reports(ME).length?'':'disabled'}>Create Form</button><span>⚙</span></div>
  <div style="overflow-x:auto"><table class="t"><tr><th><input type="checkbox" aria-label="Select all"></th><th>Title</th><th>Employee</th><th>Current Step</th><th>Date Assigned</th><th>Step Due Date</th><th>Form Start Date</th></tr>
- ${rows.map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td><input type="checkbox" aria-label="Select form" data-a="noop"></td><td>◔ &nbsp;${e(TPL[f.tpl].name)} for ${e(P[f.emp].name)}</td><td>${e(P[f.emp].name)} ▤</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td style="text-align:right">${mdy(f.assigned)}</td><td style="text-align:right">–</td><td style="text-align:right">${mdy(f.start)}</td></tr>`).join('')||'<tr><td colspan="7" class="none">No Data</td></tr>'}</table></div></div></div></div>`);
+ ${rows.map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td><input type="checkbox" aria-label="Select form" data-a="noop"></td><td>◔ &nbsp;${e(TPL[f.tpl].name)} for ${e(P[f.emp].name)}</td><td>${e(P[f.emp].name)} ▤</td><td>${e(stepName(f))}</td><td style="text-align:right">${mdy(f.assigned)}</td><td style="text-align:right">–</td><td style="text-align:right">${mdy(f.start)}</td></tr>`).join('')||'<tr><td colspan="7" class="none">No Data</td></tr>'}</table></div></div></div></div>`);
 }
 function formPage(f){
- const ap=f.tpl==='appr',p=P[f.emp],o=f.emp,gs=formGoals(f).filter(g=>visible(ME,g)),tn=formTna(f),done=f.status==='completed',mine=!done&&stepActor(f)===ME;
- const secs=ap?[['si','👤 Employee Information'],['sg','🎯 Individual Goals'],['st','🎓 Training Needs'],['so','🏆 Overall Performance Summary'],['ss','Overall Score']]:[['si','👤 Employee Information'],['sg','Individual Goals']];
+ const F=TPL[f.tpl],rm=rmOf(f),st=fstep(f),p=P[f.emp],o=f.emp,done=f.status==='completed',mine=!done&&stepActor(f)===ME,who=stepActor(f);
+ const canRate=mine&&F.rate&&F.rate.steps.includes(f.step)&&hit(F.rate.roles,ME,o),nx=rm.steps.find(s=>s.id===st.next),iss=mine?SAP.check(o,f.tpl,f.step,ME,f):[];
  const desc=t=>`<details class="desc"><summary>Description</summary><p>${t}</p></details>`;
- const row=(g,w)=>{const tna=g.plan==='tna',ed=mine&&!tna&&FL.some(x=>canW(ME,o,x)),dl=mine&&(tna||can(ME,o,'delete').ok);
-  return `<tr><td>${e(tna||canR(ME,o,'name')?g.name:tr('masked'))}</td>${w?`<td style="text-align:right;width:90px">${g.weight===''?'–':g.weight+'%'}</td>`:''}<td style="width:150px;white-space:nowrap">${ed?`<button type="button" class="ib" data-a="edit" data-id="${g.id}" aria-label="Edit">✎</button>`:''}${dl?`<button type="button" class="ib" data-a="del" data-id="${g.id}" aria-label="Delete">🗑</button>`:''}<button type="button" class="ib" style="float:right" data-a="exp" data-id="${g.id}" aria-label="Details">${U.exp[g.id]?'⌄':'›'}</button></td></tr>${U.exp[g.id]?`<tr><td colspan="3" style="background:var(--bg)">${tna?`Purpose: ${e(g.purpose)||'–'} · Target Date: ${fmt(g.due)} · Private · plan 2004`:`${tr('f_metric')}: ${e(g.metric)||'–'}<br>${tr('f_weight')}: ${g.weight===''?'–':g.weight+'%'} · ${tr('f_state')}: ${e(stLabel(g.state))} · ${tr('f_done')}: ${g.done}%`}</td></tr>`:''}`};
+ const rule=s=>COUNT[s.type]?`<p class="lk">${done?'':`At ${e(st.name)}: ${ruleText(s,f.step)} · now ${plan(o,COUNT[s.type]).length} · `}plan ${s.plan} · autosync ${s.autosync?'on':'off'} · ${s.inRating?'part of the overall rating':'not part of the overall rating'}</p>`:'';
+ const msg=q=>iss.filter(q).map(i=>`<div class="ebox" role="alert"><b>${e(i.msg||tr(i.k,...(i.a||[])))}</b></div>`).join('');
+ const row=(g,w)=>{const tna=g.plan==='tna',dev=g.plan==='dev',ed=mine&&!tna&&!dev&&FL.some(x=>canW(ME,o,x)),dl=mine&&(tna||(!dev&&can(ME,o,'delete').ok));
+  return `<tr><td>${e(tna||dev||canR(ME,o,'name')?g.name:tr('masked'))}</td>${w?`<td style="text-align:right;width:90px">${g.weight===''?'–':g.weight+'%'}</td>`:''}<td style="width:150px;white-space:nowrap">${ed?`<button type="button" class="ib" data-a="edit" data-id="${g.id}" aria-label="Edit">✎</button>`:''}${dl?`<button type="button" class="ib" data-a="del" data-id="${g.id}" aria-label="Delete">🗑</button>`:''}<button type="button" class="ib" style="float:right" data-a="exp" data-id="${g.id}" aria-label="Details">${U.exp[g.id]?'⌄':'›'}</button></td></tr>${U.exp[g.id]?`<tr><td colspan="3" style="background:var(--bg)">${tna?`Purpose: ${e(g.purpose)||'–'} · Target Date: ${fmt(g.due)} · Private · plan 2004`:dev?`Status: ${e(g.state)} · % Complete: ${g.done}%`:`${tr('f_metric')}: ${e(g.metric)||'–'}<br>${tr('f_weight')}: ${g.weight===''?'–':g.weight+'%'} · ${tr('f_state')}: ${e(stLabel(g.state))} · ${tr('f_done')}: ${g.done}%`}</td></tr>`:''}`};
+ const tbl=(gs,w)=>`<div class="tw"><table class="t"><tr><th>Goal</th>${w?'<th>Weight</th>':''}<th>Action</th></tr>${gs.map(g=>row(g,w)).join('')||`<tr><td colspan="3" class="none">No Data</td></tr>`}</table></div>`;
+ const sec=s=>{const hd=x=>`<section class="fsec" id="s_${s.id}"><h2>${e(s.name)}<span class="sp"></span>${x||''}</h2>`;
+  if(s.type==='goals')return hd(mine&&can(ME,o,'create').ok?`<button type="button" data-a="fnew" data-id="${f.id}" aria-label="Add goal">＋</button>`:'')+desc('Goals are populated from the Goal Type: <strong>Individual Goals</strong>.')+rule(s)+msg(i=>i.sec===s.id)+tbl(plan(o,'perf').filter(g=>visible(ME,g)),s.showWeight)+'</section>';
+  if(s.type==='tna')return hd(mine?`<button type="button" data-a="tna" data-id="${f.id}" aria-label="Add training need">＋</button>`:'')+desc('🎓 Identify the actual training course or programme. 🧩 Explain the capability gap and expected development outcome.')+rule(s)+msg(i=>i.sec===s.id)+tbl(plan(o,'tna'))+'</section>';
+  if(s.type==='dev')return hd()+rule(s)+tbl(plan(o,'dev'))+'</section>';
+  if(s.type==='summary')return hd()+desc('🏆 Review the overall performance outcome and recognise contributions.')+(F.rate?`<p class="lk">The rating can be entered at step ${F.rate.steps.join(' and ')} by ${F.rate.roles.join(', ')}.</p>`:'')+
+   `<div class="tw"><table class="t"><tr><th>Name</th><th>Rating</th></tr><tr><td><b>Overall Form Rating:${reqAt(F,f.step).some(r=>r.field==='rating')?'<span style="color:#BB0000">*</span>':''}</b> ⓘ</td><td><select class="fi" style="max-width:210px" id="frt" name="rating" data-chg="frating" data-id="${f.id}" ${canRate?'':'disabled'} aria-label="Overall Form Rating"><option value="">Select One</option>${opt(SCALE,f.rating)}</select></td></tr></table></div>${msg(i=>i.fld==='rating')}
+   <div class="desc" style="margin-top:10px;padding:10px 16px"><label for="fcm"><b>Section Comments:${reqAt(F,f.step).some(r=>r.field==='comments')?'<span style="color:#BB0000">*</span>':''}</b><br>Manager's Comments</label><textarea class="fi" id="fcm" name="comments" dir="auto" maxlength="4000" style="max-width:none;margin-top:8px" ${canRate?'':'disabled'}>${e(f.comments)}</textarea></div>${msg(i=>i.fld==='comments')}${writeBox(f,canRate)}</section>
+   <section class="fsec" id="ss"><div class="score">Overall Score: &nbsp;${e(f.rating)||'–'}</div></section>`;
+  return hd()+'<p class="lk">This section type is in the template but is not rendered in the sandbox.</p></section>'};
  return shell('perf',`<div class="sub"><button aria-current="page" data-a="go" data-h="perf">Reviews</button><button data-a="ptab" data-t="team">Team Overview</button><button data-a="ptab" data-t="exec">360 Executive Review</button></div>
- <div class="dh"><div class="crumb" style="padding-left:8px"><a href="#perf">My Forms</a> / Form Details</div><div class="tl" style="padding-left:8px"><h1>${e(TPL[f.tpl].name)} for ${e(p.name)}</h1><button class="btn t" data-a="hist" data-id="${f.id}">History</button>${P[o].mgr===ME||P[o].hr===ME?`<button class="btn t" data-a="fdel" data-id="${f.id}">Delete Form</button>`:''}<button class="btn t" data-a="print">Print &amp; PDF</button></div>
- <div style="display:flex;gap:40px;align-items:center;padding:14px 8px 0;flex-wrap:wrap"><span style="display:flex;gap:12px;align-items:center"><span class="pp" style="border:0;padding:0;min-height:0;width:auto;cursor:default"><span class="pa">${ini(p.name)}</span></span><b>${e(p.name)}</b> ▤</span>${ap?`<span>Overall Score:<br><b style="font-weight:400">${e(f.rating)||'–'}</b></span>`:''}<span>Current step: <b>${done?'Completed':TPL[f.tpl].steps[f.step]}</b></span>${ap?'':`<span>Goal plan state: <b>${e(pn(S.pstate[o]))}</b> <code>${S.pstate[o]}</code></span>`}</div></div>
- <div class="wrap" style="min-height:0"><nav class="fnav">${secs.map(s=>`<button data-a="jump" data-s="${s[0]}">${s[1]}</button>`).join('')}</nav><form class="main" data-f="pform" data-id="${f.id}" novalidate style="padding-bottom:90px"><div class="err fsec" id="ferr" hidden></div>
+ <div class="dh"><div class="crumb" style="padding-left:8px"><a href="#perf">My Forms</a> / Form Details</div><div class="tl" style="padding-left:8px"><h1>${e(F.name)} for ${e(p.name)}</h1><button class="btn t" data-a="hist" data-id="${f.id}">History</button>${P[o].mgr===ME||P[o].hr===ME||isAdmin(ME)?`<button class="btn t" data-a="fdel" data-id="${f.id}">Delete Form</button>`:''}<button class="btn t" data-a="print">Print &amp; PDF</button></div>
+ <div style="display:flex;gap:40px;align-items:center;padding:14px 8px 0;flex-wrap:wrap"><span style="display:flex;gap:12px;align-items:center"><span class="pp" style="border:0;padding:0;min-height:0;width:auto;cursor:default"><span class="pa">${ini(p.name)}</span></span><b>${e(p.name)}</b> ▤</span>${F.rate?`<span>Overall Score:<br><b style="font-weight:400">${e(f.rating)||'–'}</b></span>`:''}<span>Current step: <b>${e(stepName(f))}</b>${done||!who?'':` · with <b>${e(P[who].name)}</b>`}</span>${rm.steps.some(s=>s.planState)?`<span>Goal plan state: <b>${e(pn(S.pstate[o]))}</b> <code>${S.pstate[o]}</code></span>`:''}</div>
+ <div style="padding:12px 8px 0">${rmBoxes(rm,done?'done':st.id)}</div></div>
+ <div class="wrap" style="min-height:0"><nav class="fnav"><button data-a="jump" data-s="si">👤 Employee Information</button>${F.sections.map(s=>`<button data-a="jump" data-s="s_${s.id}">${e(s.name)}</button>`).join('')}</nav><form class="main" data-f="pform" data-id="${f.id}" novalidate style="padding-bottom:90px">
  <section class="fsec" id="si"><h2>👤 Employee Information</h2><div class="info">${[['First Name',p.first],['Last Name',p.last],['Employee ID',p.eid],['Division/Channel','N/A'],['Department','N/A'],['Job Title',p.title||'–'],['Manager',p.mgr?P[p.mgr].name:'–']].map(x=>`<div><small>${x[0]}:</small>${e(x[1])}</div>`).join('')}</div></section>
- <section class="fsec" id="sg"><h2>${ap?'🎯 ':''}Individual Goals<span class="sp"></span>${mine&&can(ME,o,'create').ok?`<button type="button" data-a="fnew" data-id="${f.id}" aria-label="Add goal">＋</button>`:''}</h2>${desc((ap?'🎯 Review outcomes and achievements. 📈 Consider impact. 📝 Record evidence and constructive feedback.':'This section includes Individual Goals only. Goals are populated from the Goal Type: <strong>Individual Goals</strong>.')+' Synced from goal plan 14 · 1 to 50 goals in this section.')}
- ${done?'':ready(o,f.tpl)}
- <div class="tw"><table class="t"><tr><th>Goal</th>${ap?'':'<th>Weight</th>'}<th>Action</th></tr>${gs.map(g=>row(g,!ap)).join('')||`<tr><td colspan="3" class="none">No Data</td></tr>`}</table></div></section>
- ${ap?`<section class="fsec" id="st"><h2>🎓 Training Needs<span class="sp"></span>${mine?`<button type="button" data-a="tna" data-id="${f.id}" aria-label="Add training need">＋</button>`:''}</h2>${desc('🎓 Identify the actual training course or programme. 🧩 Explain the capability gap and expected development outcome. Synced from development plan 2004 · 0 to 3 entries in this section · not part of the overall rating.')}
- <div class="tw"><table class="t"><tr><th>Goal</th><th>Action</th></tr>${tn.map(g=>row(g)).join('')||'<tr><td colspan="2" class="none">No Data</td></tr>'}</table></div></section>
- <section class="fsec" id="so"><h2>🏆 Overall Performance Summary</h2>${desc('🏆 Review the overall performance outcome and recognise contributions.')}
- <div class="tw"><table class="t"><tr><th>Name</th><th>Rating</th></tr><tr><td><b>Overall Form Rating:<span style="color:#BB0000">*</span></b> ⓘ</td><td><select class="fi" style="max-width:210px" name="rating" data-chg="frating" data-id="${f.id}" ${mine?'':'disabled'} aria-label="Overall Form Rating"><option value="">Select One</option>${opt(SCALE,f.rating)}</select></td></tr></table></div>
- <div class="desc" style="margin-top:10px;padding:10px 16px"><label for="fcm"><b>Section Comments:<span style="color:#BB0000">*</span></b><br>Manager's Comments</label><textarea class="fi" id="fcm" name="comments" maxlength="4000" style="max-width:none;margin-top:8px" ${mine?'':'disabled'}>${e(f.comments)}</textarea></div></section>
- <section class="fsec" id="ss"><div class="score">Overall Score: &nbsp;${e(f.rating)||'–'}</div></section>`:''}
- ${mine?`<div class="foot">${!ap&&f.step===1?'<button class="btn t" name="do" value="prev">Send to Previous Step</button>':''}<button class="btn em" name="do" value="next">${!ap&&f.step===0?'Send to DLM Goals Review':'Next Step'}</button><button class="btn" name="do" value="close">Save and Close</button><button class="btn" name="do" value="save">Save</button></div>`:''}</form></div>`);
+ ${mine?`<div class="fsec">${ready(o,f.tpl,f.step,f)}</div>`:''}${insightsBox(f,mine)}${F.sections.map(sec).join('')}
+ ${mine?`<div class="foot">${rm.steps.some(s=>s.id===st.back)?'<button class="btn t" name="do" value="prev">Send to Previous Step</button>':''}<button class="btn em" name="do" value="next">${nx?'Send to '+e(nx.name):st.kind==='Signature'?'Sign and Complete':'Complete'}</button><button class="btn" name="do" value="close">Save and Close</button><button class="btn" name="do" value="save">Save</button></div>`:''}</form></div>`);
 }
 
 /* ---------- calibration ---------- */
@@ -735,13 +846,22 @@ const UNVERIFIED=['Exact SAP validation and error messages. The wording here, in
  'Autosync timing between plan 14 or plan 2004 and the form sections. The sandbox reads the plan live.',
  'A plan total of 100% and a 1% to 50% range per goal appear only in the instruction text. Both are off unless switched on below.',
  'The English and Arabic instructions disagree: English says at least one goal at 1% to 50%, Arabic says at least five goals at 10% to 25%.',
- 'A manager minimum of one training need. Off unless switched on below; the appraisal export allows zero.',
+ 'A manager minimum of one training need. The appraisal export allows zero; an administrator can set it per step in the Admin Center.',
+ 'Entry limits by workflow step. The form XML sets min-goals-required and max-goals-allowed per section only, so a per-step limit is AJMN product design.',
+ 'Route maps are not in the exports. ZIP 54 references steps 2 and 4, ZIP 55 steps 1 and 2, ZIP 56 step E1; the step names, owners and order in the sandbox are assumed. The earlier single “DLM Appraisal” step is replaced by Employee Self-Assessment, Manager Evaluation, HR Representation - Calibration and Employee Signature.',
+ 'Who is an administrator. The sandbox gives Admin Admin and HR Representative access to the Admin Center; role-based permissions are not modelled.',
+ 'Forms already in progress follow the newly published configuration at once. SAP usually keeps the template version a form was launched with.',
  'Who may delete a form. The sandbox allows the line manager and the HR representative.',
  'Manager return-with-comment is a proposed enhancement and is not built. Send to Previous Step has no comment.',
- 'Not built in this pass: cascade pull, group goals, the SMART wizard steps, Continuous Performance integration and the Role Readiness Assessment Form (ZIP 56).'];
+ 'AI features: every response is scripted in the page. Whether each feature is available depends on SAP edition, Premium AI or Joule Premium entitlement, AI Access role permissions, AI Services Administration and, for Performance Insights, the template setting Assisted Performance Insights for Manager Review.',
+ 'AI eligibility uses the same SAP role codes as the goal plan. SAP grants AI access through role-based permissions; how those map to the codes in the sandbox is not verified.',
+ 'Performance Insights inputs in the tenant, including whether Continuous Performance entries are read. The evidence items in the sandbox are fictional.',
+ 'Translation in the sandbox covers only the sample comment and comments drafted by Performance Insights. SAP language coverage for Arabic, including Text Analyzer, is not verified.',
+ 'Writing assistance on 360 review comment fields is not built: no 360 template was supplied.',
+ 'Not built: cascade pull, group goals, the SMART wizard steps and Continuous Performance integration. The Role Readiness Assessment Form (ZIP 56) can be launched, but its Competencies and Skills sections are not rendered.'];
 function runTests(){
  const keepS=S,keepF=U.failNext,out=[],ck=(c,m)=>c?null:m,J=x=>JSON.stringify(x);
- const T=(name,expect,fn)=>{S=seed();U.failNext=false;let r;try{r=fn()}catch(x){r=['threw: '+x.message]}out.push({name,expect,fails:r.filter(Boolean)})};
+ const T=(name,expect,fn)=>{S=seed();useCfg();U.failNext=false;U.aiFail=false;let r;try{r=fn()}catch(x){r=['threw: '+x.message]}out.push({name,expect,fails:r.filter(Boolean)})};
  T('Save without metric','Error beside Metric, input kept, committed goal unchanged',()=>{const g=plan('admin','perf')[0],b=J(g);S.drafts[g.id]={at:1,v:{name:'Changed',metric:''}};const r=SAP.save('admin',{id:g.id,name:'Changed',metric:''});
   return[ck(!r.ok&&r.code==='VALIDATION','save was not rejected'),ck(r.errors&&r.errors.some(x=>x.f==='metric'&&L.en[x.k]==='Add a measure of success'),'no “Add a measure of success” error on metric'),ck(J(G(g.id))===b,'committed goal changed'),ck(S.drafts[g.id]&&S.drafts[g.id].v.name==='Changed','typed input was not kept')]});
  T('Save a valid goal in Goals Settings as employee','Persisted to plan 14 with weight and alignment',()=>{const r=SAP.save('hr2',{owner:'hr2',name:'New goal',metric:'90% by Dec 2026',weight:'10'}),g=r.goal,up=plan('admin','perf')[0];
@@ -759,27 +879,234 @@ function runTests(){
   return[ck(el.includes('hr1')&&el.includes('hr2')&&!el.includes('peer')&&!el.includes('gp'),'eligible list is '+el),ck(pv.length===2,'preview rows '+pv.length),ck(a.ok&&a.created.length===2&&a.created.every(id=>G(id).up===g.id),'two linked goals not created'),
    ck(b.ok&&b.replay&&b.created.length===0&&S.goals.length===n,'retry created extra goals'),ck(!x.ok&&x.code==='OUT_OF_SCOPE','out-of-scope recipient not denied'),ck(!y.ok,'out-of-scope actor not denied'),ck(S.goals.length===n,'goal count changed after denials')]});
  T('Appraisal has three Training Needs','Fourth rejected, Individual Goals limit untouched, zero passes',()=>{const r=[1,2,3,4].map(i=>SAP.addTna('admin','f2',{name:'Course '+i})),z=SAP.check('hr1','appr');
-  return[ck(r[0].ok&&r[1].ok&&r[2].ok,'first three refused'),ck(!r[3].ok&&r[3].code==='SECTION_MAX','fourth not rejected'),ck(plan('hr2','tna').length===3,'count is '+plan('hr2','tna').length),ck(LIMITS.goals.max===50&&SAP.save('hr2',{owner:'hr2',name:'G',metric:'M',weight:1}).ok,'Individual Goals limit affected'),
-   ck(plan('hr1','tna').length===0&&!z.some(i=>/tna/.test(i.k)),'zero training needs did not pass'),ck(plan('hr2','tna').every(g=>g.vis==='Private'&&g.planId===2004),'not private on plan 2004')]});
+  return[ck(r[0].ok&&r[1].ok&&r[2].ok,'first three refused'),ck(!r[3].ok&&r[3].code==='SECTION_MAX','fourth not rejected'),ck(plan('hr2','tna').length===3,'count is '+plan('hr2','tna').length),ck(secOf('appr','goals').max===50&&SAP.save('hr2',{owner:'hr2',name:'G',metric:'M',weight:1}).ok,'Individual Goals limit affected'),
+   ck(plan('hr1','tna').length===0&&!z.some(i=>i.sec==='tna'),'zero training needs did not pass'),ck(plan('hr2','tna').every(g=>g.vis==='Private'&&g.planId===2004),'not private on plan 2004')]});
  T('Link to a published priority','Connected strategy boxes with goal-only information',()=>{const g=plan('admin','perf')[1],a=SAP.linkPrio('admin',g.id,'d2'),u=SAP.linkPrio('admin',g.id,'d3'),c=SAP.chart('admin',g.id),keys='id,owner,name,measure,progress,status',o=SAP.chart('hr1',plan('gp','perf')[1].id);
   return[ck(a.ok,'link refused'),ck(!u.ok&&u.code==='NOT_PUBLISHED','unpublished priority not refused'),ck(c.strat.length===3&&c.strat[0].lvl==='DG priority'&&c.strat[2].title===STRAT.find(s=>s.id==='d2').title,'strategy boxes are '+c.strat.length),
    ck([c.self,...c.ups,...c.downs].every(v=>Object.keys(v).join()===keys),'box carries more than goal information'),ck(o.self.name===null&&o.self.owner===null&&o.self.measure===null,'private goal shown to a user without access')]});
  T('Simulate a failed save','Input kept, retry offered, prior version reported intact',()=>{const g=plan('admin','perf')[0],b=J(g),p={id:g.id,name:'Edited name'};S.drafts[g.id]={at:1,v:{name:'Edited name'}};U.failNext=true;const r=SAP.save('admin',p),mid=J(G(g.id)),d=!!S.drafts[g.id],r2=SAP.save('admin',p);
   return[ck(!r.ok&&r.code==='NETWORK','save did not fail'),ck(r.intact===true&&r.savedAt===g.updated,'prior version not reported intact'),ck(mid===b,'committed goal changed by the failed save'),ck(d,'input was not kept'),ck(r2.ok&&G(g.id).name==='Edited name','retry did not save'),ck(!S.drafts[g.id],'draft not cleared after the retry')]});
- S=keepS;U.failNext=keepF;return out}
+ T('Admin sets Training Needs to 1 to 3 at Manager Evaluation','Employee submits with zero; manager is blocked at zero, submits with one, cannot add a fourth; the form routes to the next owner',()=>{
+  const i=S.config.pub.forms.appr.sections.findIndex(s=>s.type==='tna'),path=`forms.appr.sections.${i}.byStep.2`,m='Add at least one training need before you submit the evaluation.',tn=()=>secOf('appr','tna');
+  const no=SAP.adminSet('hr1',path,{min:1,max:3,msg:m}),set=SAP.adminSet('admin',path,{min:1,max:3,msg:m}),before=limitsOf(tn(),'2').min,pub=SAP.publish('admin','Training Needs 1 to 3 at Manager Evaluation'),after=limitsOf(tn(),'2');
+  const l=SAP.launch('admin','appr',['hr2','hr1']),a=l.forms[0].form,b=l.forms[1].form,s0=a.step,o0=stepActor(a),z0=plan('hr2','tna').length;
+  const e1=SAP.formNext('hr2',a.id),s1=a.step,o1=stepActor(a);a.rating='Champions';a.comments='Solid year';
+  const m0=SAP.formNext('admin',a.id),t1=SAP.addTna('admin',a.id,{name:'Course 1'}),m1=SAP.formNext('admin',a.id);
+  SAP.formNext('hr1',b.id);const adds=[1,2,3,4].map(n=>SAP.addTna('admin',b.id,{name:'Course '+n}));
+  return[ck(!no.ok,'a non-admin changed the configuration'),ck(set.ok&&before===0,'the draft was in force before publishing'),ck(pub.ok&&S.config.ver.length===2&&!S.config.draft,'publish did not create version 2'),ck(after.min===1&&after.max===3,'published rule not in force'),
+   ck(ruleText(tn(),'2')==='1 to 3 entries'&&ruleText(tn(),'1')==='0 to 3 entries','user screen and preview text is “'+ruleText(tn(),'2')+'”'),ck(l.ok&&s0==='1'&&o0==='hr2','test form not launched to the employee'),
+   ck(e1.ok&&z0===0,'employee could not submit with zero entries: '+e1.code),ck(s1==='2'&&o1==='admin','form not routed to the manager'),
+   ck(!m0.ok&&m0.code==='SECTION'&&m0.issues.length===1&&m0.issues[0].sec==='tna'&&m0.issues[0].msg===m,'manager not blocked with the configured message at zero'),
+   ck(t1.ok&&m1.ok&&!m1.done,'manager could not submit with one entry: '+m1.code),ck(a.step==='4'&&stepActor(a)==='hrbp'&&m1.owner==='hrbp','not routed to the next configured owner (HR representative)'),
+   ck(adds[0].ok&&adds[1].ok&&adds[2].ok&&!adds[3].ok&&adds[3].code==='SECTION_MAX'&&plan('hr1','tna').length===3,'a fourth entry was not refused')]});
+ T('Draft, publish and version history','Draft is not in force, invalid configuration cannot be published, a note is required, an old version can be restored',()=>{
+  SAP.adminSet('admin','goalPlan.fields.desc.req',true);const r1=SAP.save('hr2',{owner:'hr2',name:'N1',metric:'M',weight:5});
+  SAP.adminSet('admin','routeMaps.rm_appr.steps.1.next','9');const p0=SAP.publish('admin','x');SAP.adminSet('admin','routeMaps.rm_appr.steps.1.next','4');
+  SAP.adminSet('admin','forms.appr.sections.1.min',5);const p00=SAP.publish('admin','x');SAP.adminSet('admin','forms.appr.sections.1.min',0);
+  const p1=SAP.publish('admin',''),p2=SAP.publish('admin','Intended Results required'),r2=SAP.save('hr2',{owner:'hr2',name:'N2',metric:'M',weight:5}),v2=S.config.ver[1];
+  SAP.restore('admin',1);const p3=SAP.publish('admin','Back to the seed'),r3=SAP.save('hr2',{owner:'hr2',name:'N3',metric:'M',weight:5});
+  return[ck(r1.ok,'a draft rule was enforced before publishing'),ck(!p0.ok&&p0.code==='CONFIG_INVALID','a route map pointing at a missing step was published'),ck(!p00.ok&&p00.code==='CONFIG_INVALID','a minimum above the maximum was published'),
+   ck(!p1.ok&&p1.code==='NOTE_REQUIRED','published without a note'),ck(p2.ok&&p2.n===2,'valid draft not published'),ck(!r2.ok&&r2.errors.some(x=>x.f==='desc'),'published required field not enforced by the adapter'),
+   ck(v2&&v2.changes.length===1&&/desc\.req/.test(v2.changes[0]),'version history does not list the change'),ck(p3.ok&&S.config.ver.length===3&&r3.ok,'restoring version 1 did not lift the rule')]});
+ const aiOn=(...fs)=>{fs.forEach(k=>SAP.adminSet('admin','ai.features.'+k+'.on',true));return SAP.publish('admin','Enable '+fs.join(', '))};
+ T('AI Goal Creation: enable, publish, draft, enter Weight, save','Off until published; one question for a vague brief; Weight left to the user; Plan 14 checks on save',()=>{
+  const off=SAP.aiGoal('hr2','hr2','Reduce studio downtime by 20% by December');SAP.adminSet('admin','ai.features.goalCreate.on',true);const dr=SAP.aiGoal('hr2','hr2','Reduce studio downtime by 20% by December'),pub=SAP.publish('admin','Enable Goal Creation');
+  const q=SAP.aiGoal('hr2','hr2','Improve studio operations'),g=SAP.aiGoal('hr2','hr2','Improve studio operations','Cut average fault response to 4 hours by June 2026'),v=SAP.aiGoal('hr2','hr2','Improve studio operations','Fewer faults'),n=SAP.aiGoal('hr2','hr2','Reduce studio downtime by 20% by December');
+  const dev=plan('hr2','dev').length,tna=plan('hr2','tna').length,s0=SAP.save('hr2',Object.assign({owner:'hr2'},g.draft)),s1=SAP.save('hr2',Object.assign({owner:'hr2',weight:'10'},g.draft)),ne=SAP.aiGoal('peer','hr2','Reduce downtime by 20%'),lk=SAP.aiGoal('hr1','hr1','Reduce downtime by 20%');
+  return[ck(!off.ok&&off.code==='AI_DISABLED','worked before it was enabled'),ck(!dr.ok&&dr.code==='AI_DISABLED','the draft switch was in force before publishing'),ck(pub.ok,'publish failed'),
+   ck(q.ok&&q.ask&&!q.draft,'vague brief did not get one focused question'),ck(g.ok&&g.sim&&g.draft.name&&g.draft.metric&&!('weight' in g.draft)&&!g.proposed,'no name and metric draft, or a weight was proposed'),ck(v.ok&&v.proposed&&/proposal/.test(v.draft.metric),'suggested target not marked as a proposal'),ck(n.ok&&!n.ask,'a specific brief was questioned'),
+   ck(g.prio==='d1','published strategy link not offered: '+g.prio),ck(!s0.ok&&s0.errors.some(x=>x.f==='weight'),'saved without the required Weight'),ck(s1.ok&&s1.goal.planId===14&&s1.goal.weight===10,'not saved through the normal Plan 14 save'),
+   ck(plan('hr2','dev').length===dev&&plan('hr2','tna').length===tna,'plans 2005 or 2004 were touched'),ck(!ne.ok&&ne.code==='AI_NOT_ELIGIBLE','ineligible role not refused'),ck(!lk.ok&&lk.code==='ACTION_DENIED','record permission (create) not checked before generating')]});
+ T('Performance Insights: generate, open evidence, apply an edited comment','Sources on every observation; the rating and the workflow stay with the manager',()=>{
+  aiOn('insights');const f=form('f1'),r=SAP.aiInsights('admin','f1'),ev=r.ok?SAP.evidence('admin',r.observations[0].src):{},pl=r.ok?SAP.evidence('admin',r.observations[r.observations.length-1].src):{},st=f.step,edited=r.ok&&r.comment?r.comment.en.replace('[Add your own assessment before applying.]','Met expectations on the election desk.'):'';
+  const ap=SAP.formField('admin','f1','comments',edited),nx0=SAP.formNext('admin','f1'),held=f.step===st&&f.rating==='',rt=SAP.formField('admin','f1','rating','Champions'),nx1=SAP.formNext('admin','f1'),low=SAP.aiInsights('admin','f2');
+  return[ck(r.ok&&r.sim&&r.enough&&r.observations.length>=3&&r.observations.every(o=>o.src),'insights missing or without sources'),ck(ev.ok&&ev.item.title&&pl.ok&&pl.item.lines.length===5,'evidence item did not open'),ck(!r.observations.some(o=>o.src==='e4'),'restricted evidence used'),
+   ck(ap.ok&&f.comments===edited,'edited comment not applied'),ck(!nx0.ok&&nx0.issues.some(i=>i.fld==='rating')&&held,'form moved, or a rating was set, without the manager'),ck(rt.ok&&nx1.ok&&f.step==='4','manager could not rate and submit'),
+   ck(low.ok&&!low.enough&&!low.comment&&low.missing.length>=2,'insufficient evidence not reported with what is missing')]});
+ T('Disabled features and unauthorized evidence are blocked by the adapter','AI_DISABLED when off; AI_NOT_ELIGIBLE by role; evidence refused without permission',()=>{
+  const g=plan('admin','perf')[0],d=[SAP.aiText('admin','f1','improve','ok text'),SAP.aiText('admin','f1','translate','x'),SAP.aiText('admin','f1','analyze','x'),SAP.aiInsights('admin','f1'),SAP.aiJoule('admin',g.id,'sum'),SAP.aiGoal('admin','admin','Reduce cost by 5%')];
+  aiOn('insights','writing','joule');const emp=SAP.aiInsights('hr1','f1'),e4=SAP.evidence('admin','e4'),hr=SAP.evidence('hrbp','e4'),pe=SAP.evidence('peer','e1'),pp=SAP.evidence('peer','plan:hr1'),wr=SAP.aiText('hr2','f1','improve','text'),jp=SAP.aiJoule('peer',g.id,'sum'),j=SAP.aiJoule('admin',g.id,'sum');
+  return[ck(d.every(x=>!x.ok&&x.code==='AI_DISABLED'),'a disabled feature answered'),ck(!emp.ok&&emp.code==='AI_NOT_ELIGIBLE','employee could generate manager insights'),ck(!e4.ok&&e4.code==='EVIDENCE_DENIED','manager opened HR-only evidence'),ck(hr.ok,'HR representative refused their own evidence'),
+   ck(!pe.ok&&!pp.ok,'a peer opened evidence'),ck(!wr.ok,'writing help given on a form the user cannot edit'),ck(!jp.ok,'goal action answered for a user who cannot see the goal'),ck(j.ok&&j.sim,'goal action failed for the owner'),ck(S.ailog.some(x=>x.code==='AI_DISABLED')&&S.ailog.some(x=>x.code==='AI_NOT_ELIGIBLE'),'blocked requests not logged')]});
+ T('AI failure or timeout','The draft and the comment are preserved and a retry works',()=>{
+  aiOn('goalCreate','writing','translate','analyzer');const f=form('f1');SAP.formField('admin','f1','comments','he did a lot of good stuff this year');S.drafts['new:hr2']={at:1,v:{name:'Mine'}};
+  U.aiFail=true;const g0=SAP.aiGoal('hr2','hr2','Reduce downtime by 20%'),g1=SAP.aiGoal('hr2','hr2','Reduce downtime by 20%');U.aiFail=true;const w0=SAP.aiText('admin','f1','improve',f.comments),keep=f.comments,w1=SAP.aiText('admin','f1','improve',f.comments),still=f.comments;
+  const an=SAP.aiText('admin','f1','analyze','A young and emotional colleague'),tr1=SAP.aiText('admin','f1','translate',PAIRS[0].en),ar=SAP.aiText('admin','f1','improve','أنجز العمل في الوقت المحدد'),ap=SAP.formField('admin','f1','comments',w1.text);
+  return[ck(!g0.ok&&g0.code==='AI_TIMEOUT'&&S.drafts['new:hr2'].v.name==='Mine','goal draft lost on failure'),ck(g1.ok&&g1.draft,'goal retry failed'),ck(!w0.ok&&w0.code==='AI_TIMEOUT'&&keep==='he did a lot of good stuff this year','comment changed by a failed call'),
+   ck(w1.ok&&w1.sim&&w1.text==='He did a great deal of good work this year.'&&still===keep,'suggestion wrong, or applied before the user chose Apply: '+w1.text),ck(an.ok&&an.flags.length===2,'Text Analyzer did not flag two terms'),ck(tr1.ok&&tr1.text===PAIRS[0].ar,'sample not translated to Arabic'),ck(ar.ok&&/[؀-ۿ]/.test(ar.text)&&ar.text.endsWith('.'),'Arabic text not handled'),ck(ap.ok&&f.comments===w1.text,'Apply did not go through the form field check')]});
+ S=keepS;useCfg();U.failNext=keepF;U.aiFail=false;return out}
 function parityPage(){
- const res=runTests(),pass=res.filter(r=>!r.fails.length).length,rl=l=>l===undefined?'<i>not declared</i>':l.length?l.join(', '):'<i>blank · unresolved</i>';
- const acts=['change-state','create','delete','share','create-row','delete-row','move-row','cascade-push','cascade-pull','cascade-align','unalign-parent','private-access'];
+ const res=runTests(),pass=res.filter(r=>!r.fails.length).length,rl=l=>l===undefined?'<i>not declared</i>':l.length?l.join(', '):'<i>blank · unresolved</i>',acts=ACTS;
  const tog=(k,l)=>`<label class="wr lite" style="justify-content:flex-start"><input type="checkbox" data-chg="cfg" data-k="${k}" ${S.cfg[k]?'checked':''}> ${l}</label>`;
  return shell('goals',`<div class="body" style="max-width:1200px"><p><a href="#goals">← ${tr('plan14')}</a></p><h1 style="margin:6px 0 14px">Acceptance tests and parity</h1>
  <h3>Acceptance tests: ${pass} of ${res.length} pass</h3><p>Each test runs against the simulated SAP adapter on a fresh copy of the seed data. Your sandbox data is not touched.</p>
  <div class="tw"><table class="t"><tr><th>#</th><th>Test</th><th>Expected</th><th>Result</th></tr>${res.map((r,i)=>`<tr><td>${i+1}</td><td>${e(r.name)}</td><td>${e(r.expect)}</td><td>${r.fails.length?`<b style="color:#BB0000">Fail</b><br>${r.fails.map(e).join('<br>')}`:'<b style="color:var(--green)">Pass</b>'}</td></tr>`).join('')}</table></div>
- <h3 style="margin-top:26px">Rules that are off in the parity baseline</h3><div class="wc" style="max-width:900px">${tog('strictWeights','Require a 100% plan total and 1% to 50% per goal (instruction text only; not established by the plan 14 XML)')}${tog('tnaMin','Require at least one training need on the appraisal (manager minimum, to be confirmed)')}</div>
+ <h3 style="margin-top:26px">Rules that are off in the parity baseline</h3><div class="wc" style="max-width:900px">${tog('strictWeights','Require a 100% plan total and 1% to 50% per goal (instruction text only; not established by the plan 14 XML)')}<p class="lk">Entry limits by step, such as a manager minimum of one training need, are set in <a href="#admin/forms">Admin Center → Manage Templates · Performance Forms</a>.</p></div>
  <h3 style="margin-top:26px">Not verified in the tenant</h3><div class="wc" style="max-width:900px"><ul style="margin:0;padding-inline-start:20px">${UNVERIFIED.map(x=>`<li style="margin:6px 0">${e(x)}</li>`).join('')}</ul></div>
  <h3 style="margin-top:26px">Plan 14 permissions by state, as loaded from the template</h3><p>Role codes are SAP codes relative to the plan owner. ED is the owner’s direct report, not the Executive Director job title.</p>
  ${Object.entries(TEMPLATE.states).map(([k,s])=>`<h3 style="margin:18px 0 8px;font-weight:700">${s.en} <code>${k}</code> → ${s.to.map(x=>`<code>${x}</code>`).join(' ')}</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Action</th><th>Roles</th></tr>${acts.map(a=>`<tr><td><code>${a}</code></td><td>${rl(s.act[a])}</td></tr>`).join('')}<tr><th>Field</th><th>Write · Read</th></tr>${FL.map(f=>`<tr><td><code>${sapId(f)}</code> <small>${TEMPLATE.fields[f].cu}</small></td><td>${s.write[f].length?s.write[f].join(', '):'<i>no write grant</i>'}<br><small>read: ${s.read[f].join(', ')}</small></td></tr>`).join('')}</table></div>`).join('')}</div>`);
 }
 
+/* ---------- Admin Center ---------- */
+const D=()=>S.config.draft||S.config.pub;
+const ROLES=['*','E','EM','EM+','EMM','EX','ED','EH','EHM','EY','EC','F','OP','OC','Cascader'],OWNERS={E:'Employee',EM:'Manager',EMM:'Manager’s manager',EH:'HR representative',EX:'Matrix manager'};
+const RQF={rating:'Overall Form Rating',comments:'Section Comments','tna.purpose':'Training need: Purpose','tna.due':'Training need: Target Date'};
+const ACTS=['change-state','create','delete','share','create-row','delete-row','move-row','cascade-push','cascade-pull','cascade-align','unalign-parent','private-access'];
+function flat(o,p,out){Object.entries(o||{}).forEach(([k,v])=>{const q=p?p+'.'+k:k;if(v&&typeof v==='object'&&!(Array.isArray(v)&&v.every(x=>typeof x!=='object')))flat(v,q,out);else out[q]=Array.isArray(v)?'['+v.join(', ')+']':String(v)});return out}
+function diffCfg(a,b){const x=flat(a,'',{}),y=flat(b,'',{});return [...new Set([...Object.keys(x),...Object.keys(y)])].filter(k=>x[k]!==y[k]).map(k=>`${k}: ${x[k]??'(not set)'} → ${y[k]??'(removed)'}`)}
+function getPath(o,path){return path.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+/* the adapter refuses to publish a configuration that fails these checks */
+function validateCfg(c){const er=[],g=c.goalPlan,sk=Object.keys(g.states),bad=l=>(l||[]).filter(r=>!ROLES.includes(r));
+ FL.forEach(f=>{const d=g.fields[f];if(!d.label.en.trim())er.push(`Goal plan field ${sapId(f)} needs an English label`);if(d.max!=null&&!(d.max>0))er.push(`Goal plan field ${sapId(f)} needs a maximum length above 0`)});
+ g.status.forEach(s=>{if(!String(s.en).trim())er.push(`Status ${s.v} needs an English label`)});
+ sk.forEach(k=>{const s=g.states[k];s.to.forEach(x=>{if(!sk.includes(x)||x===k)er.push(`State ${k} has an invalid transition to ${x}`)});
+  Object.entries(s.act).forEach(([a,l])=>bad(l).forEach(r=>er.push(`State ${k}, action ${a}: unknown role code ${r}`)));
+  FL.forEach(f=>[...bad(s.write[f]),...bad(s.read[f])].forEach(r=>er.push(`State ${k}, field ${sapId(f)}: unknown role code ${r}`)))});
+ Object.entries(c.routeMaps).forEach(([id,rm])=>{const ids=rm.steps.map(s=>s.id),n=`Route map ${rm.name||id}`;if(!rm.steps.length){er.push(n+' needs at least one step');return}
+  rm.steps.forEach(s=>{if(!String(s.name).trim())er.push(`${n}: step ${s.id} needs a name`);if(!OWNERS[s.owner])er.push(`${n}: step ${s.id} has no valid owner`);
+   if(s.next!=='done'&&(!ids.includes(s.next)||s.next===s.id))er.push(`${n}: step ${s.id} points to a next step that does not exist`);if(s.back&&(!ids.includes(s.back)||s.back===s.id))er.push(`${n}: step ${s.id} points to a previous step that does not exist`);
+   if(s.planState&&!sk.includes(s.planState))er.push(`${n}: step ${s.id} sets an unknown goal plan state`)});
+  const seen=[];let s=rm.steps[0];while(s&&!seen.includes(s.id)){seen.push(s.id);s=rm.steps.find(x=>x.id===s.next)}
+  if(s)er.push(n+' loops and never completes');else if(rm.steps.find(x=>x.id===seen[seen.length-1]).next!=='done')er.push(n+' never reaches Completed');
+  rm.steps.filter(x=>!seen.includes(x.id)).forEach(x=>er.push(`${n}: step ${x.id} (${x.name}) cannot be reached`))});
+ Object.entries((c.ai||{}).features||{}).forEach(([k,f])=>bad(f.roles).forEach(r=>er.push(`AI feature ${k}: unknown role code ${r}`)));
+ Object.entries(c.forms).forEach(([id,F])=>{const rm=c.routeMaps[F.routeMap],n=F.name||id;if(!String(F.name).trim())er.push(`Form template ${id} needs a name`);if(!rm){er.push(`${n} has no route map`);return}
+  const ids=rm.steps.map(s=>s.id),okn=v=>v==null||(Number.isInteger(v)&&v>=0);
+  F.sections.forEach(s=>{if(!COUNT[s.type])return;[null,...ids].forEach(st=>{const b=st&&s.byStep&&s.byStep[st]||{},mn=b.min??s.min,mx=b.max??s.max,w=st?` at step ${st}`:'';
+   if(!okn(mn)||!okn(mx))er.push(`${n}, ${s.name}${w}: limits must be whole numbers of 0 or more`);else if(mn!=null&&mx!=null&&mn>mx)er.push(`${n}, ${s.name}${w}: minimum ${mn} is above maximum ${mx}`)})});
+  (F.required||[]).forEach(r=>{if(!ids.includes(r.step))er.push(`${n}: a required-field rule points to step ${r.step}, which is not in its route map`);if(!RQF[r.field])er.push(`${n}: unknown required field ${r.field}`)})});
+ return er}
+const AIC={target:'<circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.5"/><path d="M10 10l6-6"/>',lock:'<rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 016 0V9"/>',form:'<rect x="4" y="2.5" width="12" height="15" rx="1.5"/><path d="M7 7h6M7 10.5h6M7 14h3"/>',route:'<circle cx="4.5" cy="10" r="2"/><circle cx="15.5" cy="5" r="2"/><circle cx="15.5" cy="15" r="2"/><path d="M6.5 10h3l4-4.5M9.5 10l4 4.5"/>',send:'<path d="M3 10l14-6-5 14-2.5-5.5z"/>',swap:'<path d="M4 7h11l-3-3M16 13H5l3 3"/>',gear:'<circle cx="10" cy="10" r="2.5"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5 5l1.5 1.5M13.5 13.5L15 15M15 5l-1.5 1.5M6.5 13.5L5 15"/>',scale:'<path d="M3 16h14M5 16V9M10 16V4M15 16v-5"/>',grid:'<rect x="3" y="3" width="6" height="6"/><rect x="11" y="3" width="6" height="6"/><rect x="3" y="11" width="6" height="6"/><rect x="11" y="11" width="6" height="6"/>',users:'<circle cx="7.5" cy="7" r="3"/><path d="M2 17c.5-3.5 2.5-5 5.5-5s5 1.500 5.500 5M13.500 4.500a3 3 0 010 5M15 12.500c1.800.700 2.700 2.200 3 4.500"/>',clock:'<circle cx="10" cy="10" r="7.5"/><path d="M10 5.500V10l3 2"/>',check:'<circle cx="10" cy="10" r="7.5"/><path d="M6.500 10.200l2.400 2.400 4.600-5"/>',spark:'<path d="M10 2.500l1.800 5.200 5.200 1.800-5.200 1.800L10 16.500l-1.800-5.200L3 9.500l5.200-1.800z"/>',grow:'<path d="M3 16l5-5 3 3 6-7M13 7h4v4"/>'};
+const TOOLS=[
+ {id:'goalplan',cat:'Goal Management',name:'Manage Templates · Goal Plan',d:'Fields, labels, required flags and status values of plan 14',ic:'target',on:1},
+ {id:'states',cat:'Goal Management',name:'Goal Plan States and Permissions',d:'States, manual transitions, and action and field permissions by role',ic:'lock',on:1},
+ {id:'gimport',cat:'Goal Management',name:'Import/Export Goals',d:'Bulk load goals from a file',ic:'swap'},
+ {id:'gexec',cat:'Goal Management',name:'Goal Execution Settings',d:'Status reports and execution maps',ic:'gear'},
+ {id:'forms',cat:'Performance',name:'Manage Templates · Performance Forms',d:'Sections, entry limits by step, required fields and messages',ic:'form',on:1},
+ {id:'routes',cat:'Performance',name:'Manage Route Maps',d:'Steps, owners and explicit transitions, drawn as connected boxes',ic:'route',on:1},
+ {id:'launch',cat:'Performance',name:'Launch Forms',d:'Launch a form for selected employees on the published configuration',ic:'send',on:1},
+ {id:'scales',cat:'Performance',name:'Rating Scales',d:'Scale values and labels',ic:'scale'},
+ {id:'ftsettings',cat:'Performance',name:'Form Template Settings',d:'Template-level switches',ic:'gear'},
+ {id:'modroute',cat:'Performance',name:'Modify Form Route Map',d:'Change the route of forms already in progress',ic:'route'},
+ {id:'routeform',cat:'Performance',name:'Route Form',d:'Move a form to another step by hand',ic:'swap'},
+ {id:'calsess',cat:'Calibration',name:'Manage Calibration Sessions',d:'Open the English Channel session',ic:'grid',on:1,href:'calib'},
+ {id:'caltpl',cat:'Calibration',name:'Manage Calibration Templates',d:'Views, rating elements and enforcement',ic:'grid'},
+ {id:'devtpl',cat:'Development',name:'Manage Templates · Development',d:'Career Development Plan 2005 and Training Needs 2004',ic:'grow'},
+ {id:'roles',cat:'Company and Users',name:'Manage Permission Roles',d:'Role-based permissions',ic:'users'},
+ {id:'groups',cat:'Company and Users',name:'Manage Permission Groups',d:'Target populations',ic:'users'},
+ {id:'proxy',cat:'Company and Users',name:'Proxy Management',d:'Act on behalf of another user',ic:'users'},
+ {id:'aiadmin',cat:'AI Services',name:'AI Services Administration',d:'Switch AI features on, set eligible roles, preview by role and publish',ic:'spark',on:1},
+ {id:'versions',cat:'Sandbox',name:'Configuration Versions',d:'Published versions, what changed, and restore into a draft',ic:'clock',on:1},
+ {id:'parity',cat:'Sandbox',name:'Tests and Parity',d:'Acceptance tests and behaviour not yet verified in the tenant',ic:'check',on:1,href:'parity'}];
+const abar=()=>{const c=S.config,d=c.draft&&!same(c.draft,c.pub)?diffCfg(c.pub,c.draft):[];
+ return `<div class="note ${d.length?'dr':''}" id="abar"><b>Published version ${curVer()}</b> · ${d.length?`The draft has ${d.length} unpublished change(s). User screens and validation still use version ${curVer()}. <button class="btn em" data-a="apub">Publish…</button> <button class="btn t" data-a="adiscard">Discard draft</button>`:'No unpublished changes.'} <a href="#admin/versions">Version history</a></div>`};
+const adminWrap=(title,body)=>shell('admin',`<div class="body adm"><div class="crumb" style="padding:0 0 8px"><a href="#admin">Admin Center</a> / ${title}</div><h1 style="margin-bottom:12px">${title}</h1>${abar()}${body}</div>`);
+const ci=(path,val,t,x)=>t==='bool'?`<input type="checkbox" data-cfg="${path}" data-t="bool" ${val?'checked':''} ${x||''}>`:`<input class="fi" data-cfg="${path}" data-t="${t||'str'}" value="${e(Array.isArray(val)?val.join(', '):val??'')}" ${t==='num'?'type="number" min="0" style="max-width:90px"':t==='date'?'type="date"':''} ${x||''}>`;
+const cs=(path,val,opts,x)=>`<select class="fi" data-cfg="${path}" data-t="str" data-rr="1" ${x||''}>${opts.map(([v,l])=>`<option value="${e(v)}" ${v===(val??'')?'selected':''}>${e(l)}</option>`).join('')}</select>`;
+function cfgChange(t){const ty=t.dataset.t;let v=ty==='bool'?t.checked:ty==='num'?(t.value===''?null:+t.value):ty==='roles'?t.value.split(',').map(x=>x.trim()).filter(Boolean):t.value;
+ if(ty==='inlist'){const cur=getPath(D(),t.dataset.cfg)||[];v=t.checked?[...cur,t.dataset.v]:cur.filter(x=>x!==t.dataset.v)}
+ const r=SAP.adminSet(ME,t.dataset.cfg,v);if(!r.ok){toast(why(r));render();return}
+ if(t.dataset.rr||ty==='inlist')render();else{save();const b=document.getElementById('abar');if(b)b.outerHTML=abar()}}
+function rmBoxes(rm,cur){const by=id=>rm.steps.find(s=>s.id===id),seen=[];for(let s=rm.steps[0];s&&!seen.includes(s);s=by(s.next))seen.push(s);
+ const box=(s,off)=>`<div class="rmb ${s.id===cur?'on':''} ${off?'off':''}"><small>Step ${e(s.id)} · ${e(s.kind||'Modify')}</small><b>${e(s.name)}</b><span>${e(OWNERS[s.owner]||s.owner)} <code>${e(s.owner)}</code></span>${s.planState?`<span>sets goal plan to <code>${e(s.planState)}</code></span>`:''}${by(s.back)?`<span>↩ can return to ${e(by(s.back).name)}</span>`:''}</div>`;
+ const last=seen[seen.length-1],rest=rm.steps.filter(s=>!seen.includes(s));
+ return `<div class="rm">${seen.map(s=>box(s)).join('<i class="rma">→</i>')}<i class="rma">→</i><div class="rmb end ${cur==='done'?'on':''}"><small>Completion</small><b>${last&&last.next==='done'?'Completed':'Not reached'}</b>${rm.donePlanState?`<span>sets goal plan to <code>${e(rm.donePlanState)}</code></span>`:''}</div>${rest.map(s=>'<i class="rma">⋯</i>'+box(s,1)).join('')}</div>`}
+function adminHome(){const q=(U.aq||'').toLowerCase(),fav=S.adm.fav,by=id=>TOOLS.find(t=>t.id===id);
+ const list=TOOLS.filter(t=>(!q||(t.name+' '+t.d+' '+t.cat).toLowerCase().includes(q))&&(!U.aon||t.on));
+ const card=t=>`<div class="tool ${t.on?'':'off'}" data-a="tool" data-id="${t.id}" role="button" tabindex="0"><span class="tic"><svg viewBox="0 0 20 20">${AIC[t.ic]}</svg></span><span class="tx"><b>${e(t.name)}</b><small>${e(t.d)}</small><span class="badge ${t.on?'ok':''}">${t.on?'Available in sandbox':'Not in sandbox'}</span></span><button class="star" data-a="fav" data-id="${t.id}" aria-pressed="${fav.includes(t.id)}" aria-label="${fav.includes(t.id)?'Remove from favourites':'Add to favourites'}">${fav.includes(t.id)?'★':'☆'}</button></div>`;
+ const grp=(h,ts)=>ts.length?`<h3 class="cath">${h} <small>${ts.length}</small></h3><div class="tools">${ts.map(card).join('')}</div>`:'';
+ return shell('admin',`<div class="body adm"><h1 style="margin:6px 0 4px">Admin Center</h1><p>${TOOLS.filter(t=>t.on).length} of ${TOOLS.length} tools work in the sandbox. Published configuration: version ${curVer()}.</p>
+ <div class="asrch"><input class="fi" style="max-width:420px" placeholder="Search tools" value="${e(U.aq||'')}" data-in="asearch" aria-label="Search tools"><label><input type="checkbox" data-chg="aon" ${U.aon?'checked':''}> Available in sandbox only</label></div>
+ ${q?'':grp('Favourites',fav.map(by).filter(t=>t&&(!U.aon||t.on)))+grp('Recently used',S.adm.recent.map(by).filter(Boolean))}
+ ${[...new Set(TOOLS.map(t=>t.cat))].map(c=>grp(c,list.filter(t=>t.cat===c))).join('')||''}${list.length?'':'<p>No tool matches your search.</p>'}</div>`)}
+function adminGoalPlan(){const g=D().goalPlan,rq=['name','desc','metric','weight','start','due'];
+ return adminWrap('Manage Templates · Goal Plan',`<p>Plan <code>${g.id}</code> · ${g.type} · seeded from <code>aljazeeran-2026 Individual Goal Plan (14).xml</code>. Once published, these labels, required flags and messages drive the goal editor and the adapter’s validation.</p>
+ <div class="two" style="max-width:520px"><div><label class="fl" style="margin-top:6px">Plan start</label>${ci('goalPlan.start',g.start,'date')}</div><div><label class="fl" style="margin-top:6px">Plan end</label>${ci('goalPlan.due',g.due,'date')}</div></div>
+ <h3 class="cath">Fields</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Field</th><th>Label (English)</th><th>Label (Arabic)</th><th>Required</th><th>Max length</th><th>Message when missing (English)</th><th>Message when missing (Arabic)</th><th>Cascade update</th></tr>
+ ${FL.map(f=>{const d=g.fields[f],p='goalPlan.fields.'+f,r=rq.includes(f);return `<tr><td><code>${sapId(f)}</code></td><td>${ci(p+'.label.en',d.label.en)}</td><td>${ci(p+'.label.ar',d.label.ar,'str','dir="rtl"')}</td><td>${r?ci(p+'.req',d.req,'bool','aria-label="Required"'):'–'}</td><td>${d.max!=null?ci(p+'.max',d.max,'num'):'–'}</td><td>${r?ci(p+'.msg.en',(d.msg||{}).en,'str','placeholder="default wording"'):'–'}</td><td>${r?ci(p+'.msg.ar',(d.msg||{}).ar,'str','dir="rtl"'):'–'}</td><td>${cs(p+'.cu',d.cu,[['push-down','push-down'],['regular','regular']])}</td></tr>`}).join('')}</table></div>
+ <h3 class="cath">Status values</h3><div class="tw"><table class="t"><tr><th>Stored value</th><th>Label (English)</th><th>Label (Arabic)</th><th>Flags</th></tr>${g.status.map((s,i)=>`<tr><td><code>${e(s.v)}</code></td><td>${ci('goalPlan.status.'+i+'.en',s.en)}</td><td>${ci('goalPlan.status.'+i+'.ar',s.ar,'str','dir="rtl"')}</td><td>${s.trigger?'<code>trigger-completion=true</code>':'–'}</td></tr>`).join('')}</table></div>`)}
+function adminStates(){const g=D().goalPlan,ks=Object.keys(g.states);
+ return adminWrap('Goal Plan States and Permissions',`<p>Role codes are SAP codes relative to the goal owner, separated by commas. A blank list stays unresolved and is refused; it is never treated as open to everyone. Known codes: ${ROLES.map(r=>`<code>${r}</code>`).join(' ')}</p>
+ ${ks.map(k=>{const s=g.states[k],p='goalPlan.states.'+k;return `<div class="wc" style="margin-bottom:18px"><h3>${e(s.en)} <code>${k}</code></h3>
+  <div class="two"><div><label class="fl">State label (English)</label>${ci(p+'.en',s.en)}</div><div><label class="fl">State label (Arabic)</label>${ci(p+'.ar',s.ar,'str','dir="rtl"')}</div><div><label class="fl">Action label (English)</label>${ci(p+'.actEn',s.actEn)}</div><div><label class="fl">Action label (Arabic)</label>${ci(p+'.actAr',s.actAr,'str','dir="rtl"')}</div></div>
+  <p style="margin:14px 0 6px"><b>Manual transitions from this state</b> (for roles holding <code>change-state</code>)</p>${ks.filter(x=>x!==k).map(x=>`<label style="margin-inline-end:18px"><input type="checkbox" data-cfg="${p}.to" data-t="inlist" data-v="${x}" ${s.to.includes(x)?'checked':''}> ${e(g.states[x].en)} <code>${x}</code></label>`).join('')}
+  <div class="tw" style="margin-top:12px;overflow-x:auto"><table class="t"><tr><th>Action</th><th>Roles</th></tr>${ACTS.map(a=>`<tr><td><code>${a}</code></td><td>${ci(p+'.act.'+a,s.act[a],'roles',`placeholder="${s.act[a]===undefined?'not declared':'blank · unresolved'}"`)}</td></tr>`).join('')}
+  <tr><th>Field</th><th>Write roles · Read roles</th></tr>${FL.map(f=>`<tr><td><code>${sapId(f)}</code></td><td>${ci(p+'.write.'+f,s.write[f],'roles','placeholder="no write grant" aria-label="Write roles"')}<div style="height:6px"></div>${ci(p+'.read.'+f,s.read[f],'roles','placeholder="no read grant" aria-label="Read roles"')}</td></tr>`).join('')}</table></div></div>`}).join('')}`)}
+function adminRoutes(){const c=D(),sts=[['','No change'],...Object.keys(c.goalPlan.states).map(k=>[k,c.goalPlan.states[k].en+' ('+k+')'])];
+ return adminWrap('Manage Route Maps',`<p>Each step names its owner and where the form goes next. A map can be published only if every step is reachable and the path ends at Completed.</p>`+Object.entries(c.routeMaps).map(([id,rm])=>{const p='routeMaps.'+id,nx=[...rm.steps.map(s=>[s.id,s.id+' · '+s.name]),['done','Completed']];
+  return `<div class="wc" style="margin-bottom:18px"><label class="fl" style="margin-top:0">Route map name <code>${id}</code></label>${ci(p+'.name',rm.name)}<p class="lk">${e(rm.src||'')} Used by: ${Object.values(c.forms).filter(F=>F.routeMap===id).map(F=>e(F.name)).join(', ')||'no template'}.</p>${rmBoxes(rm)}
+  <div class="tw" style="overflow-x:auto;margin-top:12px"><table class="t"><tr><th>Step id</th><th>Name</th><th>Owner</th><th>Type</th><th>Goal plan state on entry</th><th>Next step</th><th>Can return to</th><th></th></tr>
+  ${rm.steps.map((s,i)=>{const q=p+'.steps.'+i,b=(d,l,sym)=>`<button class="ib" data-a="rsmv" data-m="${id}" data-i="${i}" data-d="${d}" aria-label="${l}">${sym}</button>`;return `<tr><td><code>${e(s.id)}</code></td><td>${ci(q+'.name',s.name,'str','data-rr="1"')}</td><td>${cs(q+'.owner',s.owner,Object.entries(OWNERS).map(([k,l])=>[k,l+' ('+k+')']))}</td><td>${cs(q+'.kind',s.kind,[['Modify','Modify'],['Signature','Signature']])}</td><td>${cs(q+'.planState',s.planState,sts)}</td><td>${cs(q+'.next',s.next,nx.filter(x=>x[0]!==s.id))}</td><td>${cs(q+'.back',s.back,[['','None'],...nx.filter(x=>x[0]!==s.id&&x[0]!=='done')])}</td><td style="white-space:nowrap">${b(-1,'Move up','▲')}${b(1,'Move down','▼')}${b(0,'Delete step','🗑')}</td></tr>`}).join('')}</table></div>
+  <p><button class="btn" data-a="rsadd" data-m="${id}">Add step</button></p><div class="two" style="max-width:640px"><div><label class="fl">Goal plan state on completion</label>${cs(p+'.donePlanState',rm.donePlanState,sts)}</div><div><label class="fl">Goal plan state when the form is deleted</label>${cs(p+'.deletePlanState',rm.deletePlanState,sts)}</div></div></div>`}).join(''))}
+function formPreview(id){const F=TPL[id],rm=F&&RMAP[F.routeMap];if(!rm)return '';
+ return `<div class="wc"><p class="lk" style="margin-top:0">Preview of published version ${curVer()}. The user’s form and the adapter’s validation read this same configuration.${S.config.draft&&!same(S.config.draft,S.config.pub)?' Your draft appears here after you publish.':''}</p>${rmBoxes(rm)}
+ <div class="tw" style="margin-top:12px;overflow-x:auto"><table class="t"><tr><th>At step</th><th>Owner</th>${F.sections.map(s=>`<th>${e(s.name)}</th>`).join('')}<th>Required fields</th></tr>${rm.steps.map(st=>`<tr><td>${e(st.name)}</td><td>${e(OWNERS[st.owner]||st.owner)}</td>${F.sections.map(s=>`<td>${COUNT[s.type]?ruleText(s,st.id)+(limitsOf(s,st.id).msg?`<br><small>“${e(limitsOf(s,st.id).msg)}”</small>`:''):'–'}</td>`).join('')}<td>${reqAt(F,st.id).map(r=>e(RQF[r.field]||r.field)+(r.role!=='*'?' ('+r.role+')':'')).join(', ')||'–'}</td></tr>`).join('')}</table></div></div>`}
+function adminForms(){const c=D(),id=c.forms[U.atpl]?U.atpl:'appr',F=c.forms[id],rm=c.routeMaps[F.routeMap],p='forms.'+id,steps=rm?rm.steps:[],so=steps.map(s=>[s.id,s.id+' · '+s.name]);
+ return adminWrap('Manage Templates · Performance Forms',`<div class="tabsbar" style="padding:0;margin-bottom:14px;background:none">${Object.entries(c.forms).map(([k,x])=>`<button aria-selected="${k===id}" data-a="ftab" data-t="${k}">${e(x.name)}</button>`).join('')}</div>
+ <div class="wc"><p class="lk" style="margin-top:0">Seeded from <code>FormTemplateDownload (${F.zip}).zip</code></p><div class="two"><div><label class="fl" style="margin-top:0">Template name</label>${ci(p+'.name',F.name,'str','data-rr="1"')}</div><div><label class="fl" style="margin-top:0">Route map</label>${cs(p+'.routeMap',F.routeMap,Object.entries(c.routeMaps).map(([k,x])=>[k,x.name]))}</div></div></div>
+ <h3 class="cath">Sections and entry limits</h3>${F.sections.map((s,i)=>{const q=p+'.sections.'+i;return `<div class="wc" style="margin-bottom:12px"><div class="two"><div><label class="fl" style="margin-top:0">Section name <code>${s.type}</code>${s.plan?` · plan <code>${s.plan}</code> · autosync ${s.autosync?'on':'off'} · ${s.inRating?'in':'not in'} overall rating`:''}</label>${ci(q+'.name',s.name,'str','data-rr="1"')}</div><div></div></div>
+  ${COUNT[s.type]?`<div class="tw" style="margin-top:10px;overflow-x:auto"><table class="t"><tr><th>Applies at</th><th>Minimum entries</th><th>Maximum entries</th><th>Message shown when outside the limit</th></tr><tr><td><b>Every step</b> (section default)</td><td>${ci(q+'.min',s.min,'num','placeholder="none" aria-label="Default minimum"')}</td><td>${ci(q+'.max',s.max,'num','placeholder="none" aria-label="Default maximum"')}</td><td>–</td></tr>
+  ${steps.map(st=>{const b=(s.byStep||{})[st.id]||{},r=q+'.byStep.'+st.id;return `<tr><td>${e(st.name)} <code>${e(st.id)}</code></td><td>${ci(r+'.min',b.min,'num',`placeholder="default" aria-label="Minimum at ${e(st.name)}"`)}</td><td>${ci(r+'.max',b.max,'num',`placeholder="default" aria-label="Maximum at ${e(st.name)}"`)}</td><td>${ci(r+'.msg',b.msg,'str',`placeholder="standard wording" aria-label="Message at ${e(st.name)}"`)}</td></tr>`}).join('')}</table></div>`:'<p class="lk">No entry limits for this section type.</p>'}</div>`}).join('')}
+ <h3 class="cath">Required fields by role and step</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Field</th><th>At step</th><th>For role</th><th>Message</th><th></th></tr>${(F.required||[]).map((r,i)=>{const q=p+'.required.'+i;return `<tr><td>${cs(q+'.field',r.field,Object.entries(RQF))}</td><td>${cs(q+'.step',r.step,so)}</td><td>${cs(q+'.role',r.role,[['*','Any role (*)'],...Object.entries(OWNERS).map(([k,l])=>[k,l+' ('+k+')'])])}</td><td>${ci(q+'.msg',r.msg,'str','placeholder="standard wording"')}</td><td><button class="ib" data-a="rqdel" data-t="${id}" data-i="${i}" aria-label="Delete rule">🗑</button></td></tr>`}).join('')||'<tr><td colspan="5" class="none">No required-field rules</td></tr>'}</table></div>
+ <p><button class="btn" data-a="rqadd" data-t="${id}" ${steps.length?'':'disabled'}>Add rule</button></p><h3 class="cath">Admin preview</h3>${formPreview(id)}`)}
+function adminLaunch(){const ks=Object.keys(P);
+ return adminWrap('Launch Forms',`<form data-f="launch" class="wc" style="max-width:900px"><div class="two"><div><label class="fl" style="margin-top:0" for="ltpl">Form template</label><select class="fi" id="ltpl" name="tpl">${Object.entries(TPL).map(([k,x])=>`<option value="${k}" ${k==='appr'?'selected':''}>${e(x.name)}</option>`).join('')}</select></div><div></div></div>
+ <p style="margin:14px 0 4px"><b>Employees</b></p>${ks.map(k=>`<label class="wr lite" style="justify-content:flex-start"><input type="checkbox" name="emp" value="${k}"> <b>${e(P[k].name)}</b> <span class="lk" style="margin:0">${e(P[k].title||'')}${P[k].mgr?' · manager: '+e(P[P[k].mgr].name):''}</span></label>`).join('')}
+ <p class="lk">Forms start at the first step of the template’s route map, on published version ${curVer()}.</p><p><button class="btn em">Launch</button></p></form>
+ <h3 class="cath">Forms in the sandbox</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Form</th><th>Employee</th><th>Current step</th><th>With</th><th>Launched on</th></tr>${S.forms.filter(f=>TPL[f.tpl]).map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td>${e(TPL[f.tpl].name)}</td><td>${e(P[f.emp].name)}</td><td>${e(stepName(f))}</td><td>${f.status==='completed'?'–':e(P[stepActor(f)].name)}</td><td>${f.ver?'version '+f.ver:'seed'}</td></tr>`).join('')}</table></div>`)}
+function adminVersions(){const v=S.config.ver.slice().reverse();
+ return adminWrap('Configuration Versions',`<p>Each publish adds a version. Loading a version copies it into the draft; nothing changes for users until you publish it.</p><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Version</th><th>Published</th><th>By</th><th>Note</th><th>What changed</th><th></th></tr>
+ ${v.map(x=>`<tr><td><b>${x.n}</b>${x.n===curVer()?' <span class="badge ok">Published</span>':''}</td><td>${e(String(x.at).slice(0,16).replace('T',' '))}</td><td>${e(x.by)}</td><td>${e(x.note)}</td><td>${x.changes&&x.changes.length?`<details><summary>${x.changes.length} change(s)</summary>${x.changes.slice(0,40).map(c=>`<div><code>${e(c)}</code></div>`).join('')}</details>`:'–'}</td><td>${x.n===curVer()?'':`<button class="btn" data-a="vload" data-n="${x.n}">Load into draft</button>`}</td></tr>`).join('')}</table></div>`)}
+function adminPage(tool){
+ if(!isAdmin(ME))return shell('admin',`<div class="body"><h1 style="margin:10px 0">Admin Center</h1><div class="ebox">${e(P[ME].name)} has no administrator access in the sandbox. Sign in as Admin Admin or HR Representative.</div></div>`);
+ return ({goalplan:adminGoalPlan,states:adminStates,routes:adminRoutes,forms:adminForms,launch:adminLaunch,versions:adminVersions,aiadmin:adminAI}[tool]||adminHome)()}
+
+/* ---------- AI services: catalogue, scripted engine and screen pieces ---------- */
+const SIM='<span class="badge ai">Simulated AI · scripted response</span>';
+const aiOk=(a,feat,o)=>{const c=S.config.pub.ai.features[feat];return !!c&&c.on&&hit(c.roles,a,o)};
+const AIF={
+ goalCreate:{name:'Goal Creation',screens:'2026 Individual Goal Plan · Create with AI',sap:'Generate a goal from a short text, regenerate it, and mark the saved goal as enhanced by AI. Switched on in AI Services Administration, with an AI Access role permission.',ajmn:'One focused question when the brief is vague. Suggested targets marked as proposals. Optional link to a published strategy priority.',ver:'Premium AI entitlement. The permission name for performance goals (SAP learning content names “Assisted Development Goals”). Supported languages.'},
+ writing:{name:'Writing',screens:'Performance Appraisal · Section Comments',sap:'AI-assisted writing actions on comment fields: enhance, make shorter, bulleted list, with Apply or Discard.',ajmn:'The original text stays in the field, beside the suggestion, until Apply. Arabic and right-to-left in the demo.',ver:'Premium AI entitlement. SAP learning content says language review is English only. 360 comment fields are not in the sandbox.'},
+ translate:{name:'Translation',screens:'Performance Appraisal · Section Comments',sap:'Translate is one of the AI-assisted writing actions.',ajmn:'English and Arabic pair in the demo.',ver:'Language pairs available in the tenant, Arabic in particular.'},
+ analyzer:{name:'Text Analyzer',screens:'Performance Appraisal · Section Comments',sap:'Scans text boxes, prompts and generated output for potentially biased or harmful language and suggests replacements. Needs AI Access · Assisted Writing with Text Analyzer.',ajmn:'None.',ver:'The term lists SAP applies, and Arabic coverage.'},
+ insights:{name:'Performance Insights',screens:'Performance Appraisal · Manager Evaluation',sap:'A manager generates insights from a section at the top of the form. Needs the template setting Assisted Performance Insights for Manager Review. Insights are not saved on the form and do not print.',ajmn:'The source shown beside each observation. A list of missing evidence when there is too little.',ver:'Sold within Joule Premium for Human Capital Management. Which inputs the tenant reads, including Continuous Performance.'},
+ joule:{name:'Joule-style goal actions',screens:'Goal Details · Ask about this goal',sap:'Joule answers questions about performance and goals in conversation, for example summarising a form.',ajmn:'Two fixed actions on a goal instead of a conversation: summarise, and say what the measure lacks.',ver:'Joule availability, agents and entitlement in the tenant.'}};
+let PAIRS=[{en:'Delivered consistently strong work this year and supported colleagues during the archive migration.',ar:'قدّم عملاً قوياً ومتسقاً هذا العام ودعم زملاءه خلال ترحيل الأرشيف.'}];
+const BIAS=[[/\byoung\b/i,'Age reference','early-career'],[/\bold\b/i,'Age reference','experienced'],[/\bgirls?\b/i,'Gendered term','colleague'],[/\bemotional\b/i,'Subjective trait label','[describe the specific behaviour]'],[/\bbossy\b/i,'Gendered trait label','directive'],[/\blazy\b/i,'Character judgement','[describe the missed deliverable]'],[/\baggressive\b/i,'Subjective trait label','assertive']];
+function aiSim(act,t){const ar=/[؀-ۿ]/.test(t),sent=t.split(/(?<=[.!?؟])\s+|\n+/).map(x=>x.trim()).filter(Boolean),dot=x=>/[.!?؟]$/.test(x)?x:x+'.';
+ if(act==='improve'){let x=sent.map(s=>dot(ar?s:s[0].toUpperCase()+s.slice(1))).join(' ');if(!ar)[[/\ba lot of\b/gi,'a great deal of'],[/\bgood job\b/gi,'strong results'],[/\bvery good\b/gi,'excellent'],[/\bstuff\b/gi,'work'],[/\bgot\b/gi,'achieved'],[/\bbig\b/gi,'significant']].forEach(([a,b])=>x=x.replace(a,b));return{text:x}}
+ if(act==='shorter')return{text:dot(sent.slice(0,Math.max(1,Math.ceil(sent.length/2))).join(' '))};
+ if(act==='bullets')return{text:sent.map(s=>'• '+s.replace(/[.]$/,'')).join('\n')};
+ if(act==='translate'){const p=PAIRS.find(x=>x.en===t||x.ar===t);return p?{text:ar?p.en:p.ar}:{text:null,note:'The simulated service translates only the sandbox sample comment and comments drafted by Performance Insights, word for word as generated.'}}
+ if(act==='analyze'){const flags=BIAS.filter(([re])=>re.test(t)).map(([re,why,sug])=>({term:t.match(re)[0],why,sug}));let x=t;BIAS.forEach(([re,,sug])=>x=x.replace(re,sug));return{flags,text:flags.length?x:null,note:flags.length?'':'No potentially biased or harmful terms found.'}}
+ return{text:t}}
+const stratChain=pid=>{const c=[];for(let n=STRAT.find(s=>s.id===pid);n;n=STRAT.find(s=>s.id===n.up))if(n.pub)c.unshift(n);return c.map(n=>`<div class="abox st"><small>${e(n.lvl)} · ${e(n.owner)}</small><b>${e(n.title)}</b></div>`).join('<div class="arr">↓</div>')};
+const aiDraftNote=ai=>`<div class="aibox"><b>✦ Draft from Create with AI</b> ${SIM}<p>Check the name and the measure, then enter the Weight yourself. Every Plan 14 check runs when you save.${ai.proposed?' <b>The target in the measure is a proposal: confirm it or change it.</b>':''}</p>${ai.prio?`<label><input type="checkbox" id="ailink" checked> Link this goal to the published priority below after saving</label> <span class="badge">AJMN enhancement</span><div style="max-width:520px;margin-top:6px">${stratChain(ai.prio)}</div>`:''}</div>`;
+const WACT={improve:['writing','Improve'],shorter:['writing','Make shorter'],bullets:['writing','Bulleted list'],translate:['translate','Translate EN ⇄ AR'],analyze:['analyzer','Analyze text']};
+function writeBox(f,canRate){if(!canRate)return '';const acts=Object.entries(WACT).filter(([k,v])=>aiOk(ME,v[0],f.emp));if(!acts.length)return '';const w=U.aw&&U.aw.fid===f.id?U.aw:null;
+ return `<div class="aibox noprint" id="aiwbox"><b>✦ Writing assistance</b> ${SIM}<p style="margin:6px 0">${acts.map(([k,v])=>`<button type="button" class="btn" data-a="aiw" data-id="${f.id}" data-act="${k}">${v[1]}</button>`).join(' ')} <button type="button" class="lnk" data-a="aiwsample" data-id="${f.id}">Insert the sample comment</button></p><p class="lk" style="margin:0">Your text stays as it is until you choose Apply.</p>
+ ${w?(w.err?`<div class="ebox" role="alert"><b>${e(w.err)}</b> Your comment is unchanged. <button type="button" class="btn em" data-a="aiw" data-id="${f.id}" data-act="${w.act}">Retry</button></div>`
+  :`${w.flags&&w.flags.length?`<p><b>${w.flags.length} term(s) flagged:</b></p><ul>${w.flags.map(x=>`<li>“${e(x.term)}” · ${e(x.why)} · suggested: ${e(x.sug)}</li>`).join('')}</ul>`:''}${w.note?`<p>${e(w.note)}</p>`:''}${w.text?`<p style="margin-bottom:4px"><b>Suggestion (${WACT[w.act][1]})</b></p><blockquote dir="auto" style="white-space:pre-line">${e(w.text)}</blockquote><button type="button" class="btn em" data-a="aiwok">Apply</button> `:''}<button type="button" class="btn t" data-a="aiwno">Discard</button>`):''}</div>`}
+function insightsBox(f,mine){if(!mine||!secOf(f.tpl,'summary')||!aiOk(ME,'insights',f.emp))return '';const r=U.ins&&U.ins.fid===f.id?U.ins:null,src=S.config.pub.ai.sources;
+ return `<section class="fsec noprint" id="s_ins"><h2>✦ Performance Insights</h2><div class="wc">${SIM}<p class="lk">Generated for the manager from evidence you are permitted to see: goal progress, Continuous Performance entries and review notes. Insights are not saved on the form and do not print. You enter the rating and submit the form yourself.</p>
+ <p><button type="button" class="btn ${r&&!r.err?'':'em'}" data-a="insgen" data-id="${f.id}">${r?(r.err?'Retry':'Regenerate'):'Generate insights'}</button></p>
+ ${r?(r.err?`<div class="ebox" role="alert"><b>${e(r.err)}</b> Nothing on the form was changed.</div>`:`<p><b>Observations</b></p><ul>${r.observations.map(o=>`<li>${e(o.text)} ${src?`<button type="button" class="chip" data-a="evopen" data-id="${f.id}" data-ev="${e(o.src)}">Source</button>`:''}</li>`).join('')||'<li>No permitted evidence found.</li>'}</ul>${src?'<p class="lk">Source beside each observation: <span class="badge">AJMN enhancement</span></p>':''}
+  ${r.missing.length?`<div class="ready bad"><b>${r.enough?'Gaps in the evidence':'Not enough evidence for a suggested comment'}</b><ul>${r.missing.map(m=>`<li>${e(m)}</li>`).join('')}</ul></div>`:''}
+  ${r.comment?`<label class="fl" for="inscm">Suggested comment, to edit before applying: <button type="button" class="lnk" data-a="inslang">${r.lang==='ar'?'Show in English':'عرض بالعربية'}</button></label><textarea class="fi" id="inscm" dir="auto" style="max-width:none" maxlength="4000">${e(r.comment[r.lang==='ar'?'ar':'en'])}</textarea><p><button type="button" class="btn em" data-a="insapply" data-id="${f.id}">Apply to Section Comments</button> <span class="lk">This fills the comment only. The rating stays yours to choose.</span></p>`:''}`):''}</div></section>`}
+function jouleBox(g){if(!aiOk(ME,'joule',g.owner))return '';const r=U.jl&&U.jl.id===g.id?U.jl:null;
+ return `<div class="sh"><span>⌄</span><span>✦ Ask about this goal</span></div><div style="padding:0 22px">${SIM}<p><button class="btn" data-a="joule" data-id="${g.id}" data-act="sum">Summarise this goal</button> <button class="btn" data-a="joule" data-id="${g.id}" data-act="missing">What is the measure missing?</button></p>${r?`<div class="${r.err?'ebox':'aibox'}" dir="auto">${e(r.err||r.text)}</div>`:''}</div>`}
+function adminAI(){const c=D().ai,pub=S.config.pub.ai,pr=U.aprev||'E',PR={E:'Employee, on their own record',EM:'Manager, on a direct report',EH:'HR representative',EX:'Matrix manager'};
+ const row=([k,m])=>{const d=c.features[k],p=pub.features[k];return `<tr><td><b>${m.name}</b><br><small>${e(m.screens)}</small></td><td>${p.on?'<span class="badge ok">On</span>':'<span class="badge">Off</span>'}${d.on!==p.on?`<br><small>draft: ${d.on?'on':'off'}</small>`:''}</td><td>${ci('ai.features.'+k+'.on',d.on,'bool','data-rr="1" aria-label="Enable '+m.name+'"')}</td><td>${ci('ai.features.'+k+'.roles',d.roles,'roles','aria-label="Eligible roles"')}<small>published: ${p.roles.join(', ')||'none'}</small></td>
+  <td><details><summary><span class="badge sapb">SAP documented</span> <span class="badge">AJMN enhancement</span> <span class="badge ver">Tenant verification</span></summary><p><b>Documented by SAP:</b> ${e(m.sap)}</p><p><b>AJMN design enhancement:</b> ${e(m.ajmn)}</p><p><b>Needs tenant verification:</b> ${e(m.ver)}</p></details></td></tr>`};
+ return adminWrap('AI Services Administration',`<p>Switch a feature on, set who is eligible, preview it by role and publish. Application screens, this preview and the adapter all read the published configuration. Every response in the sandbox is scripted and labelled as simulated; no model is called.</p>
+ <div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Feature and supported screens</th><th>Published status</th><th>Enable</th><th>Eligible roles</th><th>Basis</th></tr>${Object.entries(AIF).map(row).join('')}</table></div>
+ <h3 class="cath">AJMN enhancements</h3><div class="wc"><label class="wr lite" style="justify-content:flex-start">${ci('ai.strategyLink',c.strategyLink,'bool','data-rr="1"')} Goal Creation offers a link to a published strategy priority</label><label class="wr lite" style="justify-content:flex-start">${ci('ai.sources',c.sources,'bool','data-rr="1"')} Performance Insights shows the source beside each observation</label></div>
+ <h3 class="cath">Preview by role, on published version ${curVer()}</h3><div class="wc"><label>Role <select class="fi" style="max-width:320px;display:inline-block" data-chg="aprev">${Object.entries(PR).map(([k,l])=>`<option value="${k}" ${k===pr?'selected':''}>${l} (${k})</option>`).join('')}</select></label>
+ <div class="tw" style="margin-top:10px"><table class="t"><tr><th>Feature</th><th>What this role sees</th></tr>${Object.entries(AIF).map(([k,m])=>{const p=pub.features[k];return `<tr><td>${m.name}</td><td>${!p.on?'Hidden: the feature is off':p.roles.includes(pr)?'<b>Shown</b> on '+e(m.screens):'Hidden: this role is not eligible'}</td></tr>`}).join('')}</table></div></div>
+ <h3 class="cath">Recent AI requests</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>When</th><th>By</th><th>Feature</th><th>Record of</th><th>Result</th></tr>${S.ailog.map(x=>`<tr><td>${e(x.at.slice(0,19).replace('T',' '))}</td><td>${e(x.by)}</td><td>${e((AIF[x.feat]||{}).name||x.feat)}</td><td>${e(x.owner)}</td><td><code>${e(x.code)}</code></td></tr>`).join('')||'<tr><td colspan="5" class="none">No requests yet</td></tr>'}</table></div>`)}
+
+const aiBrief=g=>`<div class="aibox"><b>✦ Create with AI</b> ${SIM}<label class="fl" for="aibrief">Describe the goal in a sentence</label><textarea class="fi" id="aibrief" dir="auto" maxlength="500">${e(g.brief||'')}</textarea>${g.ask?`<label class="fl" for="aians"><b>${e(g.ask)}</b></label><input class="fi" id="aians" dir="auto" maxlength="300" value="${e(g.ans||'')}">`:''}${g.err?`<div class="ebox" role="alert"><b>${e(g.err)}</b> Your brief and the goal below are unchanged.</div>`:''}<p><button type="button" class="btn em" data-a="aigen">${g.err?'Retry':g.res?'Regenerate':'Generate draft'}</button> <span class="lk">The draft fills Goal Description and Key Performance Indicator below. Nothing is saved until you choose Save.</span></p></div>`;
+const keepCm=fid=>{const c=document.getElementById('fcm');if(c&&!c.disabled)SAP.formField(ME,fid,'comments',c.value)};
 /* ---------- dialogs ---------- */
 function dialog(){
  const d=U.dlg;if(!d)return '';
@@ -789,9 +1116,11 @@ function dialog(){
  if(d.k==='link'){const ps=SAP.parents(ME,d.id),g=G(d.id);return wrap(tr('link'),ps.length?`<p>${tr('lk_pick')}</p><form data-f="link" data-id="${d.id}" id="lkf">${ps.map(x=>`<label class="wr lite" style="justify-content:flex-start"><input type="radio" name="up" value="${x.id}" ${g.up===x.id?'checked':''} required> <span><b>${e(P[x.owner].name)}</b> · ${e(x.name)}<br><small>${tr('measure')}: ${e(canR(ME,x.owner,'metric')?x.metric:'–')} · ${tr('progress')}: ${x.done}%</small></span></label>`).join('')}</form>`:`<p>${tr('lk_none')}</p>`,ps.length?`<button class="btn em" form="lkf">${tr('confirm')}</button>`:'')}
  if(d.k==='prio'){const g=G(d.id),lab=n=>{const c=[];for(let x=n;x;x=STRAT.find(s=>s.id===x.up))c.unshift(x.title);return c.join(' → ')};return wrap(tr('prio'),`<p>${tr('pr_pick')}</p><p class="lk">${tr('al_design')}</p><form data-f="prio" data-id="${d.id}" id="prf">${STRAT.filter(n=>n.pub).map(n=>`<label class="wr lite" style="justify-content:flex-start"><input type="radio" name="p" value="${n.id}" ${g.prio===n.id?'checked':''} required> <span><small>${e(n.lvl)} · ${e(n.owner)}</small><br>${e(lab(n))}</span></label>`).join('')}</form>`,`<button class="btn em" form="prf">${tr('confirm')}</button>`)}
  if(d.k==='share'){const g=G(d.id),pub=g.vis!=='Public';return wrap(tr(pub?'share':'unshare'),`<p>${tr(pub?'sh_q':'unsh_q',e(g.name.slice(0,120)))}</p>`,`<button class="btn em" data-a="shareok" data-id="${g.id}">${tr('confirm')}</button>`)}
+ if(d.k==='publish'){const c=S.config,ch=diffCfg(c.pub,c.draft),er=validateCfg(c.draft);return wrap('Publish configuration',`<form data-f="publish" id="pubf"><div class="err" id="perr" hidden></div><p>Publishing makes version ${curVer()+1} the configuration for user screens, admin previews and validation.</p>${er.length?`<div class="ebox" role="alert"><b>${er.length} problem(s) to fix before publishing:</b><ul>${er.map(x=>`<li>${e(x)}</li>`).join('')}</ul></div>`:''}<p><b>${ch.length} change(s)</b></p><div class="tw" style="max-height:220px;overflow:auto"><table class="t">${ch.map(x=>`<tr><td><code>${e(x)}</code></td></tr>`).join('')}</table></div><label class="fl" for="pnote">What changed:<b>*</b></label><input class="fi" id="pnote" name="note" maxlength="200" style="max-width:none"></form>`,er.length?'':'<button class="btn em" form="pubf">Publish</button>','')}
+ if(d.k==='evid')return wrap('Evidence',d.err?`<div class="ebox">${e(d.err)}</div>`:`<p><span class="badge">${e(d.item.type)}</span> · ${fmt(d.item.date)} · fictional</p><h3>${e(d.item.title)}</h3>${d.item.lines?`<ul>${d.item.lines.map(x=>`<li>${e(x)}</li>`).join('')}</ul>`:`<p>${e(d.item.text)}</p>`}<p class="lk">Opened through the adapter, which checked your permission on this record first.</p>`);
  if(d.k==='hist'){const f=form(d.id);return wrap('History',`<table class="t"><tr><th>Date</th><th>Event</th></tr>${f.hist.map(h=>`<tr><td>${h.t}</td><td>${e(h.w)}</td></tr>`).join('')}</table>`)}
  if(d.k==='act')return wrap('Create Activity',`<form data-f="act" data-id="${d.id}" id="actf"><label class="fl" for="an">Activity Name:<b>*</b></label><input class="fi" id="an" name="n" required maxlength="200"><label class="fl" for="as">Status:</label><select class="fi s" id="as" name="s"><option>In Progress</option><option>Complete</option></select></form>`,'<button class="btn em" form="actf">Save</button>');
- if(d.k==='mkform')return wrap('Create Form',`<form data-f="mkform" id="mkf"><label class="fl" for="mt">Template:</label><select class="fi s" id="mt" name="tpl">${Object.entries(TPL).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join('')}</select><label class="fl" for="me">Employee:</label><select class="fi s" id="me" name="emp">${reports(ME).map(r=>`<option value="${r}">${e(P[r].name)}</option>`).join('')}</select><p class="lk">A new Individual Goal Form starts at Employee Goal Setting and sets the goal plan to Goals Settings.</p></form>`,'<button class="btn em" form="mkf">Create</button>');
+ if(d.k==='mkform')return wrap('Create Form',`<form data-f="mkform" id="mkf"><label class="fl" for="mt">Template:</label><select class="fi s" id="mt" name="tpl">${Object.entries(TPL).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join('')}</select><label class="fl" for="me">Employee:</label><select class="fi s" id="me" name="emp">${reports(ME).map(r=>`<option value="${r}">${e(P[r].name)}</option>`).join('')}</select><p class="lk">A form starts at the first step of its route map.</p></form>`,'<button class="btn em" form="mkf">Create</button>');
  if(d.k==='tna')return wrap('Create Development Goal',`<form data-f="tna" data-id="${d.id}" id="tnaf"><div class="err" id="terr" hidden></div><label class="fl" for="tn">🎓 Training Goal:<b>*</b></label><textarea class="fi" id="tn" name="name" maxlength="500" required></textarea><div class="cnt"><span data-cnt="tn">500</span> characters left Legal Scan Coaching Advisor</div>
   <label class="fl" for="tc">Category:</label><select class="fi s" id="tc"><option>🗂️ Training Needs Goals</option></select><label class="fl" for="tp">🛡️ Purpose:</label><select class="fi s" id="tp" name="purpose"><option value="">No selection</option>${opt(PURPOSE)}</select><label class="fl" for="td">🏁 Target Date:</label><input class="fi s" type="date" id="td" name="due" value=""><p class="lk">Saved as Private on plan 2004. Purpose and target date are optional.</p></form>`,'<button class="btn em" form="tnaf">Save</button>','');
  return '';
@@ -803,7 +1132,8 @@ function render(){
  document.documentElement.lang=lg();document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
  if(a==='goal'&&b==='new')h=goalForm({plan:c==='dev'?'dev':'perf',owner:S.who,name:'',desc:'',metric:'',weight:'',start:c==='dev'?'2025-01-01':'2026-01-01',due:'2026-12-31',state:'Not Started',done:0,vis:'Public',ms:[],comps:[],mgrapp:'No selection'},true);
  else if(a==='goal'&&G(b)&&G(b).plan!=='tna'&&visible(ME,G(b)))h=c==='edit'?goalForm(G(b)):goalDetail(G(b));
- else if(a==='form'&&form(b)&&(boxOf(form(b))||P[form(b).emp].hr===ME))h=formPage(form(b));
+ else if(a==='form'&&form(b)&&TPL[form(b).tpl]&&(boxOf(form(b))||P[form(b).emp].hr===ME||isAdmin(ME)))h=formPage(form(b));
+ else if(a==='admin')h=adminPage(b);
  else if(a==='perf')h=perfPage(['inbox','enroute','completed'].includes(b)?b:'inbox');
  else if(a==='calib')h=calibPage();
  else if(a==='parity')h=parityPage();
@@ -818,7 +1148,7 @@ window.addEventListener('hashchange',()=>{U.menu=false;U.card=null;U.ferr=null;U
 /* ---------- actions ---------- */
 const msEmpty=()=>`<tr class="nod"><td colspan="4" class="none">${tr('nodata')}</td></tr>`;
 const A={
- reset:()=>{S=seed();ME=S.me;U.calDirty=false;U.ferr=U.ai=U.casc=U.dlg=null;U.failNext=false;go('goals');toast('Sandbox reset to seed data')},
+ reset:()=>{S=seed();ME=S.me;useCfg();U.calDirty=false;U.ferr=U.ai=U.casc=U.dlg=null;U.failNext=false;go('goals');toast('Sandbox reset to seed data')},
  menu:()=>{U.menu=!U.menu;render()},
  lang:el=>{draftNow();S.lang=el.dataset.l;render()},
  go:el=>{U.menu=false;if(el.dataset.h.startsWith('perf'))U.ptab='reviews';go(el.dataset.h)},
@@ -834,7 +1164,7 @@ const A={
  foc:(el,ev)=>{ev.preventDefault();const x=document.getElementById(el.dataset.f);if(x){x.focus();x.scrollIntoView({block:'center'})}},
  new:()=>{U.ret=location.hash.slice(1);go('goal/new/'+S.gtab)},
  fnew:el=>{const f=form(el.dataset.id);S.who=f.emp;S.gtab='perf';U.ret='form/'+f.id;go('goal/new/perf')},
- back:()=>{const f=document.querySelector('form[data-plan=perf]');if(f)delete S.drafts[f.dataset.key];U.ferr=U.ai=null;go(U.ret||'goals')},
+ back:()=>{U.aig=null;const f=document.querySelector('form[data-plan=perf]');if(f)delete S.drafts[f.dataset.key];U.ferr=U.ai=null;go(U.ret||'goals')},
  ddrop:()=>{const f=document.querySelector('form[data-plan=perf]');delete S.drafts[f.dataset.key];U.ferr=U.ai=null;render()},
  del:(el,ev)=>{ev.stopPropagation();const g=G(el.dataset.id);if(g.plan==='perf'){const c=can(ME,g.owner,'delete');if(!c.ok){toast(why({code:'ACTION_DENIED',action:'delete',why:c.why,state:S.pstate[g.owner]}));return}}
   if(!confirm('Delete this goal? This cannot be undone.'))return;const r=SAP.remove(ME,g.id);if(!r.ok){toast(why(r));return}toast(tr('deleted'));if(location.hash.startsWith('#goal/'))go('goals');else render()},
@@ -847,7 +1177,30 @@ const A={
  audit:el=>{U.dlg={k:'audit',id:el.dataset.id};render()},align:el=>{U.dlg={k:'align',id:el.dataset.id};render()},
  act:el=>{U.dlg={k:'act',id:el.dataset.id};render()},hist:el=>{U.dlg={k:'hist',id:el.dataset.id};render()},
  mkform:()=>{U.dlg={k:'mkform'};render()},
- tna:el=>{const f=form(el.dataset.id);if(formTna(f).length>=LIMITS.tna.max){toast(why({code:'SECTION_MAX',section:'Training Needs',max:LIMITS.tna.max}));return}U.dlg={k:'tna',id:f.id};render()},
+ tna:el=>{const f=form(el.dataset.id),s=secOf(f.tpl,'tna'),l=limitsOf(s,f.step);if(l.max!=null&&formTna(f).length>=l.max){toast(why({code:'SECTION_MAX',section:s.name,max:l.max}));return}U.dlg={k:'tna',id:f.id};render()},
+ aigo:()=>{U.ret=location.hash.slice(1);U.aig={key:'new:'+S.who};go('goal/new/perf')},
+ aigen:()=>{const f=document.querySelector('form[data-plan=perf]');draftNow();const g=U.aig,b=document.getElementById('aibrief'),an=document.getElementById('aians');g.brief=b?b.value:'';g.ans=an?an.value:'';
+  const r=SAP.aiGoal(ME,f.dataset.owner,g.brief,g.ans);if(!r.ok){g.err=why(r);render();return}g.err=null;
+  if(r.ask){g.ask=r.ask;g.res=null;U.focus='aians';render();return}S.drafts[f.dataset.key]={at:Date.now(),v:Object.assign(readForm(f),r.draft)};g.res=r;U.focus='weight';render()},
+ aiw:el=>{const fid=el.dataset.id,c=document.getElementById('fcm');keepCm(fid);const r=SAP.aiText(ME,fid,el.dataset.act,c?c.value:'');U.aw=r.ok?Object.assign({fid,act:el.dataset.act},r):{fid,act:el.dataset.act,err:why(r)};render();const b=document.getElementById('aiwbox');if(b)b.scrollIntoView({block:'center'})},
+ aiwok:()=>{const r=SAP.formField(ME,U.aw.fid,'comments',U.aw.text);toast(r.ok?'Suggestion applied to Section Comments':why(r));U.aw=null;U.focus='fcm';render()},
+ aiwno:el=>{if(U.aw)keepCm(U.aw.fid);U.aw=null;render()},
+ aiwsample:el=>{SAP.formField(ME,el.dataset.id,'comments',PAIRS[0][lg()]);U.aw=null;U.focus='fcm';render()},
+ insgen:el=>{const fid=el.dataset.id;keepCm(fid);const r=SAP.aiInsights(ME,fid);U.ins=r.ok?Object.assign({fid,lang:lg()},r):{fid,err:why(r)};render();const b=document.getElementById('s_ins');if(b)b.scrollIntoView({block:'start'})},
+ inslang:()=>{U.ins.lang=U.ins.lang==='ar'?'en':'ar';render()},
+ insapply:el=>{const t=document.getElementById('inscm').value,r=SAP.formField(ME,el.dataset.id,'comments',t);toast(r.ok?'Comment applied. Choose the rating yourself, then submit.':why(r));U.focus='fcm';render()},
+ evopen:el=>{const r=SAP.evidence(ME,el.dataset.ev);U.dlg={k:'evid',item:r.item,err:r.ok?null:why(r)};render()},
+ joule:el=>{const r=SAP.aiJoule(ME,el.dataset.id,el.dataset.act);U.jl={id:el.dataset.id,text:r.text,err:r.ok?null:why(r)};render()},
+ tool:el=>{const t=TOOLS.find(x=>x.id===el.dataset.id);if(!t.on){toast(t.name+' is not built in the sandbox');return}S.adm.recent=[t.id,...S.adm.recent.filter(x=>x!==t.id)].slice(0,4);go(t.href||'admin/'+t.id)},
+ fav:(el,ev)=>{ev.stopPropagation();const id=el.dataset.id;S.adm.fav=S.adm.fav.includes(id)?S.adm.fav.filter(x=>x!==id):[...S.adm.fav,id];render()},
+ apub:()=>{U.dlg={k:'publish'};render()},
+ adiscard:()=>{if(!confirm('Discard the draft? Unpublished changes are lost.'))return;SAP.discard(ME);render()},
+ ftab:el=>{U.atpl=el.dataset.t;render()},
+ vload:el=>{const r=SAP.restore(ME,+el.dataset.n);toast(r.ok?'Version '+el.dataset.n+' loaded into the draft. Publish to put it in force.':why(r));render()},
+ rsadd:el=>{SAP.adminEdit(ME,d=>{const rm=d.routeMaps[el.dataset.m],last=rm.steps[rm.steps.length-1];let n=1;while(rm.steps.some(s=>s.id===String(n)))n++;rm.steps.push({id:String(n),name:'New step',owner:'EM',kind:'Modify',planState:'',next:'done',back:last?last.id:''});if(last&&last.next==='done')last.next=String(n)});render()},
+ rsmv:el=>{SAP.adminEdit(ME,d=>{const st=d.routeMaps[el.dataset.m].steps,i=+el.dataset.i,dir=+el.dataset.d;if(!dir)st.splice(i,1);else if(st[i+dir]){const x=st[i];st[i]=st[i+dir];st[i+dir]=x}});render()},
+ rqadd:el=>{SAP.adminEdit(ME,d=>{const F=d.forms[el.dataset.t];(F.required=F.required||[]).push({field:'comments',step:d.routeMaps[F.routeMap].steps[0].id,role:'*',msg:''})});render()},
+ rqdel:el=>{SAP.adminEdit(ME,d=>{d.forms[el.dataset.t].required.splice(+el.dataset.i,1)});render()},
  fdel:el=>{if(!confirm('Delete this form? For the Individual Goal Form the goal plan returns to Goals Settings.'))return;const r=SAP.formDelete(ME,el.dataset.id);toast(r.ok?'Form deleted':why(r));go('perf')},
  close:()=>{U.dlg=null;U.casc=null;render()},
  msadd:()=>{const b=document.getElementById('msb'),n=b.querySelector('.nod');if(n)n.remove();b.insertAdjacentHTML('beforeend',msRow({id:'n'+Date.now().toString(36)+b.children.length},true,perfForm.ops));draftNow()},
@@ -867,7 +1220,7 @@ const A={
  form:(el,ev)=>{if(ev.target.closest('input'))return;go('form/'+el.dataset.id)},
  noop:(el,ev)=>ev.stopPropagation(),
  exp:el=>{U.exp[el.dataset.id]=!U.exp[el.dataset.id];render()},
- jump:el=>{const s=document.getElementById(el.dataset.s);if(s)s.scrollIntoView({behavior:'smooth'})},
+ jump:(el,ev)=>{ev.preventDefault();const s=document.getElementById(el.dataset.s);if(s)s.scrollIntoView({behavior:'smooth'})},
  ctab:el=>{U.ctab=el.dataset.t;render()},
  calsave:()=>{U.calDirty=false;U.calSnap=null;toast('Session saved');render()},
  calundo:()=>{if(U.calSnap){S.cal=JSON.parse(U.calSnap);U.calSnap=null}U.calDirty=false;render()},
@@ -878,19 +1231,24 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&(U.dlg||U.casc||U.menu||U.card)){U.dlg=U.casc=U.card=null;U.menu=false;render()}});
 document.addEventListener('input',ev=>{const t=ev.target;const c=t.id&&document.querySelector(`[data-cnt="${t.id}"]`);if(c)c.textContent=t.maxLength-t.value.length;
  if(t.closest&&t.closest('form[data-plan=perf]')){draftNow();if(t.id==='weight'){const w=document.getElementById('wtot');w.textContent=wtText(+w.dataset.oth,+t.value||0)}}
+ if(t.dataset.in==='asearch'){U.aq=t.value;render();const i=document.querySelector('[data-in=asearch]');i.focus();i.setSelectionRange(i.value.length,i.value.length)}
  if(t.dataset.in==='csearch'){U.casc.q=t.value;render();const i=document.querySelector('[data-in=csearch]');i.focus();i.setSelectionRange(i.value.length,i.value.length)}});
 document.addEventListener('change',ev=>{const t=ev.target,k=t.dataset.chg,c=U.casc;
  if(t.id==='state'&&t.closest('form[data-plan=perf]'))document.getElementById('trg').hidden=t.value!=='On Track';
+ if(t.dataset.cfg){cfgChange(t);return}
  if(!k)return;
- if(k==='me'){S.me=ME=t.value;S.who=ME;U.casc=U.dlg=U.ferr=null;go(location.hash.startsWith('#perf')||location.hash.startsWith('#form')?'perf':location.hash.startsWith('#parity')?'parity':'goals')}
+ if(k==='aon'){U.aon=t.checked;render()}
+ if(k==='me'){S.me=ME=t.value;S.who=ME;U.casc=U.dlg=U.ferr=null;go(location.hash.startsWith('#perf')||location.hash.startsWith('#form')?'perf':location.hash.startsWith('#parity')?'parity':location.hash.startsWith('#admin')?location.hash.slice(1):'goals')}
  if(k==='fail'){U.failNext=t.checked}
+ if(k==='aifail'){U.aiFail=t.checked}
+ if(k==='aprev'){U.aprev=t.value;render()}
  if(k==='cfg'){S.cfg[t.dataset.k]=t.checked;render()}
  if(k==='gstate'){const g=G(t.dataset.id);if(g.plan==='perf'){const r=SAP.save(ME,{id:g.id,state:t.value});if(!r.ok)toast(why(r))}else{aud(g,`Status: ${g.state} → ${t.value}`);g.state=t.value;g.updated=TODAY}render()}
  if(k==='cgoal'){c.goals=t.checked?[...c.goals,t.value]:c.goals.filter(x=>x!==t.value);render()}
  if(k==='call'){c.goals=t.checked?plan(ME,'perf').map(g=>g.id):[];render()}
  if(k==='crec'){c.rec=t.checked?[...c.rec,t.value]:c.rec.filter(x=>x!==t.value);render()}
  if(k==='crall'){const el=SAP.eligible(ME);c.rec=t.checked?reports(ME).filter(r=>el.includes(r)):[];render()}
- if(k==='frating'){form(t.dataset.id).rating=t.value;const cm=document.getElementById('fcm');if(cm)form(t.dataset.id).comments=cm.value;render()}
+ if(k==='frating'){keepCm(t.dataset.id);const r=SAP.formField(ME,t.dataset.id,'rating',t.value);if(!r.ok)toast(why(r));render()}
  if(k==='calcol')calMove(t.dataset.pid,+t.value)});
 document.addEventListener('dragstart',ev=>{const p=ev.target.closest&&ev.target.closest('.cp');if(p)ev.dataTransfer.setData('text/plain',p.dataset.pid)});
 document.addEventListener('dragover',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c){ev.preventDefault();c.classList.add('drop')}});
@@ -899,8 +1257,10 @@ document.addEventListener('drop',ev=>{const c=ev.target.closest&&ev.target.close
 document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target,fd=new FormData(f),k=f.dataset.f;
  const fail=(id,m)=>{const x=document.getElementById(id);x.textContent=m;x.hidden=false;x.scrollIntoView({block:'center'})};
  if(k==='goal'&&f.dataset.plan==='perf'){const key=f.dataset.key,p=readForm(f),isNew=!f.dataset.id;S.drafts[key]={at:Date.now(),v:p};
-  const r=SAP.save(ME,Object.assign({},p,isNew?{owner:f.dataset.owner}:{id:f.dataset.id}));
+  const aig=isNew&&U.aig&&U.aig.key===key&&U.aig.res?U.aig:null,lk=document.getElementById('ailink');
+  const r=SAP.save(ME,Object.assign({},p,isNew?{owner:f.dataset.owner}:{id:f.dataset.id},aig?{aiAssist:true}:{}));
   if(!r.ok){U.ferr=Object.assign({key},r);render();const x=document.querySelector('[aria-invalid=true]')||document.querySelector('.ebox');if(x){x.focus&&x.focus();x.scrollIntoView({block:'center'})}return}
+  if(aig&&aig.res.prio&&lk&&lk.checked){const l=SAP.linkPrio(ME,r.goal.id,aig.res.prio);if(!l.ok)toast(why(l))}U.aig=null;
   U.ferr=U.ai=null;toast(tr('saved')+(r.warn.length?' · '+r.warn.map(w=>tr(w)).join(' '):''));go(U.ret||'goals');return}
  if(k==='goal'){const isNew=!f.dataset.id,g=isNew?{id:'d'+(S.seq++),plan:'dev',planId:2005,owner:S.who,acts:[],audit:[],learn:[],comments:[],comps:[],mgrapp:'No selection',done:0,desc:''}:G(f.dataset.id);
   const v=n=>fd.has(n)?String(fd.get(n)).trim():g[n];
@@ -913,17 +1273,19 @@ document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target,fd
  if(k==='cedit'){U.casc.edits[f.dataset.id]=String(fd.get('t')).trim()||G(f.dataset.id).name;U.casc.ed=null;render()}
  if(k==='comment'){const x=String(fd.get('x')).trim();if(!x)return;G(f.dataset.id).comments.push({by:P[ME].name,t:fmt(TODAY),x});render()}
  if(k==='act'){G(f.dataset.id).acts.unshift({n:fd.get('n'),s:fd.get('s'),c:'today'});U.dlg=null;render()}
- if(k==='mkform'){const r=SAP.formCreate(ME,fd.get('tpl'),fd.get('emp'));U.dlg=null;toast(r.ok?'Form created':'This employee already has an open Individual Goal Form.');go('perf')}
+ if(k==='mkform'){const r=SAP.formCreate(ME,fd.get('tpl'),fd.get('emp'));U.dlg=null;toast(r.ok?'Form created at '+fstep(r.form).name:'This employee already has an open Individual Goal Form.');go('perf')}
  if(k==='tna'){const r=SAP.addTna(ME,f.dataset.id,{name:fd.get('name'),purpose:fd.get('purpose'),due:fd.get('due')});if(!r.ok)return fail('terr',why(r));U.dlg=null;render()}
- if(k==='pform'){const fm=form(f.dataset.id),act=ev.submitter?ev.submitter.value:'save',ap=fm.tpl==='appr';
-  if(ap){fm.rating=fd.get('rating')||fm.rating;fm.comments=String(fd.get('comments')||'')}
+ if(k==='publish'){const r=SAP.publish(ME,fd.get('note'));if(!r.ok)return fail('perr',r.code==='CONFIG_INVALID'?'Fix these before publishing: '+r.errors.join(' · '):r.code==='NOTE_REQUIRED'?'Add a short note saying what changed.':why(r));U.dlg=null;toast('Published as version '+r.n);render()}
+ if(k==='launch'){const r=SAP.launch(ME,fd.get('tpl'),fd.getAll('emp'));if(!r.ok){toast(r.code==='NO_EMPLOYEES'?'Select at least one employee.':why(r));return}
+  const ok=r.forms.filter(x=>x.ok),no=r.forms.filter(x=>!x.ok);toast(`${ok.length} form(s) launched`+(no.length?` · ${no.length} skipped: an open Individual Goal Form already exists`:''));render()}
+ if(k==='pform'){const fm=form(f.dataset.id),act=ev.submitter?ev.submitter.value:'save';
+  if(fd.has('rating'))SAP.formField(ME,fm.id,'rating',fd.get('rating'));if(fd.has('comments'))SAP.formField(ME,fm.id,'comments',fd.get('comments'));
   if(act==='save'){toast('Form saved');render();return}
   if(act==='close'){toast('Form saved');go('perf');return}
-  if(act==='prev'){const r=SAP.formPrev(ME,fm.id);toast(r.ok?'Form sent back to Employee Goal Setting':why(r));go('perf');return}
-  if(ap){if(!fm.rating)return fail('ferr','Overall Form Rating is required before the form can move to the next step.');if(!fm.comments.trim())return fail('ferr','Section Comments are required before the form can move to the next step.')}
+  if(act==='prev'){const r=SAP.formPrev(ME,fm.id);toast(r.ok?'Form sent back to '+fstep(fm).name:why(r));go('perf');return}
   const r=SAP.formNext(ME,fm.id);
   if(!r.ok){render();const x=document.getElementById('fready');if(x)x.scrollIntoView({block:'center'});toast(r.code==='SECTION'?tr('ready_bad',r.issues.length):why(r));return}
-  toast(r.done?'Form completed':'Form sent to DLM Goals Review');go('perf')}
+  toast(r.done?'Form completed':`Form sent to ${fstep(fm).name} · ${P[stepActor(fm)].name}`);go('perf')}
 });
 render();
 </script>
