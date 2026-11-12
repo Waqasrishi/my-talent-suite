@@ -41,18 +41,22 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
 ### Goals Cycle Hub
-- **Outbound alignment**: Link a goal to the goals it supports, including goals in other departments; each link waits for that goal's owner.
-- **Inbound alignment**: See the goals that support yours, and accept or reject each link with a reason.
-- **Main alignment**: One outbound link per goal is its main one; it sets the path to a pillar and counts the goal once in reports.
-- **Approval**: Submit, send back with a comment, revise and approve; approving also accepts the goal's link to the approver's own goal.
-- **Strategy map**: Pillars to staff as connected boxes, with cross-department and pending links shown, and goals not aligned to strategy flagged.
-- **Dashboard**: Approved goals, how many trace to a pillar, coverage by level, progress by pillar, unaligned goals and who is waiting on what.
+- **Measured key results**: Each key result is a number from a start to a target (higher or lower is better), done or not done, or a list of milestones, with an optional weight.
+- **Progress calculated**: Goal progress is the weighted result of its key results, or the average of the goals aligned to it; no data, behind start and exceeded are shown as such.
+- **Check-ins**: Owners record current values, how it is going and a note; a check-in older than 30 days shows as overdue.
+- **Goal cycles**: Switch between the 2025 and 2026 cycles; closed cycles are read-only.
+- **Goal types and weights**: Organisation, team and individual goals, with a due date inside the cycle and a weight; your weights are checked against 100%.
+- **Outbound and inbound alignment**: Link a goal to the goals it supports, in any department, and accept or reject links to yours with a reason.
+- **Approval and changes**: Submit, send back, revise and approve; editing an approved goal sends it back for approval and asks the owners of aligned goals to review theirs.
+- **Archive**: Archive and unarchive approved goals instead of deleting them; goals aligned to an archived goal are flagged.
+- **All goals**: Search, filter by department, type, approval and health, sort, and export the same list to CSV.
+- **Strategy map and dashboard**: Pillars to staff as connected boxes, health of goals, coverage by level, progress by pillar, unaligned goals and who is waiting on what.
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
 - **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
-- **Goals Cycle Hub**: /goals-hub.html — Goals aligned inbound and outbound, from strategy pillars down to staff, with approvals and a strategy map.
+- **Goals Cycle Hub**: /goals-hub.html — Measured goals with check-ins, cycles and inbound and outbound alignment, from strategy pillars down to staff.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions
