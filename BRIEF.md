@@ -18,10 +18,17 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Strategy tree**: One editable hierarchy from DG priority to deliverable, with owners changed in place.
 - **Record**: Who decided or confirmed what, and when.
 ### SuccessFactors replica
-- **Goal plan**: The 2026 Individual Goal Plan with its states, weights, milestones and goal details.
-- **Cascade goals**: A four-step wizard that copies goals to direct reports, aligned up.
+- **Goal plan**: The 2026 Individual Goal Plan with its states, weights, milestones and goal details, in English and Arabic.
+- **View as a person**: Sign in as the employee, manager, matrix manager, HR representative or a peer to see what each may read and change.
+- **Permissions by state**: What can be edited, created, deleted or shared follows the plan 14 template in each state, with the reason shown when something is read-only.
+- **Goal editor**: Errors beside the field, a live weight total, autosaved drafts kept apart from saved goals, and a retry when a save fails.
+- **Suggest a measure**: A scripted helper flags what a measure of success lacks and drafts one to confirm.
+- **Assign a linked goal**: A four-step wizard that previews the change for each eligible recipient before creating linked goals.
+- **Alignment**: Link a goal to another goal or to a published strategy priority and open the chart of connected boxes.
+- **Ready to Submit**: A summary of what blocks the goal form, linked to the failing field.
+- **Tests and parity**: The nine acceptance tests run in the page, beside the template's permissions and the list of tenant behaviour not yet verified.
 - **Development plan**: Career development goals with statuses, comments and manager approval.
-- **Performance forms**: The 2026 goal form and appraisal form, with training needs and overall rating.
+- **Performance forms**: The 2026 goal form, which moves the goal plan between its states, and the appraisal form with up to three training needs and an overall rating.
 - **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
 ## Pages
@@ -33,3 +40,5 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - The answers marked "Prototype · scripted" are seeded, not from a model.
 - Data lives in the browser only; "Reset sandbox" restores the seed.
 - The server serves these three pages and nothing else in the folder.
+- The SuccessFactors replica talks to a simulated SAP adapter in the page; role codes such as ED are SAP codes relative to the goal owner, not job titles.
+- A 100% weight total and a manager minimum of one training need are off until confirmed; both can be switched on under Tests and parity.

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AJMN SuccessFactors Replica Sandbox</title>
 <style>
-/* A replica of AJMN's current SuccessFactors setup (goal plan 14, development plans 2004 and 2005, the 2026 forms, calibration), with synthetic data. */
+/* A replica of AJMN's current SuccessFactors setup (goal plan 14, development plans 2004 and 2005, the 2026 forms, calibration), with synthetic data and a simulated SAP adapter. */
 :root{--hdr:#243267;--blue:#8FAEDD;--blue-d:#7C9FD6;--ink:#1D2D3E;--ink2:#131E29;--muted:#556B82;--line:#D9DDE3;--bg:#F5F6F7;--card:#FFFFFF;--link:#0064D9;--sel:#EBF1FA;
  --green:#30914C;--yellow:#B89B00;--red:#C0392B;--amber:#F0A93B;--amber-soft:#FFF6E5}
 *{box-sizing:border-box}
@@ -177,6 +177,42 @@ table.t{border-collapse:collapse;width:100%}
 .err{color:#BB0000;margin:8px 0}
 @media(max-width:900px){.side,.fnav{display:none}.hdr{padding:0 12px}.info{grid-template-columns:repeat(2,minmax(0,1fr))}.body,.ph{padding-left:14px}}
 @media print{.hdr,.sand,.side,.sub,.foot{display:none}}
+/* 2026 goal plan parity additions */
+code{font:12px ui-monospace,Menlo,Consolas,monospace;background:#EEF0F2;border-radius:4px;padding:1px 5px}
+.sand label{display:inline-flex;gap:5px;align-items:center}
+.sand select{border:1px solid #E6C68A;background:#fff;border-radius:5px;padding:2px 4px}
+.lng button{border-radius:0;margin:0}.lng button:first-child{border-radius:5px 0 0 5px}.lng button:last-child{border-radius:0 5px 5px 0;border-left:0}
+.lng button[aria-pressed=true]{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.strow{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue-d);border-radius:8px;padding:9px 14px;margin:0 0 10px;max-width:1100px}
+.note div+div{color:var(--muted);margin-top:4px;font-size:13px}
+.note.dr{border-left-color:var(--amber);background:var(--amber-soft)}
+.ready{background:#F1F9F3;border:1px solid #BFE0C8;border-radius:8px;padding:9px 14px;margin:0 0 10px;max-width:1100px}
+.ready.bad{background:#FEF7D9;border-color:#E9D48A}
+.ready ul,.ebox ul{margin:6px 0 2px;padding-inline-start:20px}
+.badge{display:inline-block;background:var(--amber-soft);border:1px solid #E6C68A;border-radius:10px;padding:0 8px;font-size:11.5px;color:var(--ink);font-weight:400}
+.lk{color:var(--muted);font-size:12.5px;margin:5px 0 0;max-width:1040px}
+.ferr{color:#BB0000;font-weight:700;margin:5px 0 0}
+.fi[aria-invalid=true]{border-color:#BB0000;box-shadow:0 0 0 1px #BB0000}
+.ebox{background:#FFF1F0;border:1px solid #E7A9A4;border-radius:8px;padding:10px 14px;margin:0 0 6px;max-width:1040px}
+.aibox{background:#F4F1FB;border:1px solid #CFC4EC;border-radius:8px;padding:10px 14px;margin:8px 0 0;max-width:1040px}
+.aibox blockquote{margin:6px 0 10px;padding:6px 10px;background:#fff;border-radius:6px}
+.abox{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0;display:flex;flex-direction:column;gap:3px}
+.abox small{color:var(--muted);font-size:12.5px}.abox span{font-size:13px}
+.abox.st{border-left:4px solid var(--hdr)}
+.abox.me{padding:0;border:2px solid var(--ink2)}.abox.me .abox{border:0;margin:0}
+.arr{text-align:center;color:var(--muted);line-height:1}
+.lnk{border:0;background:none;color:var(--link);cursor:pointer;font-weight:700;padding:2px 0;margin-inline-end:14px}
+.lnks{margin-top:12px}
+[dir=rtl] .modmenu button,[dir=rtl] .pop button,[dir=rtl] .pp,[dir=rtl] .side .nv,[dir=rtl] .fnav button,[dir=rtl] .t th{text-align:right}
+[dir=rtl] .cnt{text-align:left}
+[dir=rtl] .kpis .w{margin-left:0;margin-right:auto;text-align:left}
+[dir=rtl] .gc .dots{right:auto;left:12px}[dir=rtl] .gc .gt{padding-right:0;padding-left:40px}
+[dir=rtl] .pop{right:auto;left:10px}
+[dir=rtl] .side{border-right:0;border-left:1px solid var(--line)}
+[dir=rtl] .note{border-left:1px solid var(--line);border-right:4px solid var(--blue-d)}
+[dir=rtl] .pp::after{content:"‹"}
+[dir=rtl] .facts div{border-right:0;border-left:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -185,12 +221,25 @@ table.t{border-collapse:collapse;width:100%}
 <script>
 const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TODAY='2026-11-12';
-const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'–';
+const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString(S&&S.lang==='ar'?'ar-u-nu-latn':'en-US',{month:'short',day:'numeric',year:'numeric'}):'–';
 const mdy=d=>{const[y,m,x]=d.split('-');return `${m}/${x}/${y}`};
 
-/* ---------- configuration, from the exported templates ---------- */
-const PSTATE={empdraft:'Goals Settings',unlockedtodlm:'Goals Review',locked:'Goals Completed'};
-const GST=['In Progress','Completed','Paused','Cancelled'];
+/* ---------- plan 14 template, as exported: raw SAP codes are kept, labels are resources ---------- */
+const RW=['E','EM','EM+','EX','ED','EH','EY','F','OP','OC','Cascader'],RR=['E','EM','EM+','EX','ED','EY','F','OP','OC','EC','Cascader'],RO=['E','EM','EX'],CP=['EM','EM+','EX','ED','EC'],CA=['E',...CP];
+const CORE=['name','desc','metric','weight','start','due','ms'],FL=[...CORE,'state','done'];
+const fp=(core,extra)=>{const o={};CORE.forEach(f=>o[f]=core[f]||core._||[]);o.state=[...new Set([...(core.state||core._||[]),...extra])];o.done=extra;return o};
+const ACT0={'change-state':['EH'],'private-access':RR,'cascade-pull':CA,'cascade-push':CP,'cascade-align':CA,'unalign-parent':['E'],'unalign-child':['E'],move:RO};
+const TEMPLATE={id:14,type:'Business',start:'2026-01-01',due:'2026-12-31',
+ fields:{name:{max:500,req:1,cu:'push-down'},desc:{max:2000,cu:'push-down'},metric:{max:1000,req:1,cu:'push-down'},weight:{req:1,cu:'regular'},start:{cu:'push-down'},due:{cu:'push-down'},state:{cu:'regular'},done:{cu:'regular'},ms:{sap:'milestones',cu:'push-down'}},
+ status:[{v:'Not Started',en:'In Progress',ar:'يُعمل عليها حالياً',c:'#3B9909'},{v:'On Track',en:'Completed',ar:'مكتملة',c:'#2585BC',trigger:true},{v:'Behind',en:'Paused',ar:'متوقف مؤقتًا',c:'#D68C0C'},{v:'Completed',en:'Cancelled',ar:'تم الإلغاء',c:'#C10B0B'}],
+ states:{
+  empdraft:{en:'Goals Settings',ar:'وضع الأهداف',actEn:'Send Back to Employee',actAr:'إرجاع إلى الموظف',to:['locked'],
+   act:{...ACT0,create:RO,delete:RO,share:['E','EM','EX','EC']},read:fp({_:RR},[...RW,'EC']),write:fp({_:RO},RW)},
+  unlockedtodlm:{en:'Goals Review',ar:'مراجعة الأهداف',actEn:'Send Back to DLM',actAr:'إرجاع إلى المدير المباشر',to:['empdraft','locked'],
+   act:{...ACT0,'create-row':[],'delete-row':[],'move-row':[],create:[],delete:[],share:[]},read:fp({_:RR.filter(r=>r!=='EC')},[...RW,'EC']),write:fp({state:['E'],ms:['E']},RW)},
+  locked:{en:'Goals Completed',ar:'اكتمال الهدف',actEn:'Lock',actAr:'قفل',to:['unlockedtodlm','empdraft'],
+   act:{...ACT0,'create-row':RO,'delete-row':RO,'move-row':RO,create:['EM'],delete:[],share:[]},read:fp({_:RR},[...RW,'EC']),write:fp({state:RO,ms:RO,weight:RO},RW)}}};
+const ST=TEMPLATE.status,LIMITS={goals:{min:1,max:50},tna:{min:0,max:3}};
 const DST=['Not Started','On Track','Behind','Completed','At Risk'];
 const DCOL={'Not Started':'#1D2D3E','On Track':'#B89B00','Behind':'#D9534F','Completed':'#4CAF50','At Risk':'#E41E1E'};
 const MGRAPP=['No selection','Yes','No'];
@@ -198,25 +247,130 @@ const PURPOSE=['🌿 Develop in Current Role','🌟 Prepare for Future role','�
 const SCALE=['Unsatisfactory Performance','Needs Improvements','🎯 Achiever','Champions','Ideator','Innovator'];
 const CALCOLS=['Not Rated / Excluded','Unsatisfactory Performance','Needs Improvements','Achiever','Champions','Ideator','Innovator'];
 const TPL={goal:{name:'2026 Individual Goal Form',steps:['Employee Goal Setting','DLM Goals Review']},appr:{name:'2026 Performance Appraisal Form',steps:['DLM Appraisal']}};
-const INTRO=`<div>All goals must be aligned to the organization's strategic goals and linked to the strategic alignment.</div><br><div><strong>Goals:</strong> The establishment of clear, Specific, Measurable, Achievable, Relevant, and Time-bound (SMART) goals will guide our efforts.</div><br><div><strong>Intended Results:</strong> Defined outcomes that should be thoughtfully aligned with our overarching mission; this will be the focus of our goal-setting initiatives.</div><br><div><strong>KPIs:</strong> Key Performance Indicators (KPIs) will serve as the metrics through which we will measure progress and success.</div><br><div>Set a minimum of one (1) goals, ensuring their combined weight totals to 100%. Each goal weight to be within the range of 1% to 50%.</div>`;
+const INTRO={en:`<div>All goals must be aligned to the organization's strategic goals and linked to the strategic alignment.</div><br><div><strong>Goals:</strong> The establishment of clear, Specific, Measurable, Achievable, Relevant, and Time-bound (SMART) goals will guide our efforts.</div><br><div><strong>Intended Results:</strong> Defined outcomes that should be thoughtfully aligned with our overarching mission; this will be the focus of our goal-setting initiatives.</div><br><div><strong>KPIs:</strong> Key Performance Indicators (KPIs) will serve as the metrics through which we will measure progress and success.</div><br><div>Set a minimum of one (1) goals, ensuring their combined weight totals to 100%. Each goal weight to be within the range of 1% to 50%.</div>`,
+ ar:`<div>على جميع الأهداف ان تكون متوافقة مع الأهداف الاستراتيجية للمؤسسة، ومرتبطة بالمنظور الاستراتيجي (بطاقة الأداء المتوازن).</div><br><div><strong>الأهداف:</strong> إنشاء أهداف واضحة، محددة، قابلة للقياس والتحقيق، ذات صلة، ومحددة زمنياً (SMART) ستساعد في توجيه الجهود المبذولة.</div><br><div><strong>النتائج المطلوبة:</strong> هي النتائج المحددة التي يجب أن تكون مرتبطة بعناية مع رؤيتنا العامة؛ وسيكون هذا محور مبادراتنا في تحديد الأهداف.</div><br><div><strong>مؤشرات الأداء الرئيسية (KPIs):</strong> ستكون مؤشرات الأداء الرئيسية (KPIs) هي المقاييس التي سنقيس من خلالها التقدم والنجاح.</div><br><div>قم بتحديد على الأقل خمسة (5) أهداف، مع التأكد أن يكون مجموع وزنها 100%. يجب أن يكون وزن كل هدف في نطاق 10% إلى 25%</div>`};
 const DINTRO='This is where you create and update your Career Development goals. Click the Add Goal button to get started.<br>Frequently review progress with your manager and celebrate your achievements along the way.';
+/* AJMN product design, not SuccessFactors configuration: DG priority → ED objective → Director deliverable */
+const STRAT=[{id:'p1',lvl:'DG priority',title:'Grow trusted digital audiences',owner:'Director General',pub:true,up:null},
+ {id:'o1',lvl:'ED objective',title:'Modernise newsroom and studio operations',owner:'Executive Director, Operations',pub:true,up:'p1'},
+ {id:'d1',lvl:'Director deliverable',title:'Studio operations service levels met across all channels',owner:'Director, Studio Operations',pub:true,up:'o1'},
+ {id:'d3',lvl:'Director deliverable',title:'Regional bureau consolidation (draft)',owner:'Director, Bureaus',pub:false,up:'o1'},
+ {id:'p2',lvl:'DG priority',title:'Invest in our people',owner:'Director General',pub:true,up:null},
+ {id:'o2',lvl:'ED objective',title:'Build a skilled, adaptable workforce',owner:'Executive Director, Human Capital',pub:true,up:'p2'},
+ {id:'d2',lvl:'Director deliverable',title:'Self-service learning catalogue live for all staff',owner:'Director, Learning',pub:true,up:'o2'}];
+
+/* ---------- localized resources for the goal plan (labels marked SAP come from the export) ---------- */
+const L={en:{
+ plan14:'2026 Individual Goal Plan',cat:'Individual Goals',cat_l:'Goal Type',f_name:'Goal Description',f_desc:'Intended Results',f_metric:'Key Performance Indicator',f_weight:'Weight',f_start:'Start',f_due:'Due',f_state:'Status',f_done:'% Complete',f_ms:'Milestones',f_vis:'Visibility',ms_t:'Target Date',ms_d:'Milestone',ms_a:'Actual Date',
+ tab_perf:'Performance Goals',tab_dev:'Development Goals',create:'Create Goal',assign:'Assign a linked goal',print:'Print to PDF',state:'State',goals:'Goals',wtotal:'Weight (Total)',intro:'Introduction',none:'No goals in this plan yet.',due_date:'Due Date',
+ view:'View Details',edit:'Edit Goal',del:'Delete Goal',share:'Share (make public)',unshare:'Unshare (make private)',link:'Link existing goals',prio:'Link to a published priority',chart:'View Alignment Chart',audit:'View Audit History',
+ pub:'Public',priv:'Private',masked:'Goal details not available to your role',hidden:'{0} goal(s) in this plan are not visible to you.',
+ signed:'Signed in as',failnext:'Fail next save',parity:'Tests and parity',
+ p_mgr:'Manager',p_dr:'Direct Reports',p_mx:'Matrix Reports',p_hr:'HR Representative for',
+ roles:'Your SAP role codes on this plan: {0}',noroles:'none',
+ help_empdraft:'Goals Settings: employee, manager and matrix manager (E, EM, EX) can create, delete and edit goals, including name, measure and weight.',
+ help_unlockedtodlm:'Goals Review: name, measure and weight are read-only. The employee can update status and existing milestones. Adding, deleting or reordering milestone rows, creating, deleting and sharing carry blank roles in the template and stay off until verified.',
+ help_locked:'Goals Completed: name and measure are read-only. Employee, manager and matrix manager can change weight, status and milestones, including rows. Only the manager (EM) can create a goal. Nobody can delete.',
+ manual:'Only HR (role code EH) changes the state by hand. The Individual Goal Form also moves it: step 1 sets Goals Settings, step 2 sets Goals Review, completion sets Goals Completed, deleting the form resets Goals Settings.',
+ ready:'Ready to Submit',ready_ok:'Nothing is blocking submission of the Individual Goals section.',ready_bad:'{0} item(s) to fix before the form can move on:',fixit:'Fix',
+ i_count:'The section needs between 1 and 50 goals; this plan has {0}.',i_missing_name:'A goal has no name.',i_missing_metric:'“{0}” has no measure of success.',i_missing_weight:'“{0}” has no weight.',i_total:'Total weight is {0}%; the configured rule requires 100%.',i_range:'“{0}” has a weight outside 1% to 50%.',i_tna_max:'Training Needs allows at most 3 entries.',i_tna_min:'Add at least one training need (manager minimum is switched on).',
+ w_info:'Total assigned weight is {0}%. A 100% total is not enforced in the parity baseline.',
+ newdraft:'You have an unsaved draft of a new goal.',cont:'Continue draft',dbadge:'Unsaved draft',
+ ed_new:'Create Performance Goal',ed_edit:'Edit Performance Goal',chars:'characters left',save:'Save',cancel:'Cancel',retry:'Retry save',
+ ed_state:'Plan state: {0} ({1}). You can change: {2}.',ed_none:'nothing in this state',ed_all:'all fields',
+ ro_field:'Read-only in {0}: the template gives your role no write access here.',
+ vis_note:'Change visibility with Share or Unshare on the goal.',
+ draft:'Working draft, autosaved {0}. It is not saved to the plan yet.',draft_saved:'Saved version: updated {0}.',draft_new:'No saved version yet.',discard:'Discard draft',
+ e_title:'{0} item(s) to fix before this goal can be saved:',e_name:'Add a goal name',e_metric:'Add a measure of success',e_weight:'Add a weight as a percentage',e_weight_range:'Weight must be between 0 and 100',e_weight_1_50:'Weight must be between 1% and 50% (configured rule)',e_long:'Too long for this field',e_done:'% Complete must be between 0 and 100',e_state:'Unknown status value',e_tna:'Add a training goal',
+ d_net:'The save did not reach the server. Your input is kept on this page.',d_intact:'The version saved on {0} is intact.',d_nothing:'Nothing has been saved for this goal yet.',
+ d_field:'Save refused: {0} cannot be changed in {1}.',d_action_blank:'Refused: “{0}” has a blank role list in {1}. It is treated as unresolved, not as open to everyone.',d_action_norole:'Refused: your role codes are not granted “{0}” in {1}.',d_action_undeclared:'Refused: “{0}” is not declared in {1}.',d_generic:'Refused by the service ({0}).',
+ w_total:'Total assigned weight: {0}% (other goals {1}% + this goal {2}%)',w_dates:'Start is after Due. SAP date validation is not verified, so this is a warning only.',w_ms:'A milestone target date is outside the goal dates. The exact SAP rule (validate-start-before-due) is not verified, so this is a warning only.',
+ trig:'This value is stored as “On Track” and carries trigger-completion=true. % Complete is not changed automatically until the tenant behaviour is verified.',
+ row_add:'Add Row',row_no:'Rows cannot be added, deleted or reordered in this state (blank roles in the template, unresolved).',nodata:'No Data',actions:'Actions',
+ ai_btn:'Suggest a measure',ai_title:'Suggested measure of success',ai_tag:'Prototype · scripted, not from a model',ai_missing:'Missing from your notes:',ai_ok:'Your measure already has a number, a unit, a deadline, a baseline and an evidence source.',ai_apply:'Apply to Key Performance Indicator',ai_dismiss:'Dismiss',
+ ai_num:'a number or target value',ai_unit:'a unit (%, count, days)',ai_time:'a deadline',ai_base:'a baseline',ai_ev:'an evidence source',
+ ai_for:'Measure for “{0}”',ai_tpl:'{0}. Target: [number and unit] by {1}, from a baseline of [current value], evidenced by [report or system].',
+ saved:'Goal saved to plan 14',deleted:'Goal deleted',stored:'Stored value',
+ al:'Goal Alignment',al_up:'Aligned Up',al_down:'Aligned Down',al_none:'This goal is not linked to another goal or priority.',al_prio:'Strategy priority',al_remove:'Remove link',al_drift:'Differs from the parent in: {0}. Whether parent edits propagate, and what happens to recipient overrides, is not verified, so nothing is overwritten here.',
+ al_note:'Goal information only. Profile, grade and appraisal data are not part of this view.',al_design:'AJMN product design, not SuccessFactors configuration',al_self:'This goal',owner:'Owner',measure:'Measure',progress:'Progress',
+ lk_pick:'Choose the goal this one supports. Only goals you are allowed to see and align are listed.',lk_none:'There are no goals you can link this one to.',pr_pick:'Choose a published priority. Unpublished items are not offered.',
+ sh_q:'Make “{0}” visible to everyone who can view this plan?',unsh_q:'Make “{0}” private? Only roles with private access will see it.',confirm:'Confirm',close:'Close',
+ c_title:'Assign a linked goal',c1:'Select Goals',c2:'Select Recipients',c3:'Edit Goals',c3o:'(Optional)',c4:'Preview and assign',c1p:'Select one or more of your goals.',c_all:'Select All Loaded Goals',
+ c2p:'Only people you are allowed to assign goals to are listed.',c_team:'From My Team',c_search:'Via Search',c_dr:'Direct Reports',c_sr:'Search Results',c_sp:'Type a name. People outside your scope never appear.',
+ c3p:'Skip this step if you don’t have any changes to make to the selected goals.',c4p:'{0} new linked goal(s) will be created. Nothing changes until you assign.',
+ c_rec:'Recipient',c_goal:'Goal',c_chg:'Expected change',c_new:'New goal in {0}, aligned up to yours',c_w:'Plan weight {0}% → {1}%',c_dup:'Already has a goal linked to this one. Assigning again creates another copy; that policy is not verified.',
+ c_pd:'Copied from your goal: name, intended results, measure, dates and milestones (push-down). Weight is copied once; status and progress start fresh (regular).',
+ prev:'Previous',next:'Next',c_go:'Assign',c_done:'{0} linked goal(s) created',c_replay:'This request was already processed. No extra goals were created.',c_fail:'The assignment did not reach the server. Your selection is kept. Retry sends the same request, so nothing is created twice.',
+ st_changed:'Plan state changed to {0}'},
+ar:{
+ plan14:'خطة الأهداف الوظيفية 2026',cat:'1. أهداف العمل',cat_l:'الفئة',f_name:'إسم الهدف',f_desc:'وصف الهدف',f_metric:'القياس',f_weight:'الوزن',f_start:'تاريخ البدء',f_due:'تاريخ الإنتهاء',f_state:'الحالة',f_done:'نسبة الإنجاز',f_ms:'المعالم الرئيسية للهدف',f_vis:'الظهور',ms_t:'تاريخ الهدف',ms_d:'المعالم الرئيسية للهدف',ms_a:'تاريخ تحقيق الهدف الفعلي',
+ tab_perf:'أهداف الأداء',tab_dev:'أهداف التطوير',create:'إنشاء هدف',assign:'إسناد هدف مرتبط',print:'طباعة PDF',state:'الحالة',goals:'الأهداف',wtotal:'الوزن (الإجمالي)',intro:'مقدمة',none:'لا توجد أهداف في هذه الخطة بعد.',due_date:'تاريخ الإنتهاء',
+ view:'عرض التفاصيل',edit:'تعديل الهدف',del:'حذف الهدف',share:'مشاركة (جعله عاماً)',unshare:'إلغاء المشاركة (جعله خاصاً)',link:'ربط أهداف موجودة',prio:'ربط بأولوية منشورة',chart:'عرض مخطط المواءمة',audit:'عرض سجل التغييرات',
+ pub:'عام',priv:'خاص',masked:'تفاصيل الهدف غير متاحة لدورك',hidden:'{0} هدف في هذه الخطة غير ظاهر لك.',
+ signed:'الدخول باسم',failnext:'إفشال الحفظ التالي',parity:'الاختبارات والمطابقة',
+ p_mgr:'المدير',p_dr:'المرؤوسون المباشرون',p_mx:'مرؤوسو المصفوفة',p_hr:'ممثل الموارد البشرية لـ',
+ roles:'رموز أدوارك في SAP على هذه الخطة: {0}',noroles:'لا يوجد',
+ help_empdraft:'وضع الأهداف: يستطيع الموظف والمدير ومدير المصفوفة (E, EM, EX) إنشاء الأهداف وحذفها وتعديلها، بما في ذلك الاسم والقياس والوزن.',
+ help_unlockedtodlm:'مراجعة الأهداف: الاسم والقياس والوزن للقراءة فقط. يستطيع الموظف تحديث الحالة والمعالم الموجودة. إضافة صفوف المعالم أو حذفها أو إعادة ترتيبها، والإنشاء والحذف والمشاركة، أدوارها فارغة في القالب وتبقى معطلة حتى التحقق.',
+ help_locked:'اكتمال الهدف: الاسم والقياس للقراءة فقط. يستطيع الموظف والمدير ومدير المصفوفة تغيير الوزن والحالة والمعالم وصفوفها. المدير فقط (EM) ينشئ هدفاً. لا أحد يحذف.',
+ manual:'الموارد البشرية فقط (الرمز EH) تغيّر الحالة يدوياً. نموذج الأهداف الفردية يغيّرها أيضاً: الخطوة 1 تضع «وضع الأهداف»، الخطوة 2 «مراجعة الأهداف»، الإكمال «اكتمال الهدف»، وحذف النموذج يعيد «وضع الأهداف».',
+ ready:'جاهز للإرسال',ready_ok:'لا شيء يمنع إرسال قسم الأهداف الفردية.',ready_bad:'{0} بند يجب إصلاحه قبل انتقال النموذج:',fixit:'إصلاح',
+ i_count:'يحتاج القسم من 1 إلى 50 هدفاً؛ في هذه الخطة {0}.',i_missing_name:'هدف بلا اسم.',i_missing_metric:'«{0}» بلا مقياس نجاح.',i_missing_weight:'«{0}» بلا وزن.',i_total:'مجموع الأوزان {0}%؛ القاعدة المفعّلة تتطلب 100%.',i_range:'وزن «{0}» خارج 1% إلى 50%.',i_tna_max:'الاحتياجات التدريبية لا تتجاوز 3 إدخالات.',i_tna_min:'أضف احتياجاً تدريبياً واحداً على الأقل (حد المدير مفعّل).',
+ w_info:'مجموع الأوزان المسندة {0}%. لا يُفرض مجموع 100% في خط الأساس.',
+ newdraft:'لديك مسودة غير محفوظة لهدف جديد.',cont:'متابعة المسودة',dbadge:'مسودة غير محفوظة',
+ ed_new:'إنشاء هدف أداء',ed_edit:'تعديل هدف أداء',chars:'حرفاً متبقياً',save:'حفظ',cancel:'إلغاء',retry:'إعادة محاولة الحفظ',
+ ed_state:'حالة الخطة: {0} ({1}). يمكنك تغيير: {2}.',ed_none:'لا شيء في هذه الحالة',ed_all:'كل الحقول',
+ ro_field:'للقراءة فقط في «{0}»: القالب لا يمنح دورك صلاحية الكتابة هنا.',
+ vis_note:'غيّر الظهور عبر «مشاركة» أو «إلغاء المشاركة» على الهدف.',
+ draft:'مسودة عمل، حُفظت تلقائياً {0}. لم تُحفظ في الخطة بعد.',draft_saved:'النسخة المحفوظة: حُدّثت {0}.',draft_new:'لا توجد نسخة محفوظة بعد.',discard:'تجاهل المسودة',
+ e_title:'{0} بند يجب إصلاحه قبل حفظ هذا الهدف:',e_name:'أضف اسماً للهدف',e_metric:'أضف مقياساً للنجاح',e_weight:'أضف الوزن كنسبة مئوية',e_weight_range:'الوزن يجب أن يكون بين 0 و100',e_weight_1_50:'الوزن يجب أن يكون بين 1% و50% (قاعدة مفعّلة)',e_long:'النص أطول من المسموح لهذا الحقل',e_done:'نسبة الإنجاز يجب أن تكون بين 0 و100',e_state:'قيمة حالة غير معروفة',e_tna:'أضف هدفاً تدريبياً',
+ d_net:'لم يصل الحفظ إلى الخادم. ما أدخلته محفوظ في هذه الصفحة.',d_intact:'النسخة المحفوظة بتاريخ {0} سليمة.',d_nothing:'لم يُحفظ شيء لهذا الهدف بعد.',
+ d_field:'رُفض الحفظ: لا يمكن تغيير {0} في «{1}».',d_action_blank:'مرفوض: قائمة أدوار «{0}» فارغة في «{1}». تُعامل كغير محسومة، لا كمتاحة للجميع.',d_action_norole:'مرفوض: رموز أدوارك غير ممنوحة «{0}» في «{1}».',d_action_undeclared:'مرفوض: «{0}» غير معرّف في «{1}».',d_generic:'رفضته الخدمة ({0}).',
+ w_total:'مجموع الأوزان المسندة: {0}% (الأهداف الأخرى {1}% + هذا الهدف {2}%)',w_dates:'تاريخ البدء بعد تاريخ الإنتهاء. تحقق SAP من التواريخ غير مؤكد، لذا هذا تنبيه فقط.',w_ms:'تاريخ معلم خارج تواريخ الهدف. قاعدة SAP الدقيقة غير مؤكدة، لذا هذا تنبيه فقط.',
+ trig:'تُخزَّن هذه القيمة «On Track» وتحمل trigger-completion=true. لا تتغير نسبة الإنجاز تلقائياً حتى يُتحقق من سلوك النظام.',
+ row_add:'إضافة صف',row_no:'لا يمكن إضافة الصفوف أو حذفها أو إعادة ترتيبها في هذه الحالة (أدوار فارغة في القالب، غير محسومة).',nodata:'لا توجد بيانات',actions:'إجراءات',
+ ai_btn:'اقترح مقياساً',ai_title:'مقياس نجاح مقترح',ai_tag:'نموذج أولي · نص معدّ مسبقاً، ليس من نموذج ذكاء اصطناعي',ai_missing:'ينقص ملاحظاتك:',ai_ok:'مقياسك يتضمن رقماً ووحدة وموعداً وخط أساس ومصدر إثبات.',ai_apply:'تطبيق على القياس',ai_dismiss:'تجاهل',
+ ai_num:'رقم أو قيمة مستهدفة',ai_unit:'وحدة (%، عدد، أيام)',ai_time:'موعد نهائي',ai_base:'خط أساس',ai_ev:'مصدر إثبات',
+ ai_for:'مقياس «{0}»',ai_tpl:'{0}. المستهدف: [الرقم والوحدة] بحلول {1}، انطلاقاً من خط أساس [القيمة الحالية]، ويُثبت عبر [تقرير أو نظام].',
+ saved:'حُفظ الهدف في الخطة 14',deleted:'حُذف الهدف',stored:'القيمة المخزنة',
+ al:'مواءمة الهدف',al_up:'مرتبط للأعلى',al_down:'مرتبط للأسفل',al_none:'هذا الهدف غير مرتبط بهدف أو أولوية.',al_prio:'أولوية استراتيجية',al_remove:'إزالة الربط',al_drift:'يختلف عن الهدف الأعلى في: {0}. انتقال تعديلات الهدف الأعلى ومصير تعديلات المستلم غير مؤكدين، لذا لا يُستبدل شيء هنا.',
+ al_note:'معلومات الهدف فقط. بيانات الملف الشخصي والدرجة والتقييم ليست ضمن هذا العرض.',al_design:'تصميم منتج للجزيرة، وليس إعداداً في SuccessFactors',al_self:'هذا الهدف',owner:'المالك',measure:'القياس',progress:'التقدم',
+ lk_pick:'اختر الهدف الذي يدعمه هذا الهدف. تظهر فقط الأهداف المسموح لك برؤيتها ومواءمتها.',lk_none:'لا توجد أهداف يمكنك ربط هذا الهدف بها.',pr_pick:'اختر أولوية منشورة. البنود غير المنشورة لا تُعرض.',
+ sh_q:'جعل «{0}» ظاهراً لكل من يستطيع عرض هذه الخطة؟',unsh_q:'جعل «{0}» خاصاً؟ سيراه فقط أصحاب صلاحية الوصول الخاص.',confirm:'تأكيد',close:'إغلاق',
+ c_title:'إسناد هدف مرتبط',c1:'اختيار الأهداف',c2:'اختيار المستلمين',c3:'تعديل الأهداف',c3o:'(اختياري)',c4:'معاينة وإسناد',c1p:'اختر هدفاً أو أكثر من أهدافك.',c_all:'تحديد كل الأهداف',
+ c2p:'يظهر فقط من يُسمح لك بإسناد الأهداف إليهم.',c_team:'من فريقي',c_search:'عبر البحث',c_dr:'المرؤوسون المباشرون',c_sr:'نتائج البحث',c_sp:'اكتب اسماً. من هم خارج نطاقك لا يظهرون.',
+ c3p:'تخطَّ هذه الخطوة إن لم يكن لديك تعديل على الأهداف المختارة.',c4p:'سيُنشأ {0} هدف مرتبط جديد. لا يتغير شيء قبل الإسناد.',
+ c_rec:'المستلم',c_goal:'الهدف',c_chg:'التغيير المتوقع',c_new:'هدف جديد في «{0}»، مرتبط للأعلى بهدفك',c_w:'وزن الخطة {0}% ← {1}%',c_dup:'لديه هدف مرتبط بهذا الهدف. الإسناد مجدداً ينشئ نسخة أخرى؛ هذه السياسة غير مؤكدة.',
+ c_pd:'يُنسخ من هدفك: الاسم والوصف والقياس والتواريخ والمعالم (push-down). يُنسخ الوزن مرة واحدة؛ الحالة والتقدم يبدآن من جديد (regular).',
+ prev:'السابق',next:'التالي',c_go:'إسناد',c_done:'أُنشئ {0} هدف مرتبط',c_replay:'عولج هذا الطلب من قبل. لم تُنشأ أهداف إضافية.',c_fail:'لم يصل الإسناد إلى الخادم. اختيارك محفوظ. إعادة المحاولة ترسل الطلب نفسه، فلا يُنشأ شيء مرتين.',
+ st_changed:'تغيرت حالة الخطة إلى {0}'}};
+const tr=(k,...a)=>{let s=(L[S.lang]||L.en)[k]??L.en[k]??k;a.forEach((v,i)=>s=s.split('{'+i+'}').join(v));return s};
+const lg=()=>S.lang==='ar'?'ar':'en';
+const stLabel=v=>{const s=ST.find(x=>x.v===v);return s?s[lg()]:v};
+const stOpts=v=>ST.map(s=>`<option value="${s.v}" ${s.v===v?'selected':''}>${e(s[lg()])}</option>`).join('');
+const pn=k=>TEMPLATE.states[k][lg()];
+const sapId=f=>TEMPLATE.fields[f].sap||f;
 
 /* ---------- synthetic data ---------- */
-const P={admin:{name:'Admin Admin',first:'Admin',last:'Admin',title:'Senior ERP Specialist',eid:'99999900',mgr:'gp'},
- gp:{name:'GP Admin',first:'GP',last:'Admin',title:'',eid:'99999800',mgr:null},
- hr1:{name:'HR Administrator1',first:'HR',last:'Administrator1',title:'',eid:'99999901',mgr:'admin'},
- hr2:{name:'HR Administrator2',first:'HR',last:'Administrator2',title:'',eid:'99999902',mgr:'admin'}};
-const ME='admin';
+const P={admin:{name:'Admin Admin',first:'Admin',last:'Admin',title:'Senior ERP Specialist',eid:'99999900',mgr:'gp',hr:'hrbp'},
+ gp:{name:'GP Admin',first:'GP',last:'Admin',title:'',eid:'99999800',mgr:null,hr:'hrbp'},
+ hr1:{name:'HR Administrator1',first:'HR',last:'Administrator1',title:'',eid:'99999901',mgr:'admin',hr:'hrbp',matrix:'pm'},
+ hr2:{name:'HR Administrator2',first:'HR',last:'Administrator2',title:'',eid:'99999902',mgr:'admin',hr:'hrbp'},
+ hrbp:{name:'HR Representative',first:'HR',last:'Representative',title:'HR Business Partner (fictional)',eid:'99999903',mgr:'gp'},
+ pm:{name:'Project Lead',first:'Project',last:'Lead',title:'Matrix manager (fictional)',eid:'99999904',mgr:'gp',hr:'hrbp'},
+ peer:{name:'Peer Colleague',first:'Peer',last:'Colleague',title:'Senior Specialist (fictional)',eid:'99999905',mgr:'gp',hr:'hrbp'}};
+let ME='admin';
 const reports=u=>Object.keys(P).filter(k=>P[k].mgr===u);
 const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
 function seed(){
- let n=1;const g=(owner,name,weight,x)=>Object.assign({id:'g'+(n++),plan:'perf',owner,name,desc:'',metric:'KPI : Overall SLA achievements rate in %, Quality of output delivered %, Additional support provided beyond regular routines',weight,start:'2026-01-01',due:'2026-12-31',state:'In Progress',done:0,vis:'Public',ms:[],acts:[],audit:[],up:null,updated:TODAY},x||{});
+ let n=1;const g=(owner,name,weight,x)=>Object.assign({id:'g'+(n++),plan:'perf',planId:14,owner,name,desc:'',metric:'KPI : Overall SLA achievements rate in %, Quality of output delivered %, Additional support provided beyond regular routines',weight,start:'2026-01-01',due:'2026-12-31',state:'Not Started',done:0,vis:'Public',ms:[],acts:[],audit:[],up:null,prio:null,updated:TODAY},x||{});
  const studio='Deliver studio operations assigned tasks using the technical and operational skills of production to help editorial team achieve their ambition effectively and efficiently.';
  const learn='Focus on personal knowledge growth and assigned learnings (mandatory and self selected) to contribute in achieving business objectives & goals';
  const proj='Complete the assigned Projects deliverables for the current performance year.';
  const intro='1 Introduce new product and service inside the network which result into quantifiable overall business impact تقديم منتجات وخدمات جديدة داخل الشبكة والتي نتج عنها تأثير إيجابي ملموس على الشبكة';
- const goals=[
-  g('admin',studio,12,{done:80,acts:[{n:'test 1',s:'Complete',c:'today'},{n:'Project 1',s:'In Progress',c:'2 days ago'}]}),
+ const top=g('gp','Meet studio operations service levels across all channels',30,{prio:'d1',done:40});
+ const goals=[top,g('gp','Confidential restructuring preparation',20,{vis:'Private'}),
+  g('admin',studio,12,{done:80,up:top.id,ms:[{id:'m1',t:'2026-06-30',d:'Mid-year service level review',a:''}],acts:[{n:'test 1',s:'Complete',c:'today'},{n:'Project 1',s:'In Progress',c:'2 days ago'}]}),
   g('admin',proj,25),g('admin',learn,25),g('admin',intro,5),
   g('admin','Provide creative ideas and solutions which will improvise and optimize the network operation support quality in a way to achieve an overall efficiency of the function2',13),
   g('admin',studio,20),
@@ -224,129 +378,298 @@ function seed(){
   g('hr1','Improve the quality of content and services to deepen the engagement with AJMN audiences',20),
   g('hr1','Present new creative ways to produce and report News & Program content (TV/Online) which is in line with the editorial quality and standards of the network',20),
   g('hr1',learn,20),g('hr1',proj,20),
-  g('hr2',learn,50),g('hr2',proj,50),
+  g('hr2',learn,50),g('hr2',proj,50,{metric:''}),
   {id:'d1',plan:'dev',owner:'admin',name:'English Language Training Course for business writing',desc:'Complete the assigned course and pass the final assessment',start:'2025-01-01',due:'2025-12-31',state:'On Track',done:0,vis:'Public',comps:['Communication','Customer Focus'],mgrapp:'No selection',acts:[],learn:[],comments:[],audit:[],updated:'2025-10-28'},
   {id:'d2',plan:'dev',owner:'admin',name:'Attendance and Punctuality',desc:'1. No unapproved absences\n2.Demonstrates reliability in adhering to scheduled work hours',start:'2025-01-01',due:'2025-12-31',state:'Completed',done:0,vis:'Public',comps:[],mgrapp:'No selection',acts:[{n:'Attendance on spot',s:'Complete',c:'Oct 26, 2025',fb:1}],learn:[],comments:[],audit:[],updated:'2025-10-28'}
  ];
- const f=(id,tpl,emp,step,status,x)=>Object.assign({id,tpl,emp,step,status,assigned:'2026-11-08',start:'2026-11-08',rating:'',comments:'',hist:[{t:'11/08/2026',w:'Form created and routed to '+TPL[tpl].steps[step]}]},x||{});
+ const f=(id,tpl,emp,step,x)=>Object.assign({id,tpl,emp,step,status:'active',assigned:'2026-11-08',start:'2026-11-08',rating:'',comments:'',hist:[{t:'11/08/2026',w:'Form created and routed to '+TPL[tpl].steps[step]}]},x||{});
  const first=['Amal','Bashir','Carla','Dana','Emad','Farah','Ghazi','Hala','Imran','Jana','Kamal','Lama','Majed','Nadia','Omar','Petra','Qasim','Rima','Sami','Tala','Usama','Vera','Walid','Yara','Zaid'];
  const last=['Sample','Testuser','Demo','Fictional','Placeholder'];
  const dist=[2,3,5,14,20,8,4];const cal=[];let k=0;
  dist.forEach((c,ci)=>{for(let i=0;i<c;i++,k++)cal.push({id:'c'+k,name:first[k%25]+' '+last[(k*3+ci)%5]+' '+(k+1),col:ci,rank:''})});
- return {who:ME,gtab:'perf',pstate:{admin:'empdraft',hr1:'empdraft',hr2:'empdraft',gp:'empdraft'},goals,seq:100,
-  forms:[f('f1','appr','hr1',0,'inbox'),f('f2','appr','hr2',0,'inbox'),f('f3','goal','hr1',1,'inbox'),f('f4','goal','hr2',0,'enroute'),f('f5','appr','admin',0,'enroute')],
+ const pstate={};Object.keys(P).forEach(u=>pstate[u]='empdraft');pstate.hr1='unlockedtodlm';
+ return {me:'admin',lang:'en',who:'admin',gtab:'perf',pstate,goals,seq:100,drafts:{},reqs:{},cfg:{strictWeights:false,tnaMin:false},
+  forms:[f('f1','appr','hr1',0),f('f2','appr','hr2',0),f('f3','goal','hr1',1),f('f4','goal','hr2',0),f('f5','appr','admin',0)],
   cal,calSaved:null,calFinal:false,intro:false};
 }
-let S;try{S=JSON.parse(localStorage.getItem('ajmn-sf-replica'))}catch(x){}
-if(!S||!S.goals)S=seed();
-const U={menu:false,card:null,casc:null,dlg:null,exp:{},ctab:'table',ptab:'reviews',full:false};
-const save=()=>{try{localStorage.setItem('ajmn-sf-replica',JSON.stringify(S))}catch(x){}};
+let S;try{S=JSON.parse(localStorage.getItem('ajmn-sf-replica-v2'))}catch(x){}
+if(!S||!S.goals||!S.drafts||!P[S.me])S=seed();
+ME=S.me;
+const U={menu:false,card:null,casc:null,dlg:null,exp:{},ctab:'table',ptab:'reviews',full:false,failNext:false,ferr:null,ai:null,focus:null};
+const save=()=>{try{localStorage.setItem('ajmn-sf-replica-v2',JSON.stringify(S))}catch(x){}};
 const G=id=>S.goals.find(g=>g.id===id);
 const plan=(u,p)=>S.goals.filter(g=>g.owner===u&&g.plan===p);
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2800)}
-const aud=(g,w)=>g.audit.push({t:fmt(TODAY),by:P[ME].name,w});
+const wsum=gs=>Math.round(gs.reduce((a,g)=>a+(+g.weight||0),0)*10)/10;
+function toast(m){const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3600)}
+const aud=(g,w,by)=>g.audit.push({t:fmt(TODAY),by:P[by||ME].name,w});
 const opt=(l,v)=>l.map(x=>`<option ${x===v?'selected':''}>${e(x)}</option>`).join('');
-/* what a role may still change once the plan leaves Goals Settings (from the plan's field permissions) */
-const locked=(g,f)=>{if(g.plan!=='perf')return false;const st=S.pstate[g.owner];if(st==='empdraft')return false;const ok=st==='locked'?['state','done','ms','weight']:['state','done','ms'];return !ok.includes(f)};
-const canCreate=u=>{const st=S.pstate[u];return st==='empdraft'||(st==='locked'&&P[u].mgr===ME)};
-const canDelete=u=>S.pstate[u]==='empdraft';
+
+/* ---------- authorization: role codes are relative to the plan owner, read from the template per state ---------- */
+const chain=u=>{const c=[];for(let m=P[u].mgr;m;m=P[m].mgr)c.push(m);return c};
+const rolesOf=(a,o)=>{const r=[];if(a===o)r.push('E');if(P[o].mgr===a)r.push('EM');if(chain(o).includes(a))r.push('EM+');if(P[a].mgr===o)r.push('ED');if(P[o].matrix===a)r.push('EX');if(P[a].matrix===o)r.push('EY');if(P[o].hr===a)r.push('EH');if(P[o].custom===a)r.push('EC');return r};
+const hit=(list,a,o)=>{const r=rolesOf(a,o);return (list||[]).some(x=>r.includes(x))};
+const tst=o=>TEMPLATE.states[S.pstate[o]];
+const canW=(a,o,f)=>hit(tst(o).write[f],a,o),canR=(a,o,f)=>hit(tst(o).read[f],a,o);
+/* a blank role list is unresolved, never a wildcard; an undeclared row action follows write access to the field (assumed) */
+function can(a,o,act){const d=tst(o).act[act];
+ if(d===undefined)return /-row$/.test(act)&&canW(a,o,'ms')?{ok:true,why:'undeclared'}:{ok:false,why:'undeclared'};
+ if(!d.length)return{ok:false,why:'blank'};return hit(d,a,o)?{ok:true,why:'granted'}:{ok:false,why:'norole'}}
+/* target population is checked apart from the role lists; the sandbox assumes the reporting line below the actor */
+const inScope=(a,u)=>chain(u).includes(a)||P[u].matrix===a||P[u].custom===a;
+const visible=(a,g)=>g.plan!=='perf'||((g.vis==='Public'||can(a,g.owner,'private-access').ok)&&['name','state','done'].some(f=>canR(a,g.owner,f)));
+/* goal-only view: nothing from profile, grade or appraisal */
+const view=(a,g)=>{const ok=visible(a,g),r=f=>ok&&canR(a,g.owner,f);return{id:g.id,owner:ok?P[g.owner].name:null,name:r('name')?g.name:null,measure:r('metric')?g.metric:null,progress:r('done')?g.done:null,status:r('state')?g.state:null}};
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const form=id=>S.forms.find(f=>f.id===id);
+
+/* ---------- simulated SAP adapter: every read and change of plan 14 goes through here ---------- */
+const SAP={
+ save(a,p){
+  const isNew=!p.id,cur=isNew?null:G(p.id);if(!isNew&&(!cur||cur.plan!=='perf'))return{ok:false,code:'NOT_FOUND'};
+  const o=isNew?p.owner:cur.owner,key=isNew?'new:'+o:cur.id,st=S.pstate[o];
+  if(isNew){const c=can(a,o,'create');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'create',why:c.why,state:st}}
+  else if(!visible(a,cur))return{ok:false,code:'NOT_VISIBLE'};
+  const nx={};FL.forEach(f=>{if(!(f in p))return;let v=p[f];
+   if(f==='weight')v=v===''||v==null?'':+v;else if(f==='done')v=v===''||v==null?0:+v;
+   else if(f==='ms')v=(v||[]).filter(m=>m.t||m.d||m.a).map(m=>({id:m.id||'m'+(S.seq++),t:m.t||'',d:m.d||'',a:m.a||''}));else v=String(v??'').trim();
+   if(isNew||!same(cur[f],v))nx[f]=v});
+  if(!isNew){const ro=Object.keys(nx).filter(f=>!canW(a,o,f));if(ro.length)return{ok:false,code:'FIELD_READ_ONLY',fields:ro,state:st};
+   if(nx.ms){const old=cur.ms.map(m=>m.id),nw=nx.ms.map(m=>m.id);
+    const need=[nw.some(i=>!old.includes(i))&&'create-row',old.some(i=>!nw.includes(i))&&'delete-row',!same(nw.filter(i=>old.includes(i)),old.filter(i=>nw.includes(i)))&&'move-row'].filter(Boolean);
+    for(const act of need){const c=can(a,o,act);if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:act,why:c.why,state:st}}}}
+  const m=Object.assign({},cur||{},nx),errors=[],T=TEMPLATE.fields,chk=f=>isNew||f in p;
+  if(chk('name')){if(!m.name)errors.push({f:'name',k:'e_name'});else if(m.name.length>T.name.max)errors.push({f:'name',k:'e_long'})}
+  if(chk('desc')&&(m.desc||'').length>T.desc.max)errors.push({f:'desc',k:'e_long'});
+  if(chk('metric')){if(!m.metric)errors.push({f:'metric',k:'e_metric'});else if(m.metric.length>T.metric.max)errors.push({f:'metric',k:'e_long'})}
+  if(chk('weight')){const w=m.weight;if(w===''||w==null||isNaN(w))errors.push({f:'weight',k:'e_weight'});else if(w<0||w>100)errors.push({f:'weight',k:'e_weight_range'});else if(S.cfg.strictWeights&&(w<1||w>50))errors.push({f:'weight',k:'e_weight_1_50'})}
+  if(chk('done')&&'done' in m&&(isNaN(m.done)||m.done<0||m.done>100))errors.push({f:'done',k:'e_done'});
+  if(chk('state')&&m.state&&!ST.some(s=>s.v===m.state))errors.push({f:'state',k:'e_state'});
+  if(errors.length)return{ok:false,code:'VALIDATION',errors};
+  if(U.failNext){U.failNext=false;return{ok:false,code:'NETWORK',intact:!isNew,savedAt:cur&&cur.updated}}
+  const warn=[];if(m.start&&m.due&&m.start>m.due)warn.push('w_dates');if((m.ms||[]).some(x=>x.t&&((m.start&&x.t<m.start)||(m.due&&x.t>m.due))))warn.push('w_ms');
+  let g;
+  if(isNew){g=Object.assign({id:'g'+(S.seq++),plan:'perf',planId:TEMPLATE.id,owner:o,desc:'',start:'',due:'',state:'Not Started',done:0,vis:p.vis==='Private'?'Private':'Public',ms:[],acts:[],audit:[],up:null,prio:null},nx);S.goals.push(g);aud(g,'Goal created',a)}
+  else{g=cur;Object.keys(nx).forEach(f=>{aud(g,f==='state'?`state: ${g.state} → ${nx.state}`:f==='weight'||f==='done'?`${f}: ${g[f]} → ${nx[f]}`:sapId(f)+' changed',a);g[f]=nx[f]})}
+  g.updated=TODAY;delete S.drafts[key];return{ok:true,goal:g,warn}},
+ remove(a,id){const g=G(id);if(!g)return{ok:false,code:'NOT_FOUND'};
+  if(g.plan==='perf'){const c=can(a,g.owner,'delete');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'delete',why:c.why,state:S.pstate[g.owner]}}
+  S.goals=S.goals.filter(x=>x!==g);S.goals.forEach(x=>{if(x.up===id)x.up=null});delete S.drafts[id];return{ok:true}},
+ transition(a,o,to){const st=S.pstate[o],c=can(a,o,'change-state');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'change-state',why:c.why,state:st};
+  if(!TEMPLATE.states[st].to.includes(to))return{ok:false,code:'BAD_TRANSITION'};S.pstate[o]=to;return{ok:true}},
+ share(a,id,pub){const g=G(id),c=can(a,g.owner,'share');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'share',why:c.why,state:S.pstate[g.owner]};
+  g.vis=pub?'Public':'Private';aud(g,pub?'Shared (public)':'Unshared (private)',a);return{ok:true}},
+ eligible(a){return Object.keys(P).filter(u=>u!==a&&can(a,u,'cascade-push').ok&&inScope(a,u))},
+ preview(a,goals,recs,edits){return recs.flatMap(r=>goals.map(id=>{const s=G(id),before=wsum(plan(r,'perf'));return{r,id,name:(edits||{})[id]||s.name,state:S.pstate[r],before,after:Math.round((before+(+s.weight||0))*10)/10,dup:S.goals.some(x=>x.owner===r&&x.up===id)}}))},
+ /* the request id makes a retry safe: the same request never creates a second set */
+ cascade(a,q){if(S.reqs[q.req])return{ok:true,ids:S.reqs[q.req],created:[],replay:true};
+  const el=this.eligible(a),bad=q.recs.filter(r=>!el.includes(r));if(!q.recs.length||bad.length)return{ok:false,code:'OUT_OF_SCOPE',recs:bad};
+  const badg=q.goals.filter(id=>!G(id)||G(id).owner!==a||G(id).plan!=='perf');if(!q.goals.length||badg.length)return{ok:false,code:'GOAL_NOT_ELIGIBLE',goals:badg};
+  if(U.failNext){U.failNext=false;return{ok:false,code:'NETWORK'}}
+  const created=[];q.recs.forEach(r=>q.goals.forEach(id=>{const s=G(id),g={id:'g'+(S.seq++),plan:'perf',planId:TEMPLATE.id,owner:r,name:(q.edits||{})[id]||s.name,desc:s.desc,metric:s.metric,weight:s.weight,start:s.start,due:s.due,state:'Not Started',done:0,vis:'Public',ms:s.ms.map(m=>({id:'m'+(S.seq++),t:m.t,d:m.d,a:''})),acts:[],audit:[],up:id,prio:null,casc:{from:id,req:q.req},updated:TODAY};
+   aud(g,'Goal assigned by '+P[a].name+' (cascade-push)',a);S.goals.push(g);created.push(g.id)}));
+  S.reqs[q.req]=created;return{ok:true,ids:created,created}},
+ parents(a,id){const g=G(id);if(!can(a,g.owner,'cascade-align').ok)return[];const below=new Set([id]);for(let more=true;more;){more=false;S.goals.forEach(x=>{if(x.up&&below.has(x.up)&&!below.has(x.id)){below.add(x.id);more=true}})}
+  return S.goals.filter(x=>x.plan==='perf'&&x.owner!==g.owner&&!below.has(x.id)&&visible(a,x)&&canR(a,x.owner,'name'))},
+ link(a,id,up){const g=G(id);if(!this.parents(a,id).some(x=>x.id===up))return{ok:false,code:'LINK_DENIED'};g.up=up;aud(g,'Aligned up to a goal of '+P[G(up).owner].name,a);return{ok:true}},
+ linkPrio(a,id,pid){const g=G(id),n=STRAT.find(x=>x.id===pid),c=can(a,g.owner,'cascade-align');if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:'cascade-align',why:c.why,state:S.pstate[g.owner]};
+  if(!n||!n.pub)return{ok:false,code:'NOT_PUBLISHED'};g.prio=pid;aud(g,'Linked to priority: '+n.title,a);return{ok:true}},
+ unlink(a,id,k){const g=G(id),act=k==='up'?'unalign-parent':'cascade-align',c=can(a,g.owner,act);if(!c.ok)return{ok:false,code:'ACTION_DENIED',action:act,why:c.why,state:S.pstate[g.owner]};g[k]=null;aud(g,'Link removed',a);return{ok:true}},
+ chart(a,id){const g=G(id),ups=[];for(let x=g;x&&x.up&&ups.length<10;){x=G(x.up);if(x)ups.unshift(x)}
+  const src=[g,...ups.slice().reverse()].find(x=>x.prio),strat=[];for(let n=src&&STRAT.find(s=>s.id===src.prio);n;n=STRAT.find(s=>s.id===n.up))if(n.pub)strat.unshift({lvl:n.lvl,title:n.title,owner:n.owner});
+  return{strat,ups:ups.map(x=>view(a,x)),self:view(a,g),downs:S.goals.filter(x=>x.up===id).map(x=>view(a,x))}},
+ addTna(a,fid,p){const f=form(fid),n=String(p.name||'').trim();if(!f)return{ok:false,code:'NOT_FOUND'};
+  if(plan(f.emp,'tna').length>=LIMITS.tna.max)return{ok:false,code:'SECTION_MAX',section:'Training Needs',max:LIMITS.tna.max};
+  if(!n)return{ok:false,code:'VALIDATION',errors:[{f:'name',k:'e_tna'}]};if(n.length>500)return{ok:false,code:'VALIDATION',errors:[{f:'name',k:'e_long'}]};
+  S.goals.push({id:'t'+(S.seq++),plan:'tna',planId:2004,owner:f.emp,name:n,purpose:p.purpose||'',due:p.due||'',vis:'Private',audit:[]});return{ok:true}},
+ /* section rules belong to the form sections, not to the plan */
+ check(o,tpl){const iss=[],gs=plan(o,'perf'),tn=plan(o,'tna'),tw=wsum(gs);
+  if(gs.length<LIMITS.goals.min||gs.length>LIMITS.goals.max)iss.push({k:'i_count',a:[gs.length]});
+  gs.forEach(g=>['name','metric','weight'].forEach(f=>{if(g[f]===''||g[f]==null)iss.push({k:'i_missing_'+f,id:g.id,f,a:[g.name||'']})}));
+  if(S.cfg.strictWeights){if(tw!==100)iss.push({k:'i_total',a:[tw]});gs.forEach(g=>{if(g.weight!==''&&(g.weight<1||g.weight>50))iss.push({k:'i_range',id:g.id,f:'weight',a:[g.name]})})}
+  if(tpl==='appr'){if(tn.length>LIMITS.tna.max)iss.push({k:'i_tna_max'});if(S.cfg.tnaMin&&tn.length<1)iss.push({k:'i_tna_min'})}
+  return iss},
+ formCreate(a,tpl,emp){if(tpl==='goal'&&S.forms.some(f=>f.tpl==='goal'&&f.emp===emp&&f.status!=='completed'))return{ok:false,code:'FORM_EXISTS'};
+  const f={id:'f'+(S.seq++),tpl,emp,step:0,status:'active',assigned:TODAY,start:TODAY,rating:'',comments:'',hist:[{t:mdy(TODAY),w:'Form created by '+P[a].name}]};S.forms.unshift(f);
+  if(tpl==='goal'){S.pstate[emp]='empdraft';f.hist.push({t:mdy(TODAY),w:'Goal plan state set to empdraft (step 1)'})}return{ok:true,form:f}},
+ formNext(a,fid){const f=form(fid);if(!f||f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};
+  const iss=this.check(f.emp,f.tpl);if(iss.length)return{ok:false,code:'SECTION',issues:iss};
+  if(f.tpl==='goal'&&f.step===0){f.step=1;f.assigned=TODAY;S.pstate[f.emp]='unlockedtodlm';f.hist.push({t:mdy(TODAY),w:'Employee Goal Setting completed by '+P[a].name},{t:mdy(TODAY),w:'Goal plan state set to unlockedtodlm (step 2)'});return{ok:true,step:1}}
+  f.status='completed';f.hist.push({t:mdy(TODAY),w:TPL[f.tpl].steps[f.step]+' completed by '+P[a].name});
+  if(f.tpl==='goal'){S.pstate[f.emp]='locked';f.hist.push({t:mdy(TODAY),w:'Goal plan state set to locked (form completed)'})}return{ok:true,done:true}},
+ formPrev(a,fid){const f=form(fid);if(!f||f.tpl!=='goal'||f.step!==1||f.status==='completed'||stepActor(f)!==a)return{ok:false,code:'NOT_YOUR_STEP'};
+  f.step=0;f.assigned=TODAY;S.pstate[f.emp]='empdraft';f.hist.push({t:mdy(TODAY),w:'Sent to previous step by '+P[a].name},{t:mdy(TODAY),w:'Goal plan state set to empdraft (step 1)'});return{ok:true}},
+ formDelete(a,fid){const f=form(fid);if(!f)return{ok:false,code:'NOT_FOUND'};if(P[f.emp].mgr!==a&&P[f.emp].hr!==a)return{ok:false,code:'ACTION_DENIED',action:'delete-form',why:'norole',state:S.pstate[f.emp]};
+  S.forms=S.forms.filter(x=>x!==f);if(f.tpl==='goal')S.pstate[f.emp]='empdraft';return{ok:true}}
+};
+const stepActor=f=>f.tpl==='goal'&&f.step===0?f.emp:P[f.emp].mgr;
+const boxOf=f=>{const mine=f.emp===ME||P[f.emp].mgr===ME;return f.status==='completed'?(mine?'completed':null):stepActor(f)===ME?'inbox':mine?'enroute':null};
+function why(r){const stn=r.state?pn(r.state):'';
+ if(r.code==='FIELD_READ_ONLY')return tr('d_field',r.fields.map(f=>tr('f_'+f)).join(', '),stn);
+ if(r.code==='ACTION_DENIED')return tr('d_action_'+r.why,r.action,stn);
+ if(r.code==='NETWORK')return tr('d_net');
+ if(r.code==='SECTION_MAX')return `A maximum of ${r.max} entries is allowed in the ${r.section} section of this form.`;
+ if(r.code==='VALIDATION')return r.errors.map(x=>tr(x.k)).join(' · ');
+ return tr('d_generic',r.code)}
 
 /* ---------- shell ---------- */
 const IC={search:'<circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/>',todo:'<circle cx="10" cy="10" r="7.5"/><path d="M6.5 10.2l2.4 2.4 4.6-5"/>',help:'<path d="M3.5 11V9a6.5 6.5 0 0113 0v2"/><rect x="2.5" y="10.5" width="3" height="5" rx="1"/><rect x="14.5" y="10.5" width="3" height="5" rx="1"/><path d="M16 15.5c0 1.5-2 2-4 2"/>',book:'<path d="M2.5 4.5h6a2 2 0 012 2v9a2 2 0 00-2-2h-6zM17.5 4.5h-5a2 2 0 00-2 2v9a2 2 0 012-2h5z"/>',bell:'<path d="M5 14V9a5 5 0 0110 0v5l1.5 1.5h-13zM8.5 17.5h3"/>'};
 const ico=(k,b)=>`<button class="hico" aria-label="${k}"><svg viewBox="0 0 20 20">${IC[k]}</svg>${b?`<i>${b}</i>`:''}</button>`;
 const MOD={goals:'Goals',perf:'Performance',calib:'Calibration'};
 function shell(mod,inner){
- return `<div class="sand"><b>Sandbox</b><span>Replica of AJMN’s current SuccessFactors setup · synthetic data</span><span class="sp"></span><a href="./">Talent Suite</a><a href="strategy.html">Strategy Room</a><button data-a="reset">Reset sandbox</button></div>
+ return `<div class="sand"><b>Sandbox</b><span>Replica of AJMN’s current SuccessFactors setup · synthetic data · simulated SAP adapter</span><span class="sp"></span>
+ <label>${tr('signed')} <select data-chg="me">${Object.keys(P).map(k=>`<option value="${k}" ${k===ME?'selected':''}>${e(P[k].name)}</option>`).join('')}</select></label>
+ <span class="lng"><button data-a="lang" data-l="en" aria-pressed="${S.lang!=='ar'}">English</button><button data-a="lang" data-l="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button></span>
+ <label><input type="checkbox" data-chg="fail" ${U.failNext?'checked':''}> ${tr('failnext')}</label><a href="#parity">${tr('parity')}</a>
+ <a href="./">Talent Suite</a><a href="strategy.html">Strategy Room</a><button data-a="reset">Reset sandbox</button></div>
  <header class="hdr"><div class="logo" title="Logo placeholder">AJ</div><button class="mod" data-a="menu" aria-haspopup="true">${MOD[mod]} ⌄</button>
  ${U.menu?`<div class="modmenu">${Object.entries(MOD).map(([k,l])=>`<button data-a="go" data-h="${k}">${l}</button>`).join('')}</div>`:''}
  <span class="sp"></span><input class="hsearch" placeholder="Search for actions or people" aria-label="Search for actions or people">
- ${ico('search')}${ico('todo',8)}${ico('help')}${ico('book')}${ico('bell')}<div class="av" title="${e(P[ME].name)}">${ini(P[ME].name)}</div></header>${inner}`;
+ ${ico('search')}${ico('todo',S.forms.filter(f=>boxOf(f)==='inbox').length)}${ico('help')}${ico('book')}${ico('bell')}<div class="av" title="${e(P[ME].name)}">${ini(P[ME].name)}</div></header>${inner}`;
 }
 function people(){
- const pp=(k)=>`<button class="pp" data-a="who" data-u="${k}" ${S.who===k?'aria-current="true"':''}><span class="pa">${ini(P[k].name)}</span><span class="pn">${e(P[k].name)}<small>${e(P[k].title)}</small></span></button>`;
+ const pp=k=>`<button class="pp" data-a="who" data-u="${k}" ${S.who===k?'aria-current="true"':''}><span class="pa">${ini(P[k].name)}</span><span class="pn">${e(P[k].name)}<small>${e(P[k].title)}</small></span></button>`;
+ const grp=(l,ks)=>ks.length?`<div class="grp">${l}</div>${ks.map(pp).join('')}`:'',ks=Object.keys(P),dr=reports(ME);
  return `<aside class="side"><h2>People Selector</h2><div class="srch"><input placeholder="Search" aria-label="Search people" data-in="psearch"></div>
  <label class="chk"><input type="checkbox"> Include inactive users in search results</label>
- ${pp(ME)}<div class="grp">Manager</div>${pp(P[ME].mgr)}<div class="grp">Direct Reports</div>${reports(ME).map(pp).join('')}</aside>`;
+ ${pp(ME)}${grp(tr('p_mgr'),P[ME].mgr?[P[ME].mgr]:[])}${grp(tr('p_dr'),dr)}${grp(tr('p_mx'),ks.filter(k=>P[k].matrix===ME))}${grp(tr('p_hr'),ks.filter(k=>P[k].hr===ME&&!dr.includes(k)&&k!==P[ME].mgr))}</aside>`;
 }
 
 /* ---------- goals: plan pages ---------- */
+function ready(o,tpl){const iss=SAP.check(o,tpl),tw=wsum(plan(o,'perf'));
+ return `<div class="ready ${iss.length?'bad':''}" id="fready"><b>${iss.length?'⚠':'✓'} ${tr('ready')}</b> <span>${iss.length?tr('ready_bad',iss.length):tr('ready_ok')}</span>
+ ${iss.length?`<ul>${iss.map(i=>`<li>${e(tr(i.k,...(i.a||[]).map(x=>String(x).slice(0,70))))} ${i.id?`<a href="#goal/${i.id}/edit" data-a="fix" data-id="${i.id}" data-f="${i.f}">${tr('fixit')}: ${tr('f_'+i.f)}</a>`:''}</li>`).join('')}</ul>`:''}
+ ${S.cfg.strictWeights?'':`<div class="lk">${tr('w_info',tw)}</div>`}</div>`}
 function goalsPage(){
- const u=S.who,dev=S.gtab==='dev',gs=plan(u,dev?'dev':'perf');
- const cnt=l=>l.map(s=>`<div><b>${gs.filter(g=>g.state===s).length}</b>${s}</div>`).join('');
- const tw=gs.reduce((a,g)=>a+(+g.weight||0),0);
- const card=g=>{const od=dev&&g.state!=='Completed'&&g.due<TODAY?Math.round((new Date(TODAY)-new Date(g.due))/864e5):0;
-  return `<div class="gc" data-a="open" data-id="${g.id}"><div class="gt">${e(g.name)}</div><button class="dots" data-a="card" data-id="${g.id}" aria-label="More actions">•••</button>
-  ${U.card===g.id?`<div class="pop"><button data-a="open" data-id="${g.id}">View Details</button><button data-a="edit" data-id="${g.id}">Edit Goal</button>${dev||canDelete(u)?`<button data-a="del" data-id="${g.id}">Delete Goal</button>`:''}</div>`:''}
-  <div class="due">${od?`<b>${od}</b> Days Overdue`:'Due Date: '+fmt(g.due)}</div><div class="pc"><span>% Complete</span><span>${g.done}%</span></div><div class="bar"><i style="width:${g.done}%"></i></div>
-  <div class="ft"><select class="stsel" data-chg="gstate" data-id="${g.id}" aria-label="Status" style="${dev?'color:'+DCOL[g.state]:''}">${opt(dev?DST:GST,g.state)}</select><span>${dev?(g.comps.length?'◈ '+g.comps.length:''):'⚖ '+g.weight+'%'}</span></div></div>`};
+ const u=S.who,dev=S.gtab==='dev',st=S.pstate[u],all=plan(u,dev?'dev':'perf'),gs=dev?all:all.filter(g=>visible(ME,g)),hid=all.length-gs.length;
+ const cnt=dev?DST.map(s=>`<div><b>${gs.filter(g=>g.state===s).length}</b>${s}</div>`).join(''):ST.map(s=>`<div><b>${gs.filter(g=>g.state===s.v).length}</b>${e(s[lg()])}</div>`).join('');
+ const tw=wsum(gs),cc=dev?{ok:true}:can(ME,u,'create'),el=dev?[]:SAP.eligible(ME),rl=rolesOf(ME,u),nd=!dev&&S.drafts['new:'+u];
+ const card=g=>{const od=dev&&g.state!=='Completed'&&g.due<TODAY?Math.round((new Date(TODAY)-new Date(g.due))/864e5):0,nm=dev||canR(ME,u,'name')?g.name:tr('masked'),sw=dev||canW(ME,u,'state');
+  return `<div class="gc" data-a="open" data-id="${g.id}"><div class="gt">${e(nm)}</div><button class="dots" data-a="card" data-id="${g.id}" aria-label="More actions">•••</button>
+  ${U.card===g.id?`<div class="pop"><button data-a="open" data-id="${g.id}">${dev?'View Details':tr('view')}</button><button data-a="edit" data-id="${g.id}">${dev?'Edit Goal':tr('edit')}</button>${dev||can(ME,u,'delete').ok?`<button data-a="del" data-id="${g.id}">${dev?'Delete Goal':tr('del')}</button>`:''}${!dev&&can(ME,u,'share').ok?`<button data-a="share" data-id="${g.id}">${tr(g.vis==='Public'?'unshare':'share')}</button>`:''}${!dev&&can(ME,u,'cascade-align').ok?`<button data-a="link" data-id="${g.id}">${tr('link')}</button>`:''}</div>`:''}
+  <div class="due">${od?`<b>${od}</b> Days Overdue`:(dev?'Due Date':tr('due_date'))+': '+fmt(g.due)}</div><div class="pc"><span>${dev?'% Complete':tr('f_done')}</span><span>${g.done}%</span></div><div class="bar"><i style="width:${g.done}%"></i></div>
+  <div class="ft">${dev?`<select class="stsel" data-chg="gstate" data-id="${g.id}" aria-label="Status" style="color:${DCOL[g.state]}">${opt(DST,g.state)}</select>`:`<select class="stsel" data-chg="gstate" data-id="${g.id}" aria-label="${tr('f_state')}" ${sw?'':'disabled'}>${stOpts(g.state)}</select>`}
+  <span>${dev?(g.comps.length?'◈ '+g.comps.length:''):(S.drafts[g.id]?`<span class="badge">${tr('dbadge')}</span> `:'')+(g.vis==='Private'?'🔒 ':'')+(canR(ME,u,'weight')?'⚖ '+(g.weight===''?'–':g.weight+'%'):'')}</span></div></div>`};
+ const stRow=dev?'':`<span class="strow">${tr('state')}: <b>${e(pn(st))}</b> <code>${st}</code>${can(ME,u,'change-state').ok?TEMPLATE.states[st].to.map(k=>`<button class="btn" data-a="pstate" data-to="${k}">${e(TEMPLATE.states[k][S.lang==='ar'?'actAr':'actEn'])} → ${e(pn(k))}</button>`).join(''):''}</span>`;
  return shell('goals',`<div class="wrap">${U.full?'':people()}<div class="main">
- <div class="tabsbar" role="tablist"><button role="tab" aria-selected="${!dev}" data-a="gtab" data-t="perf">Performance Goals</button><button role="tab" aria-selected="${dev}" data-a="gtab" data-t="dev">Development Goals</button></div>
- <div class="ph"><div class="r1"><h1>${dev?'Career Development Plan':'2026 Individual Goal Plan'}</h1><span title="Switch plan">⌄</span><span class="sp"></span>
-  <button class="btn em" data-a="new" ${dev||canCreate(u)?'':'disabled title="Goals cannot be created in this plan state"'}>Create Goal</button>${dev?'':`<button class="btn" data-a="cascade">Cascade Goal</button>`}<button class="btn" data-a="print">Print to PDF</button><button class="btn" data-a="full" aria-label="Full screen">⛶</button></div>
-  <div class="dt"><span>${dev?'Jan 1, 2025 - Dec 31, 2026':'Jan 1, 2026 - Dec 31, 2026'}</span>${dev?'':`<label>State: <select class="stsel" data-chg="pstate">${Object.entries(PSTATE).map(([k,l])=>`<option value="${k}" ${S.pstate[u]===k?'selected':''}>${l}</option>`).join('')}</select></label>`}</div>
-  <div class="kpis"><div><b>${gs.length}</b>Goals</div>${cnt(dev?DST:GST)}${dev?'':`<div class="w">${tw}%<br>Weight (Total)</div>`}</div></div>
- <div class="body"><button class="sect" data-a="intro">ⓘ Introduction</button>${S.intro?`<div class="intro">${dev?DINTRO:INTRO}</div>`:''}
-  <div class="sect">⌄ &nbsp;${dev?'Development Goals':'Individual Goals'}</div>
-  <div class="cards">${gs.map(card).join('')}</div>${gs.length?'':'<p>No goals in this plan yet.</p>'}</div></div></div>`);
+ <div class="tabsbar" role="tablist"><button role="tab" aria-selected="${!dev}" data-a="gtab" data-t="perf">${tr('tab_perf')}</button><button role="tab" aria-selected="${dev}" data-a="gtab" data-t="dev">${tr('tab_dev')}</button></div>
+ <div class="ph"><div class="r1"><h1>${dev?'Career Development Plan':tr('plan14')}</h1><span title="Switch plan">⌄</span><span class="sp"></span>
+  <button class="btn em" data-a="new" ${cc.ok?'':`disabled title="${e(why({code:'ACTION_DENIED',action:'create',why:cc.why,state:st}))}"`}>${dev?'Create Goal':tr('create')}</button>${dev?'':`<button class="btn" data-a="cascade" ${el.length?'':'disabled'}>${tr('assign')}</button>`}<button class="btn" data-a="print">${dev?'Print to PDF':tr('print')}</button><button class="btn" data-a="full" aria-label="Full screen">⛶</button></div>
+  <div class="dt"><span>${dev?'Jan 1, 2025 - Dec 31, 2026':fmt(TEMPLATE.start)+' - '+fmt(TEMPLATE.due)}</span>${stRow}</div>
+  <div class="kpis"><div><b>${gs.length}</b>${dev?'Goals':tr('goals')}</div>${cnt}${dev?'':`<div class="w">${tw}%<br>${tr('wtotal')}</div>`}</div></div>
+ <div class="body">${dev?'':`<div class="note"><div>${tr('help_'+st)}</div><div>${tr('roles',rl.length?rl.join(', '):tr('noroles'))} · ${tr('manual')}</div></div>${rl.includes('E')||rl.includes('EM')?ready(u,'goal'):''}
+  ${nd?`<div class="note dr">${tr('newdraft')} <a href="#goal/new/perf">${tr('cont')}</a></div>`:''}${hid?`<div class="note">${tr('hidden',hid)}</div>`:''}`}
+  <button class="sect" data-a="intro">ⓘ ${dev?'Introduction':tr('intro')}</button>${S.intro?`<div class="intro">${dev?DINTRO:INTRO[lg()]}</div>`:''}
+  <div class="sect">⌄ &nbsp;${dev?'Development Goals':tr('cat')}</div>
+  <div class="cards">${gs.map(card).join('')}</div>${gs.length?'':`<p>${dev?'No goals in this plan yet.':tr('none')}</p>`}</div></div></div>`);
 }
 
 /* ---------- goals: details ---------- */
+const gbox=(v,l)=>`<div class="abox"><small>${l}${v.owner?' · '+tr('owner')+': '+e(v.owner):''}</small><b>${e(v.name??tr('masked'))}</b>${v.measure?`<span>${tr('measure')}: ${e(v.measure)}</span>`:''}${v.progress!=null?`<span>${tr('progress')}: ${v.progress}%${v.status?' · '+e(stLabel(v.status)):''}</span>`:''}</div>`;
+function alignBody(g){const c=SAP.chart(ME,g.id),own=g.prio&&STRAT.find(s=>s.id===g.prio),kids=S.goals.filter(x=>x.up===g.id);
+ const drift=x=>{const d=['name','desc','metric','start','due'].filter(f=>x[f]!==g[f]);return d.length&&visible(ME,x)?`<div class="lk">${tr('al_drift',d.map(f=>tr('f_'+f)).join(', '))}</div>`:''};
+ return `<div style="padding:0 22px">${c.ups.length?`<p>${tr('al_up')}:</p>${gbox(c.ups[c.ups.length-1],tr('al_up'))}${can(ME,g.owner,'unalign-parent').ok?`<button class="lnk" data-a="unlink" data-id="${g.id}" data-k="up">${tr('al_remove')}</button>`:''}`:''}
+ ${own?`<p>${tr('al_prio')}:</p><div class="abox st"><small>${e(own.lvl)} · ${e(own.owner)}</small><b>${e(own.title)}</b></div>${can(ME,g.owner,'cascade-align').ok?`<button class="lnk" data-a="unlink" data-id="${g.id}" data-k="prio">${tr('al_remove')}</button>`:''}`:''}
+ ${kids.length?`<p>${tr('al_down')}: ${kids.length}</p>${kids.map(x=>gbox(view(ME,x),tr('al_down'))+drift(x)).join('')}`:''}
+ ${!c.ups.length&&!own&&!kids.length?`<p>${tr('al_none')}</p>`:''}
+ <p class="lnks">${can(ME,g.owner,'cascade-align').ok?`<button class="lnk" data-a="link" data-id="${g.id}">${tr('link')}</button><button class="lnk" data-a="prio" data-id="${g.id}">${tr('prio')}</button>`:''}<button class="lnk" data-a="align" data-id="${g.id}">${tr('chart')}</button></p></div>`}
 function goalDetail(g){
- const dev=g.plan==='dev',planName=dev?'Career Development Plan':'2026 Individual Goal Plan',cat=dev?'Development Goals':'Individual Goals';
- const up=g.up&&G(g.up),down=S.goals.filter(x=>x.up===g.id);
+ const dev=g.plan==='dev',o=g.owner,planName=dev?'Career Development Plan':tr('plan14'),cat=dev?'Development Goals':tr('cat');
+ const r=f=>dev||canR(ME,o,f),sw=dev||canW(ME,o,'state'),so=ST.find(s=>s.v===g.state);
  const sec=(t,body,right)=>`<div class="sh"><span>⌄</span><span>${t}</span><span class="sp"></span>${right||''}</div>${body}`;
  const acts=`<div class="sb" style="padding:0;min-height:${dev?130:110}px">${g.acts.map(a=>`<div class="act ${a.s==='Complete'?'c':''}"><span>${e(a.n)}<small>${a.s} · Created: ${e(a.c)}</small>${a.fb?`<small>Feedback (${a.fb})</small>`:''}</span><span>🏆</span></div>`).join('')}</div>`;
  return shell('goals',`<div class="crumb"><a href="#goals">${planName}</a> / ${cat} / Goal Details</div>
- <div class="dh"><div class="tl"><h1>${e(g.name)}<span class="vis">(${g.vis})</span></h1>${dev?`<button class="btn em" data-a="edit" data-id="${g.id}">Edit Goal</button><button class="btn" data-a="del" data-id="${g.id}">Delete Goal</button>`:`<button class="btn t" data-a="edit" data-id="${g.id}" title="Edit Goal">•••</button>`}</div>
- <div>Updated: ${fmt(g.updated)}</div>
- <div class="facts"><div><small>Status</small><select class="stsel" style="font-size:20px;${dev?'color:'+DCOL[g.state]:''}" data-chg="gstate" data-id="${g.id}">${opt(dev?DST:GST,g.state)}</select></div><div><small>% Complete</small><span>${g.done} <small style="display:inline">%</small></span></div><div><small>${dev?'Start Date':'Start'}</small><span>${fmt(g.start)}</span></div><div><small>${dev?'End Date':'Due'}</small><span>${fmt(g.due)}</span></div>${dev?`<div><small>Competencies</small><span>${g.comps.length}</span></div>`:''}</div></div>
+ <div class="dh"><div class="tl"><h1>${e(r('name')?g.name:tr('masked'))}<span class="vis">(${dev?g.vis:tr(g.vis==='Private'?'priv':'pub')})</span></h1>${dev?`<button class="btn em" data-a="edit" data-id="${g.id}">Edit Goal</button><button class="btn" data-a="del" data-id="${g.id}">Delete Goal</button>`
+  :`<button class="btn em" data-a="edit" data-id="${g.id}">${tr('edit')}</button>${can(ME,o,'share').ok?`<button class="btn" data-a="share" data-id="${g.id}">${tr(g.vis==='Public'?'unshare':'share')}</button>`:''}${can(ME,o,'delete').ok?`<button class="btn" data-a="del" data-id="${g.id}">${tr('del')}</button>`:''}`}</div>
+ <div>Updated: ${fmt(g.updated)}${!dev&&S.drafts[g.id]?` <span class="badge">${tr('dbadge')}</span>`:''}</div>
+ <div class="facts"><div><small>${dev?'Status':tr('f_state')}</small>${dev?`<select class="stsel" style="font-size:20px;color:${DCOL[g.state]}" data-chg="gstate" data-id="${g.id}">${opt(DST,g.state)}</select>`:`<select class="stsel" style="font-size:20px" data-chg="gstate" data-id="${g.id}" ${sw?'':'disabled'}>${stOpts(g.state)}</select>`}</div><div><small>${dev?'% Complete':tr('f_done')}</small><span>${g.done} <small style="display:inline">%</small></span></div><div><small>${dev?'Start Date':tr('f_start')}</small><span>${r('start')?fmt(g.start):'–'}</span></div><div><small>${dev?'End Date':tr('f_due')}</small><span>${r('due')?fmt(g.due):'–'}</span></div>${dev?`<div><small>Competencies</small><span>${g.comps.length}</span></div>`:''}</div></div>
  <div class="dgrid"><div class="l">
-  ${dev?sec('Metric',`<div class="sb" style="white-space:pre-line">${e(g.desc)||'–'}</div>`):sec('Intended Results',g.desc?`<div class="sb">${e(g.desc)}</div>`:'')+sec('Milestones',g.ms.length?`<div class="tw"><table class="t"><tr><th>Target Date</th><th>Milestone</th><th>Actual Date</th></tr>${g.ms.map(m=>`<tr><td>${fmt(m.t)}</td><td>${e(m.d)}</td><td>${fmt(m.a)}</td></tr>`).join('')}</table></div>`:'',`<button class="x" data-a="edit" data-id="${g.id}">Manage Milestones</button>`)}
+  ${dev?sec('Metric',`<div class="sb" style="white-space:pre-line">${e(g.desc)||'–'}</div>`):sec(tr('f_desc'),g.desc&&r('desc')?`<div class="sb">${e(g.desc)}</div>`:'')+sec(tr('f_ms'),g.ms.length&&r('ms')?`<div class="tw"><table class="t"><tr><th>${tr('ms_t')}</th><th>${tr('ms_d')}</th><th>${tr('ms_a')}</th></tr>${g.ms.map(m=>`<tr><td>${fmt(m.t)}</td><td>${e(m.d)}</td><td>${fmt(m.a)}</td></tr>`).join('')}</table></div>`:'',`<button class="x" data-a="edit" data-id="${g.id}">Manage Milestones</button>`)}
   ${sec(`Linked Activities (${g.acts.length})`,acts,`<button class="x" data-a="act" data-id="${g.id}">＋ Create Activity</button>`)}
   ${dev?sec('Linked Learning',g.learn.length?`<div class="sb">${g.learn.map(e).join('<br>')}</div>`:'')+sec(`comments (${g.comments.length})`,`<div class="sb">${g.comments.map(c=>`<p><b>${e(c.by)}</b> · ${e(c.t)}<br>${e(c.x)}</p>`).join('')}<form data-f="comment" data-id="${g.id}"><p>Leave a Comment</p><div style="display:flex;gap:8px;align-items:center"><div class="av" style="background:#D5E5F9">${ini(P[ME].name)}</div><input class="fi" name="x" style="max-width:none" maxlength="1000" aria-label="Comment"><button class="btn" aria-label="Send">➤</button></div></form></div>`):''}
  </div><div class="r">
-  ${sec('More Info',`<div style="padding:0 22px">${dev?`<p>Is the Goal approved by Manager:<br>${e(g.mgrapp)}</p>`:`<p>Key Performance Indicator:<br>${e(g.metric)}</p><p>Weight:<br>${g.weight}%</p>`}</div>`)}
-  ${sec('Goal Audit',`<div style="padding:0 30px"><button class="sh x" style="padding:0;border:0;background:none;cursor:pointer;font-size:14px" data-a="audit" data-id="${g.id}">View Audit History</button></div>`)}
-  ${dev?'':sec('Goal Alignment',`<div style="padding:0 22px">${up?`<p>Aligned Up:</p><div class="pp" style="border:0;padding:4px 0;min-height:0;cursor:default"><span class="pa" style="width:32px;height:32px;font-size:12px">${ini(P[up.owner].name)}</span></div><p>${e(up.name)}</p>`:''}${down.length?`<p>Aligned Down: ${down.length} goal${down.length>1?'s':''}</p>`:''}${!up&&!down.length?'<p>This goal is not aligned to another goal.</p>':''}<button class="sh x" style="padding:0;border:0;background:none;cursor:pointer;font-size:14px" data-a="align" data-id="${g.id}">View Alignment Chart</button></div>`)}
+  ${sec('More Info',`<div style="padding:0 22px">${dev?`<p>Is the Goal approved by Manager:<br>${e(g.mgrapp)}</p>`:`<p>${tr('f_metric')}:<br>${r('metric')?e(g.metric)||'–':'–'}</p><p>${tr('f_weight')}:<br>${r('weight')?(g.weight===''?'–':g.weight+'%'):'–'}</p><p>${tr('stored')}:<br><code>${e(g.state)}</code>${so&&so.trigger?' <code>trigger-completion=true</code>':''} · <code>plan ${g.planId||TEMPLATE.id}</code> · <code>${S.pstate[o]}</code></p>`}</div>`)}
+  ${sec('Goal Audit',`<div style="padding:0 30px"><button class="lnk" data-a="audit" data-id="${g.id}">${dev?'View Audit History':tr('audit')}</button></div>`)}
+  ${dev?'':sec(tr('al'),alignBody(g))}
  </div></div>`);
 }
 
-/* ---------- goals: create / edit ---------- */
+/* ---------- goals: create / edit (development plan 2005, as it was) ---------- */
 function goalForm(g,isNew){
- const dev=g.plan==='dev',d=f=>locked(g,f)?'disabled':'';
- const ta=(id,label,val,max,req,f)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><textarea class="fi" id="${id}" name="${id}" maxlength="${max}" ${d(f||id)} ${req?'required':''}>${e(val)}</textarea><div class="cnt"><span data-cnt="${id}">${max-String(val||'').length}</span> characters left Legal Scan</div>`;
- const sel=(id,label,list,val,req,f)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><select class="fi s" id="${id}" name="${id}" ${d(f||id)}>${opt(list,val)}</select>`;
- const dates=`<div class="two"><div><label class="fl" for="start">${dev?'Start Date':'Start'}:</label><input class="fi" type="date" id="start" name="start" value="${g.start}" ${d('start')}></div><div><label class="fl" for="due">${dev?'End Date':'Due'}:</label><input class="fi" type="date" id="due" name="due" value="${g.due}" ${d('due')}></div></div>`;
- const pct=(id,label,val,req)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><input class="fi s" type="number" id="${id}" name="${id}" min="0" max="100" value="${val}" ${d(id)} ${req?'required':''}>`;
- const msrow=m=>`<tr><td><input type="date" class="fi" name="mt" value="${m.t||''}" aria-label="Target Date"></td><td><input class="fi" name="md" value="${e(m.d||'')}" aria-label="Milestone"></td><td><input type="date" class="fi" name="ma" value="${m.a||''}" aria-label="Actual Date"></td><td><button type="button" class="ib" data-a="msdel" aria-label="Delete row">🗑</button></td></tr>`;
- goalForm.msrow=msrow;
- return shell('goals',`<div class="crumb">${e(P[g.owner].name)} / ${dev?'Career Development Plan':'2026 Individual Goal Plan'} / ${isNew?'Create':'Edit'} Goal</div>
- <div class="dh"><h1 style="padding-top:14px">${isNew?'Create':'Edit'} ${dev?'Development':'Performance'} Goal</h1></div>
- <form data-f="goal" data-id="${isNew?'':g.id}" data-plan="${g.plan}" novalidate><div class="formp"><div class="err" id="gerr" hidden></div>
- ${dev?ta('name','Name',g.name,500,true)+sel('vis','Visibility',['Public','Private'],g.vis,true)+sel('cat','Category',['Development Goals'],'Development Goals')+ta('desc','Metric',g.desc,2000)
+ if(g.plan!=='dev')return perfForm(g,isNew);
+ const ta=(id,label,val,max,req)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><textarea class="fi" id="${id}" name="${id}" maxlength="${max}" ${req?'required':''}>${e(val)}</textarea><div class="cnt"><span data-cnt="${id}">${max-String(val||'').length}</span> characters left Legal Scan</div>`;
+ const sel=(id,label,list,val,req)=>`<label class="fl" for="${id}">${label}:${req?'<b>*</b>':''}</label><select class="fi s" id="${id}" name="${id}">${opt(list,val)}</select>`;
+ return shell('goals',`<div class="crumb">${e(P[g.owner].name)} / Career Development Plan / ${isNew?'Create':'Edit'} Goal</div>
+ <div class="dh"><h1 style="padding-top:14px">${isNew?'Create':'Edit'} Development Goal</h1></div>
+ <form data-f="goal" data-id="${isNew?'':g.id}" data-plan="dev" novalidate><div class="formp"><div class="err" id="gerr" hidden></div>
+ ${ta('name','Name',g.name,500,true)+sel('vis','Visibility',['Public','Private'],g.vis,true)+sel('cat','Category',['Development Goals'],'Development Goals')+ta('desc','Metric',g.desc,2000)
    +`<label class="fl" for="comps">Competencies:</label><select class="fi s" id="comps" name="comps" multiple size="4">${['Communication','Customer Focus','Teamwork','Planning and Organising','Editorial Judgement'].map(c=>`<option ${g.comps.includes(c)?'selected':''}>${c}</option>`).join('')}</select>`
-   +dates+pct('done','% Complete',g.done,true)+sel('state','Status',DST,g.state,true)+`<label class="fl" for="mgrapp">Is the Goal approved by Manager:<b>*</b></label><select class="fi s" id="mgrapp" name="mgrapp" ${P[g.owner].mgr===ME?'':'disabled title="Only the line manager may change this"'}>${opt(MGRAPP,g.mgrapp)}</select>`
-  :ta('name','Goal Description',g.name,500,true)+sel('vis','Visibility',['Public','Private'],g.vis,true)+sel('cat','Goal Type',['Individual Goals'],'Individual Goals',false,'name')+ta('desc','Intended Results',g.desc,2000)+ta('metric','Key Performance Indicator',g.metric,1000,true)
-   +`<label class="fl" for="weight">Weight:<b>*</b></label><input class="fi s" type="number" id="weight" name="weight" min="1" max="50" step="0.1" value="${g.weight}" ${d('weight')} required>`
-   +dates+sel('state','Status',GST,g.state)+pct('done','% Complete',g.done)
-   +`<label class="fl">Milestones: ⓘ</label><div class="tw"><table class="t"><thead><tr><th>Target Date</th><th>Milestone</th><th>Actual Date</th><th>Actions</th></tr></thead><tbody id="msb">${g.ms.map(msrow).join('')||'<tr class="nod"><td colspan="4" class="none">No Data</td></tr>'}</tbody></table></div><p><button type="button" class="btn t" data-a="msadd">Add Row</button></p>`}
+   +`<div class="two"><div><label class="fl" for="start">Start Date:</label><input class="fi" type="date" id="start" name="start" value="${g.start}"></div><div><label class="fl" for="due">End Date:</label><input class="fi" type="date" id="due" name="due" value="${g.due}"></div></div>`
+   +`<label class="fl" for="done">% Complete:<b>*</b></label><input class="fi s" type="number" id="done" name="done" min="0" max="100" value="${g.done}" required>`+sel('state','Status',DST,g.state,true)
+   +`<label class="fl" for="mgrapp">Is the Goal approved by Manager:<b>*</b></label><select class="fi s" id="mgrapp" name="mgrapp" ${P[g.owner].mgr===ME?'':'disabled title="Only the line manager may change this"'}>${opt(MGRAPP,g.mgrapp)}</select>`}
  </div><div class="foot"><button class="btn em">Save</button><button type="button" class="btn t" data-a="back">Cancel</button></div></form>`);
 }
 
-/* ---------- goals: cascade wizard ---------- */
+/* ---------- goals: create / edit (plan 14) ---------- */
+const wtText=(oth,w)=>tr('w_total',Math.round((oth+w)*10)/10,oth,w);
+function msRow(m,w,ops){const d=w?'':'disabled';
+ return `<tr><td><input type="hidden" name="mid" value="${e(m.id)}" ${d}><input type="date" class="fi" name="mt" value="${e(m.t||'')}" aria-label="${tr('ms_t')}" ${d}></td><td><input class="fi" name="md" value="${e(m.d||'')}" aria-label="${tr('ms_d')}" ${d}></td><td><input type="date" class="fi" name="ma" value="${e(m.a||'')}" aria-label="${tr('ms_a')}" ${d}></td><td style="white-space:nowrap">${ops.mv?'<button type="button" class="ib" data-a="msup" aria-label="Move up">▲</button><button type="button" class="ib" data-a="msdn" aria-label="Move down">▼</button>':''}${ops.del?'<button type="button" class="ib" data-a="msdel" aria-label="Delete row">🗑</button>':''}</td></tr>`}
+function perfForm(g,isNew){
+ const o=g.owner,st=S.pstate[o],key=isNew?'new:'+o:g.id,dr=S.drafts[key],v=Object.assign({},g,dr?dr.v:{}),E=U.ferr&&U.ferr.key===key?U.ferr:null,errs=E&&E.errors||[];
+ const w=f=>isNew||canW(ME,o,f),ro=f=>w(f)?'':'disabled',lock=f=>w(f)?'':`<div class="lk">🔒 ${tr('ro_field',pn(st))}</div>`;
+ const err=f=>{const x=errs.find(y=>y.f===f);return x?`<div class="ferr" id="e-${f}">${tr(x.k)}</div>`:''},inv=f=>errs.some(y=>y.f===f)?`aria-invalid="true" aria-describedby="e-${f}"`:'';
+ const ta=(f,req,extra)=>{const max=TEMPLATE.fields[f].max;return `<label class="fl" for="${f}">${tr('f_'+f)}:${req?'<b>*</b>':''}</label><textarea class="fi" id="${f}" name="${f}" maxlength="${max}" ${ro(f)} ${inv(f)}>${e(v[f])}</textarea><div class="cnt">${extra||''}<span data-cnt="${f}">${max-String(v[f]||'').length}</span> ${tr('chars')}</div>${err(f)}${lock(f)}`};
+ const ops={add:isNew||can(ME,o,'create-row').ok,del:isNew||can(ME,o,'delete-row').ok,mv:isNew||can(ME,o,'move-row').ok};perfForm.ops=ops;
+ const wf=FL.filter(w),oth=wsum(plan(o,'perf').filter(x=>x.id!==g.id)),ai=U.ai&&U.ai.key===key?U.ai:null;
+ const top=E?(E.code==='VALIDATION'?`<div class="ebox" role="alert"><b>${tr('e_title',errs.length)}</b><ul>${errs.map(x=>`<li><a href="#" data-a="foc" data-f="${x.f}">${tr('f_'+x.f)}: ${tr(x.k)}</a></li>`).join('')}</ul></div>`
+   :`<div class="ebox" role="alert"><b>${e(why(E))}</b>${E.code==='NETWORK'?`<div>${E.intact?tr('d_intact',fmt(E.savedAt)):tr('d_nothing')}</div><p><button class="btn em">${tr('retry')}</button></p>`:''}</div>`):'';
+ return shell('goals',`<div class="crumb">${e(P[o].name)} / ${tr('plan14')} / ${tr(isNew?'ed_new':'ed_edit')}</div>
+ <div class="dh"><h1 style="padding-top:14px">${tr(isNew?'ed_new':'ed_edit')}</h1></div>
+ <form data-f="goal" data-id="${isNew?'':g.id}" data-plan="perf" data-key="${key}" data-owner="${o}" novalidate><div class="formp">
+ <div class="note">${tr('ed_state',e(pn(st)),st,isNew||wf.length===FL.length?tr('ed_all'):wf.length?wf.map(f=>tr('f_'+f)).join(', '):tr('ed_none'))}</div>
+ <div class="note dr" id="dbar" ${dr?'':'hidden'}><span id="dstat">${dr?tr('draft',new Date(dr.at).toLocaleTimeString()):''}</span> ${isNew?tr('draft_new'):tr('draft_saved',fmt(g.updated))} <button type="button" class="lnk" data-a="ddrop">${tr('discard')}</button></div>
+ ${top}
+ ${ta('name',true)}
+ <label class="fl" for="vis">${tr('f_vis')}:</label>${isNew?`<select class="fi s" id="vis" name="vis"><option value="Public" ${v.vis!=='Private'?'selected':''}>${tr('pub')}</option><option value="Private" ${v.vis==='Private'?'selected':''}>${tr('priv')}</option></select>`:`<input class="fi s" id="vis" value="${tr(g.vis==='Private'?'priv':'pub')}" disabled><div class="lk">${tr('vis_note')}</div>`}
+ <label class="fl" for="cat">${tr('cat_l')}:</label><input class="fi s" id="cat" value="${tr('cat')}" disabled>
+ ${ta('desc')}
+ ${ta('metric',true,w('metric')?`<button type="button" class="lnk" data-a="ai" style="float:inline-start">✦ ${tr('ai_btn')}</button>`:'')}
+ ${ai?`<div class="aibox"><b>${tr('ai_title')}</b> <span class="badge">${tr('ai_tag')}</span><p>${ai.flags.length?tr('ai_missing')+' '+ai.flags.map(k=>tr(k)).join(' · '):tr('ai_ok')}</p>${ai.flags.length?`<blockquote>${e(ai.text)}</blockquote><button type="button" class="btn em" data-a="aiok">${tr('ai_apply')}</button> `:''}<button type="button" class="btn t" data-a="aino">${tr('ai_dismiss')}</button></div>`:''}
+ <label class="fl" for="weight">${tr('f_weight')} (%):<b>*</b></label><input class="fi s" type="number" id="weight" name="weight" min="0" max="100" step="0.1" value="${e(v.weight)}" ${ro('weight')} ${inv('weight')}>${err('weight')}${lock('weight')}
+ <div class="lk" id="wtot" data-oth="${oth}" aria-live="polite">${wtText(oth,+v.weight||0)}</div>
+ <div class="two"><div><label class="fl" for="start">${tr('f_start')}:</label><input class="fi" type="date" id="start" name="start" value="${e(v.start)}" ${ro('start')}>${lock('start')}</div><div><label class="fl" for="due">${tr('f_due')}:</label><input class="fi" type="date" id="due" name="due" value="${e(v.due)}" ${ro('due')}>${lock('due')}</div></div>
+ <label class="fl" for="state">${tr('f_state')}:</label><select class="fi s" id="state" name="state" ${ro('state')}>${stOpts(v.state)}</select>${lock('state')}<div class="lk" id="trg" ${v.state==='On Track'?'':'hidden'}>${tr('trig')}</div>
+ <label class="fl" for="done">${tr('f_done')}:</label><input class="fi s" type="number" id="done" name="done" min="0" max="100" value="${e(v.done)}" ${ro('done')} ${inv('done')}>${err('done')}${lock('done')}
+ <label class="fl">${tr('f_ms')}: ⓘ</label>${w('ms')?'<input type="hidden" name="msw" value="1">':''}<div class="tw"><table class="t"><thead><tr><th>${tr('ms_t')}</th><th>${tr('ms_d')}</th><th>${tr('ms_a')}</th><th>${tr('actions')}</th></tr></thead><tbody id="msb">${(v.ms||[]).map(m=>msRow(m,w('ms'),ops)).join('')||`<tr class="nod"><td colspan="4" class="none">${tr('nodata')}</td></tr>`}</tbody></table></div>
+ ${w('ms')&&ops.add?`<p><button type="button" class="btn t" data-a="msadd">${tr('row_add')}</button></p>`:w('ms')?`<div class="lk">${tr('row_no')}</div>`:lock('ms')}
+ </div><div class="foot"><button class="btn em">${tr('save')}</button><button type="button" class="btn t" data-a="back">${tr('cancel')}</button></div></form>`);
+}
+function readForm(f){const fd=new FormData(f),p={};['name','desc','metric','weight','start','due','state','done','vis'].forEach(n=>{if(fd.has(n))p[n]=String(fd.get(n))});
+ if(fd.has('msw')){const id=fd.getAll('mid'),a=fd.getAll('mt'),b=fd.getAll('md'),c=fd.getAll('ma');p.ms=id.map((x,i)=>({id:x,t:a[i],d:b[i],a:c[i]}))}return p}
+function draftNow(){const f=document.querySelector('form[data-plan=perf]');if(!f)return;S.drafts[f.dataset.key]={at:Date.now(),v:readForm(f)};save();
+ const b=document.getElementById('dbar');if(b){b.hidden=false;document.getElementById('dstat').textContent=tr('draft',new Date().toLocaleTimeString())}}
+/* scripted helper: flags what a measure lacks and drafts one for the user to confirm; it never writes on its own */
+function suggest(name,metric,due){const s=metric||'',fl=[];
+ if(!/\d/.test(s))fl.push('ai_num');if(!/%|percent|hours?|days?|count|number of|per |rate|score|نسبة|عدد|يوم/i.test(s))fl.push('ai_unit');
+ if(!/\bby\b|\bq[1-4]\b|20\d\d|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|month|quarter|year|بحلول|شهر|ربع/i.test(s))fl.push('ai_time');
+ if(!/baseline|from |current|compared|versus|vs\.?|خط أساس|مقارنة/i.test(s))fl.push('ai_base');if(!/report|dashboard|survey|log|audit|system|measured|تقرير|نظام/i.test(s))fl.push('ai_ev');
+ const base=(s.trim()||tr('ai_for',(name||'').trim().slice(0,90)||'…')).replace(/[.\s]+$/,'');return{flags:fl,text:tr('ai_tpl',base,due?fmt(due):'[date]')}}
+
+/* ---------- goals: assign a linked goal (cascade push) ---------- */
 function cascadeDlg(){
- const c=U.casc,gs=plan(ME,'perf'),st=['Select Goals','Select Recipients','Edit Goals<small>(Optional)</small>','Cascade'];
+ const c=U.casc,gs=plan(ME,'perf'),el=SAP.eligible(ME),st=[tr('c1'),tr('c2'),`${tr('c3')}<small>${tr('c3o')}</small>`,tr('c4')];
  let b='';
- if(c.step===0)b=`<h2>1. Select Goals</h2><p>Select one or more goals.</p><label class="wr"><input type="checkbox" data-chg="call" ${gs.every(g=>c.goals.includes(g.id))?'checked':''}> Select All Loaded Goals</label>${gs.map(g=>`<label class="wr"><input type="checkbox" data-chg="cgoal" value="${g.id}" ${c.goals.includes(g.id)?'checked':''}> ${e(g.name)}</label>`).join('')}`;
- if(c.step===1){const team=reports(ME),hits=Object.keys(P).filter(k=>k!==ME&&c.q&&P[k].name.toLowerCase().includes(c.q.toLowerCase()));
-  b=`<h2>2. Select Recipients</h2><p>Select one or more recipients from your team or via search. Only recipients with correct permissions can be selected.</p><div class="seg"><button data-a="cmode" data-m="team" aria-pressed="${c.mode==='team'}">From My Team</button><button data-a="cmode" data-m="search" aria-pressed="${c.mode==='search'}">Via Search</button></div>
-  ${c.mode==='team'?`<h3>My Team (${c.rec.filter(r=>team.includes(r)).length} selected)</h3><label class="wr"><input type="checkbox" data-chg="crall" ${team.every(t=>c.rec.includes(t))?'checked':''}> Direct Reports</label>${team.map(t=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${t}" ${c.rec.includes(t)?'checked':''}> <span class="pa" style="width:28px;height:28px;border-radius:50%;background:#D5E5F9;color:#1B62C4;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${ini(P[t].name)}</span> <b>${e(P[t].name)}</b></label>`).join('')}`
-  :`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Search Results</h3><input class="fi" style="max-width:190px" placeholder="Search" value="${e(c.q||'')}" data-in="csearch" aria-label="Search recipients"></div>${hits.map(t=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${t}" ${c.rec.includes(t)?'checked':''}> ${e(P[t].name)}</label>`).join('')||'<div class="wr lite" style="justify-content:center">Mapping results will be listed here.</div>'}`}`;}
- if(c.step===2)b=`<h2>3. Edit Goals</h2><p>Skip this step if you don’t have any changes to make to the selected goals.</p>${c.goals.map(id=>c.ed===id?`<form class="wr lite" data-f="cedit" data-id="${id}"><input class="fi" name="t" value="${e(c.edits[id]||G(id).name)}" style="max-width:none" maxlength="500" aria-label="Goal Description"><button class="btn em">Done</button></form>`:`<div class="wr lite"><span>${e(c.edits[id]||G(id).name)}</span><button class="ib" data-a="cpen" data-id="${id}" aria-label="Edit goal">✎</button></div>`).join('')}`;
- if(c.step===3)b=`<h2>4. Cascade</h2><p>${c.goals.length} goal${c.goals.length>1?'s':''} will be added to the 2026 Individual Goal Plan of ${c.rec.length} recipient${c.rec.length>1?'s':''}, aligned up to your goals.</p>${c.rec.map(r=>`<div class="wr lite"><b>${e(P[r].name)}</b><span>${c.goals.length} goal${c.goals.length>1?'s':''}</span></div>`).join('')}`;
+ if(c.step===0)b=`<h2>1. ${tr('c1')}</h2><p>${tr('c1p')}</p><label class="wr"><input type="checkbox" data-chg="call" ${gs.every(g=>c.goals.includes(g.id))?'checked':''}> ${tr('c_all')}</label>${gs.map(g=>`<label class="wr"><input type="checkbox" data-chg="cgoal" value="${g.id}" ${c.goals.includes(g.id)?'checked':''}> ${e(g.name)}</label>`).join('')}`;
+ if(c.step===1){const team=reports(ME).filter(r=>el.includes(r)),hits=el.filter(k=>c.q&&P[k].name.toLowerCase().includes(c.q.toLowerCase()));
+  const av=k=>`<span class="pa" style="width:28px;height:28px;border-radius:50%;background:#D5E5F9;color:#1B62C4;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${ini(P[k].name)}</span>`;
+  b=`<h2>2. ${tr('c2')}</h2><p>${tr('c2p')}</p><div class="seg"><button data-a="cmode" data-m="team" aria-pressed="${c.mode==='team'}">${tr('c_team')}</button><button data-a="cmode" data-m="search" aria-pressed="${c.mode==='search'}">${tr('c_search')}</button></div>
+  ${c.mode==='team'?`<h3>${tr('c_team')} (${c.rec.filter(r=>team.includes(r)).length})</h3><label class="wr"><input type="checkbox" data-chg="crall" ${team.length&&team.every(x=>c.rec.includes(x))?'checked':''}> ${tr('c_dr')}</label>${team.map(k=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${k}" ${c.rec.includes(k)?'checked':''}> ${av(k)} <b>${e(P[k].name)}</b></label>`).join('')}`
+  :`<div style="display:flex;justify-content:space-between;align-items:center"><h3>${tr('c_sr')}</h3><input class="fi" style="max-width:190px" placeholder="Search" value="${e(c.q||'')}" data-in="csearch" aria-label="Search recipients"></div>${hits.map(k=>`<label class="wr"><input type="checkbox" data-chg="crec" value="${k}" ${c.rec.includes(k)?'checked':''}> ${e(P[k].name)}</label>`).join('')||`<div class="wr lite" style="justify-content:center">${tr('c_sp')}</div>`}`}`;}
+ if(c.step===2)b=`<h2>3. ${tr('c3')}</h2><p>${tr('c3p')}</p>${c.goals.map(id=>c.ed===id?`<form class="wr lite" data-f="cedit" data-id="${id}"><input class="fi" name="t" value="${e(c.edits[id]||G(id).name)}" style="max-width:none" maxlength="500" aria-label="${tr('f_name')}"><button class="btn em">Done</button></form>`:`<div class="wr lite"><span>${e(c.edits[id]||G(id).name)}</span><button class="ib" data-a="cpen" data-id="${id}" aria-label="Edit goal">✎</button></div>`).join('')}`;
+ if(c.step===3){const pv=SAP.preview(ME,c.goals,c.rec,c.edits);
+  b=`<h2>4. ${tr('c4')}</h2><p>${tr('c4p',pv.length)}</p>${c.err?`<div class="ebox" role="alert"><b>${e(c.err)}</b></div>`:''}<div class="tw"><table class="t"><tr><th>${tr('c_rec')}</th><th>${tr('c_goal')}</th><th>${tr('c_chg')}</th></tr>${pv.map(x=>`<tr><td><b>${e(P[x.r].name)}</b></td><td>${e(x.name)}</td><td>${tr('c_new',e(pn(x.state)))}<br>${tr('c_w',x.before,x.after)}${x.dup?`<div class="ferr">${tr('c_dup')}</div>`:''}</td></tr>`).join('')}</table></div><p class="lk">${tr('c_pd')}</p>`}
  const ok=c.step===0?c.goals.length:c.step===1?c.rec.length:1;
- return `<div class="mask"><div class="dlg" role="dialog" aria-label="Cascade Goal"><header>Cascade Goal</header><div class="steps">${st.map((s,i)=>`<div class="${i===c.step?'on':''} ${i<c.step?'done':''}"><b>${i+1}</b><span>${s}</span></div>`).join('')}</div>
- <div class="db"><div class="wc">${b}</div></div><footer>${c.step?'<button class="btn t" data-a="cprev">Previous</button>':''}<button class="btn em" data-a="cnext" ${ok?'':'disabled'}>${c.step===3?'Cascade':'Next'}</button><button class="btn t" data-a="close">Cancel</button></footer></div></div>`;
+ return `<div class="mask"><div class="dlg" role="dialog" aria-label="${tr('c_title')}"><header>${tr('c_title')}</header><div class="steps">${st.map((s,i)=>`<div class="${i===c.step?'on':''} ${i<c.step?'done':''}"><b>${i+1}</b><span>${s}</span></div>`).join('')}</div>
+ <div class="db"><div class="wc">${b}</div></div><footer>${c.step?`<button class="btn t" data-a="cprev">${tr('prev')}</button>`:''}<button class="btn em" data-a="cnext" ${ok?'':'disabled'}>${c.step===3?(c.err?tr('retry'):tr('c_go')):tr('next')}</button><button class="btn t" data-a="close">${tr('cancel')}</button></footer></div></div>`;
 }
 
 /* ---------- performance ---------- */
@@ -355,34 +678,36 @@ function perfPage(box){
  const sub=`<div class="sub">${[['reviews','Reviews'],['team','Team Overview'],['exec','360 Executive Review']].map(([k,l])=>`<button data-a="ptab" data-t="${k}" ${U.ptab===k?'aria-current="page"':''}>${l}</button>`).join('')}</div>`;
  if(U.ptab==='team')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">Team Overview</h1><div class="tw"><table class="t"><tr><th>Employee</th><th>Form</th><th>Current Step</th><th>Overall Form Rating</th></tr>${S.forms.filter(f=>P[f.emp].mgr===ME).map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td>${e(P[f.emp].name)}</td><td>${TPL[f.tpl].name}</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td>${e(f.rating)||'–'}</td></tr>`).join('')}</table></div></div>`);
  if(U.ptab==='exec')return shell('perf',sub+`<div class="body"><h1 style="margin:10px 0 16px">360 Executive Review</h1><p>This tab is not replicated: no screenshot or template was provided for it.</p></div>`);
- const rows=S.forms.filter(f=>f.status===box),fl=(l,a)=>`<label>${l}<select><option>${a||'All'}</option></select></label>`;
+ const rows=S.forms.filter(f=>boxOf(f)===box),fl=(l,a)=>`<label>${l}<select><option>${a||'All'}</option></select></label>`;
  const nv=(k,l,c)=>`<button class="nv ${c||''}" data-a="go" data-h="perf/${k}" ${box===k?'aria-current="page"':''}>${l}</button>`;
  return shell('perf',sub+`<div class="wrap"><aside class="side" style="width:332px"><h2 style="font-size:24px;padding:24px 8px 14px">My Forms</h2><span class="nv">All Forms</span><span class="nv">In Progress</span>${nv('inbox','Inbox','in')}${nv('enroute','En Route','in')}<span class="nv">Completed</span>${nv('completed','Unfiled','in')}</aside>
  <div class="main"><div class="ph" style="padding-bottom:10px"><div class="r1"><h1>${{inbox:'Inbox',enroute:'En Route',completed:'Completed'}[box]}</h1><span title="Help">ⓘ</span><span class="sp"></span><button class="btn em">Go</button><button class="btn">Reset</button></div>
  <div class="filters">${fl('Template:')}${fl('Current Step:')}${fl('Group: ⓘ')}${fl('All or Reports Only:','All Employees')}<label>Employee:<input placeholder="Search for employee" style="font-style:italic;padding:0 8px"></label>${fl('Division/Channel:')}${fl('Department:')}${fl('Bureau:')}${fl('Section:')}${fl('Directorate:')}${fl('Director General:')}${fl('Group:')}</div></div>
- <div class="body" style="padding-left:16px"><div class="r1" style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><b style="font-size:16px">Forms (${rows.length})</b><span style="flex:1"></span><button class="btn" data-a="mkform">Create Form</button><button class="btn t" disabled>Send to Previous Step</button><button class="btn t" disabled>Final Submission</button><span>⚙</span></div>
+ <div class="body" style="padding-left:16px"><div class="r1" style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><b style="font-size:16px">Forms (${rows.length})</b><span style="flex:1"></span><button class="btn" data-a="mkform" ${reports(ME).length?'':'disabled'}>Create Form</button><span>⚙</span></div>
  <div style="overflow-x:auto"><table class="t"><tr><th><input type="checkbox" aria-label="Select all"></th><th>Title</th><th>Employee</th><th>Current Step</th><th>Date Assigned</th><th>Step Due Date</th><th>Form Start Date</th></tr>
  ${rows.map(f=>`<tr class="cl" data-a="form" data-id="${f.id}"><td><input type="checkbox" aria-label="Select form" data-a="noop"></td><td>◔ &nbsp;${e(TPL[f.tpl].name)} for ${e(P[f.emp].name)}</td><td>${e(P[f.emp].name)} ▤</td><td>${f.status==='completed'?'Completed':TPL[f.tpl].steps[f.step]}</td><td style="text-align:right">${mdy(f.assigned)}</td><td style="text-align:right">–</td><td style="text-align:right">${mdy(f.start)}</td></tr>`).join('')||'<tr><td colspan="7" class="none">No Data</td></tr>'}</table></div></div></div></div>`);
 }
 function formPage(f){
- const ap=f.tpl==='appr',p=P[f.emp],gs=formGoals(f),tn=formTna(f),done=f.status==='completed',mine=f.status==='inbox';
+ const ap=f.tpl==='appr',p=P[f.emp],o=f.emp,gs=formGoals(f).filter(g=>visible(ME,g)),tn=formTna(f),done=f.status==='completed',mine=!done&&stepActor(f)===ME;
  const secs=ap?[['si','👤 Employee Information'],['sg','🎯 Individual Goals'],['st','🎓 Training Needs'],['so','🏆 Overall Performance Summary'],['ss','Overall Score']]:[['si','👤 Employee Information'],['sg','Individual Goals']];
  const desc=t=>`<details class="desc"><summary>Description</summary><p>${t}</p></details>`;
- const row=(g,w)=>`<tr><td>${e(g.name)}</td>${w?`<td style="text-align:right;width:90px">${g.weight}%</td>`:''}<td style="width:150px;white-space:nowrap">${mine?`<button class="ib" data-a="edit" data-id="${g.id}" aria-label="Edit">✎</button><button class="ib" data-a="del" data-id="${g.id}" aria-label="Delete">🗑</button>`:''}<button class="ib" style="float:right" data-a="exp" data-id="${g.id}" aria-label="Details">${U.exp[g.id]?'⌄':'›'}</button></td></tr>${U.exp[g.id]?`<tr><td colspan="3" style="background:var(--bg)">${g.plan==='tna'?`Purpose: ${e(g.purpose)} · Target Date: ${fmt(g.due)}`:`Key Performance Indicator: ${e(g.metric)}<br>Weight: ${g.weight}% · Status: ${g.state} · % Complete: ${g.done}%`}</td></tr>`:''}`;
+ const row=(g,w)=>{const tna=g.plan==='tna',ed=mine&&!tna&&FL.some(x=>canW(ME,o,x)),dl=mine&&(tna||can(ME,o,'delete').ok);
+  return `<tr><td>${e(tna||canR(ME,o,'name')?g.name:tr('masked'))}</td>${w?`<td style="text-align:right;width:90px">${g.weight===''?'–':g.weight+'%'}</td>`:''}<td style="width:150px;white-space:nowrap">${ed?`<button type="button" class="ib" data-a="edit" data-id="${g.id}" aria-label="Edit">✎</button>`:''}${dl?`<button type="button" class="ib" data-a="del" data-id="${g.id}" aria-label="Delete">🗑</button>`:''}<button type="button" class="ib" style="float:right" data-a="exp" data-id="${g.id}" aria-label="Details">${U.exp[g.id]?'⌄':'›'}</button></td></tr>${U.exp[g.id]?`<tr><td colspan="3" style="background:var(--bg)">${tna?`Purpose: ${e(g.purpose)||'–'} · Target Date: ${fmt(g.due)} · Private · plan 2004`:`${tr('f_metric')}: ${e(g.metric)||'–'}<br>${tr('f_weight')}: ${g.weight===''?'–':g.weight+'%'} · ${tr('f_state')}: ${e(stLabel(g.state))} · ${tr('f_done')}: ${g.done}%`}</td></tr>`:''}`};
  return shell('perf',`<div class="sub"><button aria-current="page" data-a="go" data-h="perf">Reviews</button><button data-a="ptab" data-t="team">Team Overview</button><button data-a="ptab" data-t="exec">360 Executive Review</button></div>
- <div class="dh"><div class="crumb" style="padding-left:8px"><a href="#perf">My Forms</a> / Form Details</div><div class="tl" style="padding-left:8px"><h1>${e(TPL[f.tpl].name)} for ${e(p.name)}</h1><button class="btn t" data-a="hist" data-id="${f.id}">History</button><button class="btn t">Actions</button><button class="btn t" data-a="print">Print &amp; PDF</button></div>
- <div style="display:flex;gap:40px;align-items:center;padding:14px 8px 0"><span style="display:flex;gap:12px;align-items:center"><span class="pp" style="border:0;padding:0;min-height:0;width:auto;cursor:default"><span class="pa">${ini(p.name)}</span></span><b>${e(p.name)}</b> ▤</span>${ap?`<span>Overall Score:<br><b style="font-weight:400">${e(f.rating)||'–'}</b></span>`:''}<span>Current step: <b>${done?'Completed':TPL[f.tpl].steps[f.step]}</b></span></div></div>
+ <div class="dh"><div class="crumb" style="padding-left:8px"><a href="#perf">My Forms</a> / Form Details</div><div class="tl" style="padding-left:8px"><h1>${e(TPL[f.tpl].name)} for ${e(p.name)}</h1><button class="btn t" data-a="hist" data-id="${f.id}">History</button>${P[o].mgr===ME||P[o].hr===ME?`<button class="btn t" data-a="fdel" data-id="${f.id}">Delete Form</button>`:''}<button class="btn t" data-a="print">Print &amp; PDF</button></div>
+ <div style="display:flex;gap:40px;align-items:center;padding:14px 8px 0;flex-wrap:wrap"><span style="display:flex;gap:12px;align-items:center"><span class="pp" style="border:0;padding:0;min-height:0;width:auto;cursor:default"><span class="pa">${ini(p.name)}</span></span><b>${e(p.name)}</b> ▤</span>${ap?`<span>Overall Score:<br><b style="font-weight:400">${e(f.rating)||'–'}</b></span>`:''}<span>Current step: <b>${done?'Completed':TPL[f.tpl].steps[f.step]}</b></span>${ap?'':`<span>Goal plan state: <b>${e(pn(S.pstate[o]))}</b> <code>${S.pstate[o]}</code></span>`}</div></div>
  <div class="wrap" style="min-height:0"><nav class="fnav">${secs.map(s=>`<button data-a="jump" data-s="${s[0]}">${s[1]}</button>`).join('')}</nav><form class="main" data-f="pform" data-id="${f.id}" novalidate style="padding-bottom:90px"><div class="err fsec" id="ferr" hidden></div>
  <section class="fsec" id="si"><h2>👤 Employee Information</h2><div class="info">${[['First Name',p.first],['Last Name',p.last],['Employee ID',p.eid],['Division/Channel','N/A'],['Department','N/A'],['Job Title',p.title||'–'],['Manager',p.mgr?P[p.mgr].name:'–']].map(x=>`<div><small>${x[0]}:</small>${e(x[1])}</div>`).join('')}</div></section>
- <section class="fsec" id="sg"><h2>${ap?'🎯 ':''}Individual Goals<span class="sp"></span>${mine&&!done?`<button type="button" data-a="fnew" data-id="${f.id}" aria-label="Add goal">＋</button>`:''}</h2>${desc(ap?'🎯 Review outcomes and achievements. 📈 Consider impact. 📝 Record evidence and constructive feedback.':'This section includes Individual Goals only. Goals are populated from the Goal Type: <strong>Individual Goals</strong>.')}
+ <section class="fsec" id="sg"><h2>${ap?'🎯 ':''}Individual Goals<span class="sp"></span>${mine&&can(ME,o,'create').ok?`<button type="button" data-a="fnew" data-id="${f.id}" aria-label="Add goal">＋</button>`:''}</h2>${desc((ap?'🎯 Review outcomes and achievements. 📈 Consider impact. 📝 Record evidence and constructive feedback.':'This section includes Individual Goals only. Goals are populated from the Goal Type: <strong>Individual Goals</strong>.')+' Synced from goal plan 14 · 1 to 50 goals in this section.')}
+ ${done?'':ready(o,f.tpl)}
  <div class="tw"><table class="t"><tr><th>Goal</th>${ap?'':'<th>Weight</th>'}<th>Action</th></tr>${gs.map(g=>row(g,!ap)).join('')||`<tr><td colspan="3" class="none">No Data</td></tr>`}</table></div></section>
- ${ap?`<section class="fsec" id="st"><h2>🎓 Training Needs<span class="sp"></span>${mine&&!done?`<button type="button" data-a="tna" data-id="${f.id}" aria-label="Add training need">＋</button>`:''}</h2>${desc('🎓 Identify the actual training course or programme. 🧩 Explain the capability gap and expected development outcome.')}
+ ${ap?`<section class="fsec" id="st"><h2>🎓 Training Needs<span class="sp"></span>${mine?`<button type="button" data-a="tna" data-id="${f.id}" aria-label="Add training need">＋</button>`:''}</h2>${desc('🎓 Identify the actual training course or programme. 🧩 Explain the capability gap and expected development outcome. Synced from development plan 2004 · 0 to 3 entries in this section · not part of the overall rating.')}
  <div class="tw"><table class="t"><tr><th>Goal</th><th>Action</th></tr>${tn.map(g=>row(g)).join('')||'<tr><td colspan="2" class="none">No Data</td></tr>'}</table></div></section>
  <section class="fsec" id="so"><h2>🏆 Overall Performance Summary</h2>${desc('🏆 Review the overall performance outcome and recognise contributions.')}
- <div class="tw"><table class="t"><tr><th>Name</th><th>Rating</th></tr><tr><td><b>Overall Form Rating:<span style="color:#BB0000">*</span></b> ⓘ</td><td><select class="fi" style="max-width:210px" name="rating" data-chg="frating" data-id="${f.id}" ${mine&&!done?'':'disabled'} aria-label="Overall Form Rating"><option value="">Select One</option>${opt(SCALE,f.rating)}</select></td></tr></table></div>
- <div class="desc" style="margin-top:10px;padding:10px 16px"><label for="fcm"><b>Section Comments:<span style="color:#BB0000">*</span></b><br>Manager's Comments</label><textarea class="fi" id="fcm" name="comments" maxlength="4000" style="max-width:none;margin-top:8px" ${mine&&!done?'':'disabled'}>${e(f.comments)}</textarea></div></section>
+ <div class="tw"><table class="t"><tr><th>Name</th><th>Rating</th></tr><tr><td><b>Overall Form Rating:<span style="color:#BB0000">*</span></b> ⓘ</td><td><select class="fi" style="max-width:210px" name="rating" data-chg="frating" data-id="${f.id}" ${mine?'':'disabled'} aria-label="Overall Form Rating"><option value="">Select One</option>${opt(SCALE,f.rating)}</select></td></tr></table></div>
+ <div class="desc" style="margin-top:10px;padding:10px 16px"><label for="fcm"><b>Section Comments:<span style="color:#BB0000">*</span></b><br>Manager's Comments</label><textarea class="fi" id="fcm" name="comments" maxlength="4000" style="max-width:none;margin-top:8px" ${mine?'':'disabled'}>${e(f.comments)}</textarea></div></section>
  <section class="fsec" id="ss"><div class="score">Overall Score: &nbsp;${e(f.rating)||'–'}</div></section>`:''}
- ${mine&&!done?`<div class="foot"><button class="btn em" name="do" value="next">Next Step</button><button class="btn" name="do" value="close">Save and Close</button><button class="btn" name="do" value="save">Save</button></div>`:''}</form></div>`);
+ ${mine?`<div class="foot">${!ap&&f.step===1?'<button class="btn t" name="do" value="prev">Send to Previous Step</button>':''}<button class="btn em" name="do" value="next">${!ap&&f.step===0?'Send to DLM Goals Review':'Next Step'}</button><button class="btn" name="do" value="close">Save and Close</button><button class="btn" name="do" value="save">Save</button></div>`:''}</form></div>`);
 }
 
 /* ---------- calibration ---------- */
@@ -397,39 +722,105 @@ function calibPage(){
  <div class="foot"><button class="btn em" data-a="calsave" ${U.calDirty?'':'disabled'}>Save</button><button class="btn t" data-a="calfinal" ${S.calFinal?'disabled':''}>Finalize</button><button class="btn t" data-a="calundo" ${U.calDirty?'':'disabled'}>Undo</button></div>`);
 }
 
+/* ---------- acceptance tests and parity notes ---------- */
+const UNVERIFIED=['Exact SAP validation and error messages. The wording here, including “Add a measure of success”, is proposed.',
+ 'Route-map actor names and who receives each step of the 2026 Individual Goal Form. The sandbox sends step 1 to the employee and step 2 to the line manager.',
+ 'Effective access in the tenant: role-based permissions, target populations and the meaning of EY, F, OP, OC and Cascader. The sandbox resolves E, EM, EM+, ED, EX, EH and EC only, and assumes the target population is the reporting line below the actor.',
+ 'Blank role lists (create, delete, share and the three milestone row actions in Goals Review; delete and share in Goals Completed). They are treated as unresolved and refused.',
+ 'Milestone row actions are not declared in Goals Settings. The sandbox lets them follow write access to the milestones field.',
+ 'Date validation: the trigger for validate-start-before-due on Target Date and how Actual Date is treated. Shown as a warning, never blocking.',
+ 'trigger-completion=true on the stored value “On Track” (shown as Completed). % Complete is not auto-set.',
+ 'Cascade propagation: when edits to a parent reach linked goals and what happens to recipient overrides. Nothing propagates after the first copy.',
+ 'A deliberate second assignment of the same goal to the same person. It is allowed with a warning.',
+ 'Autosync timing between plan 14 or plan 2004 and the form sections. The sandbox reads the plan live.',
+ 'A plan total of 100% and a 1% to 50% range per goal appear only in the instruction text. Both are off unless switched on below.',
+ 'The English and Arabic instructions disagree: English says at least one goal at 1% to 50%, Arabic says at least five goals at 10% to 25%.',
+ 'A manager minimum of one training need. Off unless switched on below; the appraisal export allows zero.',
+ 'Who may delete a form. The sandbox allows the line manager and the HR representative.',
+ 'Manager return-with-comment is a proposed enhancement and is not built. Send to Previous Step has no comment.',
+ 'Not built in this pass: cascade pull, group goals, the SMART wizard steps, Continuous Performance integration and the Role Readiness Assessment Form (ZIP 56).'];
+function runTests(){
+ const keepS=S,keepF=U.failNext,out=[],ck=(c,m)=>c?null:m,J=x=>JSON.stringify(x);
+ const T=(name,expect,fn)=>{S=seed();U.failNext=false;let r;try{r=fn()}catch(x){r=['threw: '+x.message]}out.push({name,expect,fails:r.filter(Boolean)})};
+ T('Save without metric','Error beside Metric, input kept, committed goal unchanged',()=>{const g=plan('admin','perf')[0],b=J(g);S.drafts[g.id]={at:1,v:{name:'Changed',metric:''}};const r=SAP.save('admin',{id:g.id,name:'Changed',metric:''});
+  return[ck(!r.ok&&r.code==='VALIDATION','save was not rejected'),ck(r.errors&&r.errors.some(x=>x.f==='metric'&&L.en[x.k]==='Add a measure of success'),'no “Add a measure of success” error on metric'),ck(J(G(g.id))===b,'committed goal changed'),ck(S.drafts[g.id]&&S.drafts[g.id].v.name==='Changed','typed input was not kept')]});
+ T('Save a valid goal in Goals Settings as employee','Persisted to plan 14 with weight and alignment',()=>{const r=SAP.save('hr2',{owner:'hr2',name:'New goal',metric:'90% by Dec 2026',weight:'10'}),g=r.goal,up=plan('admin','perf')[0];
+  if(!r.ok)return['save refused: '+r.code];const l=SAP.link('hr2',g.id,up.id),c=SAP.chart('hr2',g.id);
+  return[ck(S.pstate.hr2==='empdraft','plan not in empdraft'),ck(G(g.id)&&g.planId===14&&g.plan==='perf','not stored on plan 14'),ck(g.weight===10,'weight not stored'),ck(l.ok&&c.ups.length&&c.ups[c.ups.length-1].name===up.name,'alignment not shown')]});
+ T('Enter Goals Review through the Individual Goal Form','State unlockedtodlm, direct save of name or metric denied',()=>{const g=plan('hr2','perf')[1];SAP.save('hr2',{id:g.id,metric:'Delivered on time'});const n=SAP.formNext('hr2','f4'),a=SAP.save('hr2',{id:g.id,name:'Renamed'}),b=SAP.save('admin',{id:g.id,metric:'Other'}),c=SAP.save('hr2',{id:g.id,state:'Behind'});
+  return[ck(n.ok,'form did not move: '+n.code),ck(S.pstate.hr2==='unlockedtodlm','state is '+S.pstate.hr2),ck(!a.ok&&a.code==='FIELD_READ_ONLY'&&a.fields.includes('name'),'name change by E not denied'),ck(!b.ok&&b.code==='FIELD_READ_ONLY'&&b.fields.includes('metric'),'metric change by EM not denied'),ck(G(g.id).name!=='Renamed','name was changed'),ck(c.ok,'status change by E refused')]});
+ T('Complete the Individual Goal Form','State locked, name denied, weight allowed for E/EM/EX, create allowed for EM only',()=>{const g=plan('hr1','perf')[0],n=SAP.formNext('admin','f3');
+  return[ck(n.ok&&n.done,'form not completed: '+n.code),ck(S.pstate.hr1==='locked','state is '+S.pstate.hr1),ck(!SAP.save('hr1',{id:g.id,name:'X'}).ok&&!SAP.save('admin',{id:g.id,name:'X'}).ok,'name edit not denied'),
+   ck(SAP.save('hr1',{id:g.id,weight:21}).ok,'weight edit by E refused'),ck(SAP.save('admin',{id:g.id,weight:22}).ok,'weight edit by EM refused'),ck(SAP.save('pm',{id:g.id,weight:23}).ok,'weight edit by EX refused'),
+   ck(SAP.save('admin',{owner:'hr1',name:'Late goal',metric:'M',weight:5}).ok,'create by EM refused'),ck(!SAP.save('hr1',{owner:'hr1',name:'Own',metric:'M',weight:5}).ok,'create by E not denied'),ck(!SAP.save('peer',{id:g.id,weight:1}).ok,'weight edit out of scope not denied')]});
+ T('Select Completed','Stored as On Track, shown as Completed after reload',()=>{const g=plan('admin','perf')[0],pick=ST.find(s=>s.en==='Completed').v,r=SAP.save('admin',{id:g.id,state:pick});S=JSON.parse(J(S));
+  return[ck(r.ok,'save refused'),ck(G(g.id).state==='On Track','stored value is '+G(g.id).state),ck(stLabel(G(g.id).state)==='Completed','label is '+stLabel(G(g.id).state)),ck(G(g.id).done===80,'% Complete was changed automatically')]});
+ T('Cascade to two eligible recipients','Preview, two linked goals, retry creates none, out-of-scope denied',()=>{const g=plan('admin','perf')[1],el=SAP.eligible('admin'),pv=SAP.preview('admin',[g.id],['hr1','hr2']),q={req:'r-1',goals:[g.id],recs:['hr1','hr2']},a=SAP.cascade('admin',q),n=S.goals.length,b=SAP.cascade('admin',q),x=SAP.cascade('admin',{req:'r-2',goals:[g.id],recs:['peer']}),y=SAP.cascade('peer',{req:'r-3',goals:[g.id],recs:['hr1']});
+  return[ck(el.includes('hr1')&&el.includes('hr2')&&!el.includes('peer')&&!el.includes('gp'),'eligible list is '+el),ck(pv.length===2,'preview rows '+pv.length),ck(a.ok&&a.created.length===2&&a.created.every(id=>G(id).up===g.id),'two linked goals not created'),
+   ck(b.ok&&b.replay&&b.created.length===0&&S.goals.length===n,'retry created extra goals'),ck(!x.ok&&x.code==='OUT_OF_SCOPE','out-of-scope recipient not denied'),ck(!y.ok,'out-of-scope actor not denied'),ck(S.goals.length===n,'goal count changed after denials')]});
+ T('Appraisal has three Training Needs','Fourth rejected, Individual Goals limit untouched, zero passes',()=>{const r=[1,2,3,4].map(i=>SAP.addTna('admin','f2',{name:'Course '+i})),z=SAP.check('hr1','appr');
+  return[ck(r[0].ok&&r[1].ok&&r[2].ok,'first three refused'),ck(!r[3].ok&&r[3].code==='SECTION_MAX','fourth not rejected'),ck(plan('hr2','tna').length===3,'count is '+plan('hr2','tna').length),ck(LIMITS.goals.max===50&&SAP.save('hr2',{owner:'hr2',name:'G',metric:'M',weight:1}).ok,'Individual Goals limit affected'),
+   ck(plan('hr1','tna').length===0&&!z.some(i=>/tna/.test(i.k)),'zero training needs did not pass'),ck(plan('hr2','tna').every(g=>g.vis==='Private'&&g.planId===2004),'not private on plan 2004')]});
+ T('Link to a published priority','Connected strategy boxes with goal-only information',()=>{const g=plan('admin','perf')[1],a=SAP.linkPrio('admin',g.id,'d2'),u=SAP.linkPrio('admin',g.id,'d3'),c=SAP.chart('admin',g.id),keys='id,owner,name,measure,progress,status',o=SAP.chart('hr1',plan('gp','perf')[1].id);
+  return[ck(a.ok,'link refused'),ck(!u.ok&&u.code==='NOT_PUBLISHED','unpublished priority not refused'),ck(c.strat.length===3&&c.strat[0].lvl==='DG priority'&&c.strat[2].title===STRAT.find(s=>s.id==='d2').title,'strategy boxes are '+c.strat.length),
+   ck([c.self,...c.ups,...c.downs].every(v=>Object.keys(v).join()===keys),'box carries more than goal information'),ck(o.self.name===null&&o.self.owner===null&&o.self.measure===null,'private goal shown to a user without access')]});
+ T('Simulate a failed save','Input kept, retry offered, prior version reported intact',()=>{const g=plan('admin','perf')[0],b=J(g),p={id:g.id,name:'Edited name'};S.drafts[g.id]={at:1,v:{name:'Edited name'}};U.failNext=true;const r=SAP.save('admin',p),mid=J(G(g.id)),d=!!S.drafts[g.id],r2=SAP.save('admin',p);
+  return[ck(!r.ok&&r.code==='NETWORK','save did not fail'),ck(r.intact===true&&r.savedAt===g.updated,'prior version not reported intact'),ck(mid===b,'committed goal changed by the failed save'),ck(d,'input was not kept'),ck(r2.ok&&G(g.id).name==='Edited name','retry did not save'),ck(!S.drafts[g.id],'draft not cleared after the retry')]});
+ S=keepS;U.failNext=keepF;return out}
+function parityPage(){
+ const res=runTests(),pass=res.filter(r=>!r.fails.length).length,rl=l=>l===undefined?'<i>not declared</i>':l.length?l.join(', '):'<i>blank · unresolved</i>';
+ const acts=['change-state','create','delete','share','create-row','delete-row','move-row','cascade-push','cascade-pull','cascade-align','unalign-parent','private-access'];
+ const tog=(k,l)=>`<label class="wr lite" style="justify-content:flex-start"><input type="checkbox" data-chg="cfg" data-k="${k}" ${S.cfg[k]?'checked':''}> ${l}</label>`;
+ return shell('goals',`<div class="body" style="max-width:1200px"><p><a href="#goals">← ${tr('plan14')}</a></p><h1 style="margin:6px 0 14px">Acceptance tests and parity</h1>
+ <h3>Acceptance tests: ${pass} of ${res.length} pass</h3><p>Each test runs against the simulated SAP adapter on a fresh copy of the seed data. Your sandbox data is not touched.</p>
+ <div class="tw"><table class="t"><tr><th>#</th><th>Test</th><th>Expected</th><th>Result</th></tr>${res.map((r,i)=>`<tr><td>${i+1}</td><td>${e(r.name)}</td><td>${e(r.expect)}</td><td>${r.fails.length?`<b style="color:#BB0000">Fail</b><br>${r.fails.map(e).join('<br>')}`:'<b style="color:var(--green)">Pass</b>'}</td></tr>`).join('')}</table></div>
+ <h3 style="margin-top:26px">Rules that are off in the parity baseline</h3><div class="wc" style="max-width:900px">${tog('strictWeights','Require a 100% plan total and 1% to 50% per goal (instruction text only; not established by the plan 14 XML)')}${tog('tnaMin','Require at least one training need on the appraisal (manager minimum, to be confirmed)')}</div>
+ <h3 style="margin-top:26px">Not verified in the tenant</h3><div class="wc" style="max-width:900px"><ul style="margin:0;padding-inline-start:20px">${UNVERIFIED.map(x=>`<li style="margin:6px 0">${e(x)}</li>`).join('')}</ul></div>
+ <h3 style="margin-top:26px">Plan 14 permissions by state, as loaded from the template</h3><p>Role codes are SAP codes relative to the plan owner. ED is the owner’s direct report, not the Executive Director job title.</p>
+ ${Object.entries(TEMPLATE.states).map(([k,s])=>`<h3 style="margin:18px 0 8px;font-weight:700">${s.en} <code>${k}</code> → ${s.to.map(x=>`<code>${x}</code>`).join(' ')}</h3><div class="tw" style="overflow-x:auto"><table class="t"><tr><th>Action</th><th>Roles</th></tr>${acts.map(a=>`<tr><td><code>${a}</code></td><td>${rl(s.act[a])}</td></tr>`).join('')}<tr><th>Field</th><th>Write · Read</th></tr>${FL.map(f=>`<tr><td><code>${sapId(f)}</code> <small>${TEMPLATE.fields[f].cu}</small></td><td>${s.write[f].length?s.write[f].join(', '):'<i>no write grant</i>'}<br><small>read: ${s.read[f].join(', ')}</small></td></tr>`).join('')}</table></div>`).join('')}</div>`);
+}
+
 /* ---------- dialogs ---------- */
 function dialog(){
  const d=U.dlg;if(!d)return '';
- const wrap=(t,b,f,cls)=>`<div class="mask"><div class="dlg ${cls||'sm'}" role="dialog" aria-label="${t}"><header>${t}</header><div class="db" style="min-height:120px">${b}</div><footer>${f||''}<button class="btn t" data-a="close">${f?'Cancel':'Close'}</button></footer></div></div>`;
+ const wrap=(t,b,f,cls)=>`<div class="mask"><div class="dlg ${cls||'sm'}" role="dialog" aria-label="${t}"><header>${t}</header><div class="db" style="min-height:120px">${b}</div><footer>${f||''}<button class="btn t" data-a="close">${f?tr('cancel'):tr('close')}</button></footer></div></div>`;
  if(d.k==='audit'){const g=G(d.id);return wrap('Goal Audit History',g.audit.length?`<table class="t"><tr><th>Date</th><th>Changed By</th><th>Change</th></tr>${g.audit.slice().reverse().map(a=>`<tr><td>${a.t}</td><td>${e(a.by)}</td><td>${e(a.w)}</td></tr>`).join('')}</table>`:'<p>No changes have been recorded for this goal in the sandbox.</p>')}
- if(d.k==='align'){const g=G(d.id),up=g.up&&G(g.up),dn=S.goals.filter(x=>x.up===g.id),bx=(x,l)=>`<div class="wc" style="margin:8px 0;border:1px solid var(--line)"><small>${l} · ${e(P[x.owner].name)}</small><br>${e(x.name)}</div>`;return wrap('Alignment Chart',(up?bx(up,'Aligned Up'):'')+bx(g,'This goal')+dn.map(x=>bx(x,'Aligned Down')).join(''))}
- if(d.k==='hist'){const f=S.forms.find(x=>x.id===d.id);return wrap('History',`<table class="t"><tr><th>Date</th><th>Event</th></tr>${f.hist.map(h=>`<tr><td>${h.t}</td><td>${e(h.w)}</td></tr>`).join('')}</table>`)}
+ if(d.k==='align'){const c=SAP.chart(ME,d.id);return wrap(tr('chart'),`<p class="lk">${tr('al_note')}</p>${c.strat.map(n=>`<div class="abox st"><small>${e(n.lvl)} · ${e(n.owner)}</small><b>${e(n.title)}</b></div><div class="arr">↓</div>`).join('')}${c.strat.length?`<p class="lk">${tr('al_design')}</p>`:''}${c.ups.map(v=>gbox(v,tr('al_up'))+'<div class="arr">↓</div>').join('')}<div class="abox me">${gbox(c.self,tr('al_self'))}</div>${c.downs.map(v=>'<div class="arr">↓</div>'+gbox(v,tr('al_down'))).join('')}`)}
+ if(d.k==='link'){const ps=SAP.parents(ME,d.id),g=G(d.id);return wrap(tr('link'),ps.length?`<p>${tr('lk_pick')}</p><form data-f="link" data-id="${d.id}" id="lkf">${ps.map(x=>`<label class="wr lite" style="justify-content:flex-start"><input type="radio" name="up" value="${x.id}" ${g.up===x.id?'checked':''} required> <span><b>${e(P[x.owner].name)}</b> · ${e(x.name)}<br><small>${tr('measure')}: ${e(canR(ME,x.owner,'metric')?x.metric:'–')} · ${tr('progress')}: ${x.done}%</small></span></label>`).join('')}</form>`:`<p>${tr('lk_none')}</p>`,ps.length?`<button class="btn em" form="lkf">${tr('confirm')}</button>`:'')}
+ if(d.k==='prio'){const g=G(d.id),lab=n=>{const c=[];for(let x=n;x;x=STRAT.find(s=>s.id===x.up))c.unshift(x.title);return c.join(' → ')};return wrap(tr('prio'),`<p>${tr('pr_pick')}</p><p class="lk">${tr('al_design')}</p><form data-f="prio" data-id="${d.id}" id="prf">${STRAT.filter(n=>n.pub).map(n=>`<label class="wr lite" style="justify-content:flex-start"><input type="radio" name="p" value="${n.id}" ${g.prio===n.id?'checked':''} required> <span><small>${e(n.lvl)} · ${e(n.owner)}</small><br>${e(lab(n))}</span></label>`).join('')}</form>`,`<button class="btn em" form="prf">${tr('confirm')}</button>`)}
+ if(d.k==='share'){const g=G(d.id),pub=g.vis!=='Public';return wrap(tr(pub?'share':'unshare'),`<p>${tr(pub?'sh_q':'unsh_q',e(g.name.slice(0,120)))}</p>`,`<button class="btn em" data-a="shareok" data-id="${g.id}">${tr('confirm')}</button>`)}
+ if(d.k==='hist'){const f=form(d.id);return wrap('History',`<table class="t"><tr><th>Date</th><th>Event</th></tr>${f.hist.map(h=>`<tr><td>${h.t}</td><td>${e(h.w)}</td></tr>`).join('')}</table>`)}
  if(d.k==='act')return wrap('Create Activity',`<form data-f="act" data-id="${d.id}" id="actf"><label class="fl" for="an">Activity Name:<b>*</b></label><input class="fi" id="an" name="n" required maxlength="200"><label class="fl" for="as">Status:</label><select class="fi s" id="as" name="s"><option>In Progress</option><option>Complete</option></select></form>`,'<button class="btn em" form="actf">Save</button>');
- if(d.k==='mkform')return wrap('Create Form',`<form data-f="mkform" id="mkf"><label class="fl" for="mt">Template:</label><select class="fi s" id="mt" name="tpl">${Object.entries(TPL).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join('')}</select><label class="fl" for="me">Employee:</label><select class="fi s" id="me" name="emp">${reports(ME).map(r=>`<option value="${r}">${e(P[r].name)}</option>`).join('')}</select></form>`,'<button class="btn em" form="mkf">Create</button>');
+ if(d.k==='mkform')return wrap('Create Form',`<form data-f="mkform" id="mkf"><label class="fl" for="mt">Template:</label><select class="fi s" id="mt" name="tpl">${Object.entries(TPL).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join('')}</select><label class="fl" for="me">Employee:</label><select class="fi s" id="me" name="emp">${reports(ME).map(r=>`<option value="${r}">${e(P[r].name)}</option>`).join('')}</select><p class="lk">A new Individual Goal Form starts at Employee Goal Setting and sets the goal plan to Goals Settings.</p></form>`,'<button class="btn em" form="mkf">Create</button>');
  if(d.k==='tna')return wrap('Create Development Goal',`<form data-f="tna" data-id="${d.id}" id="tnaf"><div class="err" id="terr" hidden></div><label class="fl" for="tn">🎓 Training Goal:<b>*</b></label><textarea class="fi" id="tn" name="name" maxlength="500" required></textarea><div class="cnt"><span data-cnt="tn">500</span> characters left Legal Scan Coaching Advisor</div>
-  <label class="fl" for="tc">Category:</label><select class="fi s" id="tc"><option>🗂️ Training Needs Goals</option></select><label class="fl" for="tp">🛡️ Purpose:</label><select class="fi s" id="tp" name="purpose">${opt(PURPOSE)}</select><label class="fl" for="td">🏁 Target Date:</label><input class="fi s" type="date" id="td" name="due" value="2030-12-31"></form>`,'<button class="btn em" form="tnaf">Save</button>','');
+  <label class="fl" for="tc">Category:</label><select class="fi s" id="tc"><option>🗂️ Training Needs Goals</option></select><label class="fl" for="tp">🛡️ Purpose:</label><select class="fi s" id="tp" name="purpose"><option value="">No selection</option>${opt(PURPOSE)}</select><label class="fl" for="td">🏁 Target Date:</label><input class="fi s" type="date" id="td" name="due" value=""><p class="lk">Saved as Private on plan 2004. Purpose and target date are optional.</p></form>`,'<button class="btn em" form="tnaf">Save</button>','');
  return '';
 }
 
 /* ---------- router ---------- */
 function render(){
  const [a,b,c]=location.hash.slice(1).split('/');let h;
- if(a==='goal'&&b==='new')h=goalForm({plan:c==='dev'?'dev':'perf',owner:S.who,name:'',desc:'',metric:'',weight:'',start:c==='dev'?'2025-01-01':'2026-01-01',due:'2026-12-31',state:c==='dev'?'Not Started':'In Progress',done:0,vis:'Public',ms:[],comps:[],mgrapp:'No selection'},true);
- else if(a==='goal'&&G(b))h=c==='edit'?goalForm(G(b)):goalDetail(G(b));
- else if(a==='form'&&S.forms.find(f=>f.id===b))h=formPage(S.forms.find(f=>f.id===b));
+ document.documentElement.lang=lg();document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
+ if(a==='goal'&&b==='new')h=goalForm({plan:c==='dev'?'dev':'perf',owner:S.who,name:'',desc:'',metric:'',weight:'',start:c==='dev'?'2025-01-01':'2026-01-01',due:'2026-12-31',state:'Not Started',done:0,vis:'Public',ms:[],comps:[],mgrapp:'No selection'},true);
+ else if(a==='goal'&&G(b)&&G(b).plan!=='tna'&&visible(ME,G(b)))h=c==='edit'?goalForm(G(b)):goalDetail(G(b));
+ else if(a==='form'&&form(b)&&(boxOf(form(b))||P[form(b).emp].hr===ME))h=formPage(form(b));
  else if(a==='perf')h=perfPage(['inbox','enroute','completed'].includes(b)?b:'inbox');
  else if(a==='calib')h=calibPage();
+ else if(a==='parity')h=parityPage();
  else h=goalsPage();
  document.getElementById('root').innerHTML=h+(U.casc?cascadeDlg():'')+dialog();
+ if(U.focus){const x=document.getElementById(U.focus);U.focus=null;if(x){x.focus();x.scrollIntoView({block:'center'})}}
  save();
 }
 const go=h=>{if(location.hash==='#'+h)render();else location.hash=h};
-window.addEventListener('hashchange',()=>{U.menu=false;U.card=null;render();window.scrollTo(0,0)});
+window.addEventListener('hashchange',()=>{U.menu=false;U.card=null;U.ferr=null;U.ai=null;render();if(!U.keep)window.scrollTo(0,0);U.keep=false});
 
 /* ---------- actions ---------- */
+const msEmpty=()=>`<tr class="nod"><td colspan="4" class="none">${tr('nodata')}</td></tr>`;
 const A={
- reset:()=>{S=seed();U.calDirty=false;go('goals');toast('Sandbox reset to seed data')},
+ reset:()=>{S=seed();ME=S.me;U.calDirty=false;U.ferr=U.ai=U.casc=U.dlg=null;U.failNext=false;go('goals');toast('Sandbox reset to seed data')},
  menu:()=>{U.menu=!U.menu;render()},
+ lang:el=>{draftNow();S.lang=el.dataset.l;render()},
  go:el=>{U.menu=false;if(el.dataset.h.startsWith('perf'))U.ptab='reviews';go(el.dataset.h)},
  who:el=>{S.who=el.dataset.u;render()},
  gtab:el=>{S.gtab=el.dataset.t;render()},
@@ -439,24 +830,39 @@ const A={
  card:(el,ev)=>{ev.stopPropagation();U.card=U.card===el.dataset.id?null:el.dataset.id;render()},
  open:(el,ev)=>{if(ev.target.closest('select'))return;go('goal/'+el.dataset.id)},
  edit:(el,ev)=>{ev.stopPropagation();U.ret=location.hash.slice(1);go('goal/'+el.dataset.id+'/edit')},
+ fix:(el,ev)=>{ev.preventDefault();U.ret=location.hash.slice(1);U.focus=el.dataset.f;U.keep=true;go('goal/'+el.dataset.id+'/edit')},
+ foc:(el,ev)=>{ev.preventDefault();const x=document.getElementById(el.dataset.f);if(x){x.focus();x.scrollIntoView({block:'center'})}},
  new:()=>{U.ret=location.hash.slice(1);go('goal/new/'+S.gtab)},
- fnew:el=>{const f=S.forms.find(x=>x.id===el.dataset.id);S.who=f.emp;U.ret='form/'+f.id;go('goal/new/perf')},
- back:()=>go(U.ret||'goals'),
- del:(el,ev)=>{ev.stopPropagation();const g=G(el.dataset.id);if(g.plan==='perf'&&!canDelete(g.owner)){toast('Goals cannot be deleted in the “'+PSTATE[S.pstate[g.owner]]+'” state');return}
-  if(!confirm('Delete this goal? This cannot be undone.'))return;S.goals=S.goals.filter(x=>x.id!==g.id);S.goals.forEach(x=>{if(x.up===g.id)x.up=null});toast('Goal deleted');if(location.hash.startsWith('#goal/'))go('goals');else render()},
+ fnew:el=>{const f=form(el.dataset.id);S.who=f.emp;S.gtab='perf';U.ret='form/'+f.id;go('goal/new/perf')},
+ back:()=>{const f=document.querySelector('form[data-plan=perf]');if(f)delete S.drafts[f.dataset.key];U.ferr=U.ai=null;go(U.ret||'goals')},
+ ddrop:()=>{const f=document.querySelector('form[data-plan=perf]');delete S.drafts[f.dataset.key];U.ferr=U.ai=null;render()},
+ del:(el,ev)=>{ev.stopPropagation();const g=G(el.dataset.id);if(g.plan==='perf'){const c=can(ME,g.owner,'delete');if(!c.ok){toast(why({code:'ACTION_DENIED',action:'delete',why:c.why,state:S.pstate[g.owner]}));return}}
+  if(!confirm('Delete this goal? This cannot be undone.'))return;const r=SAP.remove(ME,g.id);if(!r.ok){toast(why(r));return}toast(tr('deleted'));if(location.hash.startsWith('#goal/'))go('goals');else render()},
+ pstate:el=>{const r=SAP.transition(ME,S.who,el.dataset.to);toast(r.ok?tr('st_changed',pn(el.dataset.to)):why(r));render()},
+ share:(el,ev)=>{ev.stopPropagation();U.card=null;U.dlg={k:'share',id:el.dataset.id};render()},
+ shareok:el=>{const g=G(el.dataset.id),r=SAP.share(ME,g.id,g.vis!=='Public');U.dlg=null;if(!r.ok)toast(why(r));render()},
+ link:(el,ev)=>{ev.stopPropagation();U.card=null;U.dlg={k:'link',id:el.dataset.id};render()},
+ prio:el=>{U.dlg={k:'prio',id:el.dataset.id};render()},
+ unlink:el=>{const r=SAP.unlink(ME,el.dataset.id,el.dataset.k);if(!r.ok)toast(why(r));render()},
  audit:el=>{U.dlg={k:'audit',id:el.dataset.id};render()},align:el=>{U.dlg={k:'align',id:el.dataset.id};render()},
  act:el=>{U.dlg={k:'act',id:el.dataset.id};render()},hist:el=>{U.dlg={k:'hist',id:el.dataset.id};render()},
  mkform:()=>{U.dlg={k:'mkform'};render()},
- tna:el=>{const f=S.forms.find(x=>x.id===el.dataset.id);if(formTna(f).length>=3){toast('A maximum of 3 training needs is allowed on this form');return}U.dlg={k:'tna',id:f.id};render()},
+ tna:el=>{const f=form(el.dataset.id);if(formTna(f).length>=LIMITS.tna.max){toast(why({code:'SECTION_MAX',section:'Training Needs',max:LIMITS.tna.max}));return}U.dlg={k:'tna',id:f.id};render()},
+ fdel:el=>{if(!confirm('Delete this form? For the Individual Goal Form the goal plan returns to Goals Settings.'))return;const r=SAP.formDelete(ME,el.dataset.id);toast(r.ok?'Form deleted':why(r));go('perf')},
  close:()=>{U.dlg=null;U.casc=null;render()},
- msadd:()=>{const b=document.getElementById('msb');const n=b.querySelector('.nod');if(n)n.remove();b.insertAdjacentHTML('beforeend',goalForm.msrow({}))},
- msdel:el=>{const b=document.getElementById('msb');el.closest('tr').remove();if(!b.children.length)b.innerHTML='<tr class="nod"><td colspan="4" class="none">No Data</td></tr>'},
- cascade:()=>{U.casc={step:0,goals:[],rec:[],mode:'team',edits:{},ed:null,q:''};render()},
+ msadd:()=>{const b=document.getElementById('msb'),n=b.querySelector('.nod');if(n)n.remove();b.insertAdjacentHTML('beforeend',msRow({id:'n'+Date.now().toString(36)+b.children.length},true,perfForm.ops));draftNow()},
+ msdel:el=>{const b=document.getElementById('msb');el.closest('tr').remove();if(!b.children.length)b.innerHTML=msEmpty();draftNow()},
+ msup:el=>{const r=el.closest('tr');if(r.previousElementSibling)r.parentNode.insertBefore(r,r.previousElementSibling);draftNow()},
+ msdn:el=>{const r=el.closest('tr');if(r.nextElementSibling)r.parentNode.insertBefore(r.nextElementSibling,r);draftNow()},
+ ai:()=>{const f=document.querySelector('form[data-plan=perf]');draftNow();const p=readForm(f);U.ai=Object.assign({key:f.dataset.key},suggest(p.name,p.metric,p.due||TEMPLATE.due));U.focus='metric';render()},
+ aiok:()=>{const f=document.querySelector('form[data-plan=perf]');draftNow();S.drafts[f.dataset.key].v.metric=U.ai.text.slice(0,TEMPLATE.fields.metric.max);U.ai=null;U.focus='metric';render()},
+ aino:()=>{draftNow();U.ai=null;render()},
+ cascade:()=>{U.casc={step:0,goals:[],rec:[],mode:'team',edits:{},ed:null,q:'',req:'req-'+Date.now().toString(36)+'-'+(S.seq++),err:null};render()},
  cmode:el=>{U.casc.mode=el.dataset.m;render()},cpen:el=>{U.casc.ed=el.dataset.id;render()},
- cprev:()=>{U.casc.step--;render()},
+ cprev:()=>{U.casc.step--;U.casc.err=null;render()},
  cnext:()=>{const c=U.casc;if(c.step<3){c.step++;c.ed=null;render();return}
-  c.rec.forEach(r=>c.goals.forEach(id=>{const s=G(id);S.goals.push(Object.assign({},s,{id:'g'+(S.seq++),owner:r,name:c.edits[id]||s.name,done:0,state:'In Progress',acts:[],ms:[],up:id,updated:TODAY,audit:[{t:fmt(TODAY),by:P[ME].name,w:'Goal cascaded from '+P[ME].name}]}))}));
-  U.casc=null;toast(`${c.goals.length} goal${c.goals.length>1?'s':''} cascaded to ${c.rec.length} recipient${c.rec.length>1?'s':''}`);render()},
+  const r=SAP.cascade(ME,{req:c.req,goals:c.goals,recs:c.rec,edits:c.edits});if(!r.ok){c.err=r.code==='NETWORK'?tr('c_fail'):why(r);render();return}
+  U.casc=null;toast(r.replay?tr('c_replay'):tr('c_done',r.created.length));render()},
  ptab:el=>{U.ptab=el.dataset.t;go('perf')},
  form:(el,ev)=>{if(ev.target.closest('input'))return;go('form/'+el.dataset.id)},
  noop:(el,ev)=>ev.stopPropagation(),
@@ -471,15 +877,20 @@ function calMove(pid,col){const p=S.cal.find(x=>x.id===pid);if(!p||p.col===col||
 document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el){if(U.menu||U.card){U.menu=false;U.card=null;render()}return}const f=A[el.dataset.a];if(f)f(el,ev)});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&(U.dlg||U.casc||U.menu||U.card)){U.dlg=U.casc=U.card=null;U.menu=false;render()}});
 document.addEventListener('input',ev=>{const t=ev.target;const c=t.id&&document.querySelector(`[data-cnt="${t.id}"]`);if(c)c.textContent=t.maxLength-t.value.length;
+ if(t.closest&&t.closest('form[data-plan=perf]')){draftNow();if(t.id==='weight'){const w=document.getElementById('wtot');w.textContent=wtText(+w.dataset.oth,+t.value||0)}}
  if(t.dataset.in==='csearch'){U.casc.q=t.value;render();const i=document.querySelector('[data-in=csearch]');i.focus();i.setSelectionRange(i.value.length,i.value.length)}});
-document.addEventListener('change',ev=>{const t=ev.target,k=t.dataset.chg;if(!k)return;const c=U.casc;
- if(k==='gstate'){const g=G(t.dataset.id);aud(g,`Status: ${g.state} → ${t.value}`);g.state=t.value;g.updated=TODAY;render()}
- if(k==='pstate'){S.pstate[S.who]=t.value;toast('Plan state changed to '+PSTATE[t.value]);render()}
+document.addEventListener('change',ev=>{const t=ev.target,k=t.dataset.chg,c=U.casc;
+ if(t.id==='state'&&t.closest('form[data-plan=perf]'))document.getElementById('trg').hidden=t.value!=='On Track';
+ if(!k)return;
+ if(k==='me'){S.me=ME=t.value;S.who=ME;U.casc=U.dlg=U.ferr=null;go(location.hash.startsWith('#perf')||location.hash.startsWith('#form')?'perf':location.hash.startsWith('#parity')?'parity':'goals')}
+ if(k==='fail'){U.failNext=t.checked}
+ if(k==='cfg'){S.cfg[t.dataset.k]=t.checked;render()}
+ if(k==='gstate'){const g=G(t.dataset.id);if(g.plan==='perf'){const r=SAP.save(ME,{id:g.id,state:t.value});if(!r.ok)toast(why(r))}else{aud(g,`Status: ${g.state} → ${t.value}`);g.state=t.value;g.updated=TODAY}render()}
  if(k==='cgoal'){c.goals=t.checked?[...c.goals,t.value]:c.goals.filter(x=>x!==t.value);render()}
  if(k==='call'){c.goals=t.checked?plan(ME,'perf').map(g=>g.id):[];render()}
  if(k==='crec'){c.rec=t.checked?[...c.rec,t.value]:c.rec.filter(x=>x!==t.value);render()}
- if(k==='crall'){c.rec=t.checked?reports(ME):[];render()}
- if(k==='frating'){S.forms.find(f=>f.id===t.dataset.id).rating=t.value;const cm=document.getElementById('fcm');if(cm)S.forms.find(f=>f.id===t.dataset.id).comments=cm.value;render()}
+ if(k==='crall'){const el=SAP.eligible(ME);c.rec=t.checked?reports(ME).filter(r=>el.includes(r)):[];render()}
+ if(k==='frating'){form(t.dataset.id).rating=t.value;const cm=document.getElementById('fcm');if(cm)form(t.dataset.id).comments=cm.value;render()}
  if(k==='calcol')calMove(t.dataset.pid,+t.value)});
 document.addEventListener('dragstart',ev=>{const p=ev.target.closest&&ev.target.closest('.cp');if(p)ev.dataTransfer.setData('text/plain',p.dataset.pid)});
 document.addEventListener('dragover',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c){ev.preventDefault();c.classList.add('drop')}});
@@ -487,30 +898,32 @@ document.addEventListener('dragleave',ev=>{const c=ev.target.closest&&ev.target.
 document.addEventListener('drop',ev=>{const c=ev.target.closest&&ev.target.closest('.col');if(c){ev.preventDefault();calMove(ev.dataTransfer.getData('text/plain'),+c.dataset.col)}});
 document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target,fd=new FormData(f),k=f.dataset.f;
  const fail=(id,m)=>{const x=document.getElementById(id);x.textContent=m;x.hidden=false;x.scrollIntoView({block:'center'})};
- if(k==='goal'){const dev=f.dataset.plan==='dev',isNew=!f.dataset.id;const g=isNew?{id:(dev?'d':'g')+(S.seq++),plan:f.dataset.plan,owner:S.who,acts:[],audit:[],ms:[],learn:[],comments:[],comps:[],up:null,mgrapp:'No selection',done:0,weight:0,metric:'',desc:''}:G(f.dataset.id);
+ if(k==='goal'&&f.dataset.plan==='perf'){const key=f.dataset.key,p=readForm(f),isNew=!f.dataset.id;S.drafts[key]={at:Date.now(),v:p};
+  const r=SAP.save(ME,Object.assign({},p,isNew?{owner:f.dataset.owner}:{id:f.dataset.id}));
+  if(!r.ok){U.ferr=Object.assign({key},r);render();const x=document.querySelector('[aria-invalid=true]')||document.querySelector('.ebox');if(x){x.focus&&x.focus();x.scrollIntoView({block:'center'})}return}
+  U.ferr=U.ai=null;toast(tr('saved')+(r.warn.length?' · '+r.warn.map(w=>tr(w)).join(' '):''));go(U.ret||'goals');return}
+ if(k==='goal'){const isNew=!f.dataset.id,g=isNew?{id:'d'+(S.seq++),plan:'dev',planId:2005,owner:S.who,acts:[],audit:[],learn:[],comments:[],comps:[],mgrapp:'No selection',done:0,desc:''}:G(f.dataset.id);
   const v=n=>fd.has(n)?String(fd.get(n)).trim():g[n];
-  if(!v('name'))return fail('gerr',(dev?'Name':'Goal Description')+' is required.');
-  if(!dev){if(!v('metric'))return fail('gerr','Key Performance Indicator is required.');const w=+v('weight');if(!(w>=1&&w<=50))return fail('gerr','Weight must be within the range of 1% to 50%.');g.weight=w;g.metric=v('metric');
-   if(fd.has('mt')){const t=fd.getAll('mt'),d=fd.getAll('md'),a=fd.getAll('ma');g.ms=t.map((x,i)=>({t:x,d:d[i],a:a[i]})).filter(m=>m.t||m.d||m.a)}else if(!locked(g,'ms'))g.ms=[]}
-  else{g.comps=fd.getAll('comps');if(fd.has('mgrapp'))g.mgrapp=fd.get('mgrapp')}
+  if(!v('name'))return fail('gerr','Name is required.');
+  g.comps=fd.getAll('comps');if(fd.has('mgrapp'))g.mgrapp=fd.get('mgrapp');
   g.name=v('name');g.desc=v('desc');g.vis=v('vis')||g.vis||'Public';g.start=v('start');g.due=v('due');g.state=v('state');g.done=Math.max(0,Math.min(100,+v('done')||0));g.updated=TODAY;
-  aud(g,isNew?'Goal created':'Goal edited');if(isNew)S.goals.push(g);
-  const tw=plan(g.owner,'perf').reduce((a,x)=>a+(+x.weight||0),0);toast(dev||tw===100?'Goal saved':`Goal saved. Total weight is ${tw}%; it must total 100%.`);go(U.ret||'goals')}
+  aud(g,isNew?'Goal created':'Goal edited');if(isNew)S.goals.push(g);toast('Goal saved');go(U.ret||'goals')}
+ if(k==='link'){const r=SAP.link(ME,f.dataset.id,fd.get('up'));U.dlg=null;if(!r.ok)toast(why(r));render()}
+ if(k==='prio'){const r=SAP.linkPrio(ME,f.dataset.id,fd.get('p'));U.dlg=null;if(!r.ok)toast(why(r));render()}
  if(k==='cedit'){U.casc.edits[f.dataset.id]=String(fd.get('t')).trim()||G(f.dataset.id).name;U.casc.ed=null;render()}
  if(k==='comment'){const x=String(fd.get('x')).trim();if(!x)return;G(f.dataset.id).comments.push({by:P[ME].name,t:fmt(TODAY),x});render()}
  if(k==='act'){G(f.dataset.id).acts.unshift({n:fd.get('n'),s:fd.get('s'),c:'today'});U.dlg=null;render()}
- if(k==='mkform'){const tpl=fd.get('tpl');S.forms.unshift({id:'f'+(S.seq++),tpl,emp:fd.get('emp'),step:tpl==='goal'?1:0,status:'inbox',assigned:TODAY,start:TODAY,rating:'',comments:'',hist:[{t:mdy(TODAY),w:'Form created by '+P[ME].name}]});U.dlg=null;toast('Form created');go('perf')}
- if(k==='tna'){const fm=S.forms.find(x=>x.id===f.dataset.id),name=String(fd.get('name')).trim();if(!name)return fail('terr','Training Goal is required.');
-  S.goals.push({id:'t'+(S.seq++),plan:'tna',owner:fm.emp,name,purpose:fd.get('purpose'),due:fd.get('due'),audit:[]});U.dlg=null;render()}
- if(k==='pform'){const fm=S.forms.find(x=>x.id===f.dataset.id),act=ev.submitter?ev.submitter.value:'save',ap=fm.tpl==='appr';
+ if(k==='mkform'){const r=SAP.formCreate(ME,fd.get('tpl'),fd.get('emp'));U.dlg=null;toast(r.ok?'Form created':'This employee already has an open Individual Goal Form.');go('perf')}
+ if(k==='tna'){const r=SAP.addTna(ME,f.dataset.id,{name:fd.get('name'),purpose:fd.get('purpose'),due:fd.get('due')});if(!r.ok)return fail('terr',why(r));U.dlg=null;render()}
+ if(k==='pform'){const fm=form(f.dataset.id),act=ev.submitter?ev.submitter.value:'save',ap=fm.tpl==='appr';
   if(ap){fm.rating=fd.get('rating')||fm.rating;fm.comments=String(fd.get('comments')||'')}
   if(act==='save'){toast('Form saved');render();return}
   if(act==='close'){toast('Form saved');go('perf');return}
+  if(act==='prev'){const r=SAP.formPrev(ME,fm.id);toast(r.ok?'Form sent back to Employee Goal Setting':why(r));go('perf');return}
   if(ap){if(!fm.rating)return fail('ferr','Overall Form Rating is required before the form can move to the next step.');if(!fm.comments.trim())return fail('ferr','Section Comments are required before the form can move to the next step.')}
-  else{const gs=formGoals(fm),tw=gs.reduce((a,g)=>a+(+g.weight||0),0);if(!gs.length)return fail('ferr','At least one goal is required.');if(tw!==100)return fail('ferr',`The total weight of the goals is ${tw}%. It must total 100%.`);if(gs.some(g=>g.weight<1||g.weight>50))return fail('ferr','Each goal weight must be within the range of 1% to 50%.')}
-  fm.status='completed';fm.hist.push({t:mdy(TODAY),w:(ap?'DLM Appraisal':'DLM Goals Review')+' completed by '+P[ME].name});
-  if(!ap){S.pstate[fm.emp]='locked';fm.hist.push({t:mdy(TODAY),w:'Goal plan state changed to Goals Completed'})}
-  toast('Form completed');go('perf')}
+  const r=SAP.formNext(ME,fm.id);
+  if(!r.ok){render();const x=document.getElementById('fready');if(x)x.scrollIntoView({block:'center'});toast(r.code==='SECTION'?tr('ready_bad',r.issues.length):why(r));return}
+  toast(r.done?'Form completed':'Form sent to DLM Goals Review');go('perf')}
 });
 render();
 </script>
