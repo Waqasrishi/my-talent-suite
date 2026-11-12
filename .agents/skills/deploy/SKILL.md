@@ -64,12 +64,12 @@ fix that one thing, run it again — never run stages individually to get past o
 If the user keeps the code in GitHub and wants a push to be what ships ("deploy when I push", "connect
 this to GitHub"), link the repository once instead of running `canvas deploy` each time:
 
-1. `canvas github link <owner/repo> --branch <branch>`. The organisation's GitHub App reads the repository
-   when an admin has listed it for the team (`githubRepos` in the team's file) — no token. When it cannot,
-   the command says why and asks for a **fine-grained token** (this one repository, Contents: read-only)
-   hidden at the prompt. The user creates and types it — never ask for the token in chat, never put it
-   in a file, an argument or score.yaml. A pair cannot be linked: it is deployed from its root with
-   `canvas deploy`
+1. `canvas github link <owner/repo> --branch <branch>`. **No token and no approval are needed**: the
+   organisation's GitHub App "AJ Canvas Sandbox" reads the repository. If the command refuses, the repository
+   is not in that App: tell the user to ask an organisation admin to add it (GitHub → the organisation's Settings
+   → GitHub Apps → configure → Repository access), then run the command again. Never ask for a token, in chat or
+   otherwise. (A platform that keeps a per-team list says so: the team's admin lists the repository in `githubRepos`.)
+   A pair cannot be linked: it is deployed from its root with `canvas deploy`
 2. From then on a push **is** the deploy, as `canvas deploy` is: within a minute the controller reads
    score.yaml as `canvas validate` does, builds the commit and deploys it — the first deploy, a changed
    score.yaml and a new migration included. `canvas github status` says how it stands
@@ -77,7 +77,7 @@ this to GitHub"), link the repository once instead of running `canvas deploy` ea
    and `canvas app update --check` (a push never says the app is behind: when it does, tell the developer and offer `canvas app update`),
    then `git push`. Never `git push --force`, and never `canvas deploy` on a linked app: it stops and says so
    (an upload would replace the build the push is waiting for)
-4. A state other than `deployed` says why (`waiting` and `building` pass by themselves): `error` — the link itself (the token was revoked, the branch deleted, the person who linked left the team: the message says; `canvas github link` again); `rejected` — the commit fails the checks (the message is
+4. A state other than `deployed` says why (`waiting` and `building` pass by themselves): `error` — the link itself (the repository was removed from the GitHub App, the branch deleted: the message says; `canvas github link` again); `rejected` — the commit fails the checks (the message is
    `canvas validate`'s: fix it and push); `needs` — a secret score.yaml declares has no value yet
    (`canvas secret set <KEY>`, `add-secret`; it deploys by itself once set); `failed` — the build
    (`canvas logs --build`) or a deploy check. `canvas github unlink` goes back to uploading

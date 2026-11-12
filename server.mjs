@@ -1,11 +1,11 @@
 // Serves the one static page (index.html) on Canvas, with the platform's checks: who may open it
 // (score.yaml's access, as PLATFORM_ACCESS), /healthz, and the security headers. No dependencies.
-// It serves index.html and nothing else: no other file in this folder is reachable.
+// It serves index.html and strategy.html and nothing else: no other file in this folder is reachable.
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
-const PAGE = join(import.meta.dirname, "index.html");
+const PAGES = { "/": "index.html", "/index.html": "index.html", "/strategy.html": "strategy.html" };
 const RULES = JSON.parse(process.env.PLATFORM_ACCESS || "{}");
 const SSO = process.env.PLATFORM_AUTH === "sso";
 // index.html is kept exactly as it is: one inline script, one inline style block, and its fonts
@@ -39,8 +39,8 @@ createServer(async (req, res) => {
     return res.writeHead(403, { ...HEADERS, "Content-Type": "text/plain; charset=utf-8" })
       .end("You do not have access to this app. Ask its owners to add you.\n");
   }
-  if (path !== "/" && path !== "/index.html") return res.writeHead(404, HEADERS).end();
-  const page = await readFile(PAGE).catch(() => null);
+  if (!Object.hasOwn(PAGES, path)) return res.writeHead(404, HEADERS).end();
+  const page = await readFile(join(import.meta.dirname, PAGES[path])).catch(() => null);
   if (!page) return res.writeHead(500, HEADERS).end();
   res.writeHead(200, { ...HEADERS, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
   res.end(req.method === "HEAD" ? undefined : page);

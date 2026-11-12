@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AJMN Strategy Room Sandbox</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Same tokens and components as the Talent Suite page (index.html), plus the tree, decision and commitment pieces. */
+:root{
+  --bg:#FFFFFF; --ink:#14181F; --muted:#5A6472; --line:#DDE2E8; --soft:#F4F6F8;
+  --navy:#123D70; --navy-d:#0B2748; --teal:#0E7C78; --teal-soft:#E8F3F2;
+  --amber:#F0A93B; --amber-soft:#FFF6E5; --amber-ink:#17120A; --red:#C2362B; --red-soft:#FBEDEB;
+  --display:'Space Grotesk','Segoe UI',sans-serif; --body:'Inter','Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45}
+a{color:var(--navy)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+main:focus{outline:none}
+.gut{padding-left:16px;padding-right:16px}
+@media(min-width:900px){.gut{padding-left:40px;padding-right:40px}}
+
+.top{position:sticky;top:0;z-index:20;background:var(--bg)}
+.hdr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 28px;padding-block:6px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.02em;display:flex;align-items:baseline;gap:10px}
+.brand small{font-family:var(--body);font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+nav.main{display:flex;flex-wrap:wrap;gap:0 22px;min-width:0;flex:1 1 auto}
+nav.main a{font-size:14px;font-weight:500;text-decoration:none;padding:12px 2px;min-height:44px;display:flex;align-items:center;color:var(--muted);border-bottom:2px solid transparent}
+nav.main a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--navy)}
+nav.main a:hover{color:var(--ink)}
+.sbar{background:var(--amber-soft);border-bottom:1px solid #F3D9A6}
+.sbar-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-block:8px;font-size:13px}
+.sbar label{font-weight:600}
+.sbar select{min-height:36px;padding:0 10px;border:1px solid #E6C68A;border-radius:6px;background:var(--bg);max-width:100%}
+.sbar .who{color:var(--muted)}
+.sbar .sp{flex:1 1 auto}
+.tag-sandbox{font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--amber-ink);background:var(--amber);border-radius:4px;padding:3px 8px}
+
+main{max-width:1360px;margin:0 auto;padding-block:32px 96px;display:flex;flex-direction:column;gap:24px}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.phead>div:first-child{display:flex;flex-direction:column;gap:8px;min-width:0}
+.eyebrow{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy)}
+.eyebrow.teal{color:var(--teal)}
+h1{margin:0;font-family:var(--display);font-size:clamp(28px,4vw,38px);font-weight:700;line-height:1.08;letter-spacing:-.01em;text-wrap:balance}
+h2{margin:0;font-family:var(--display);font-size:20px;font-weight:700;text-wrap:balance}
+h3{margin:0;font-family:var(--display);font-size:16px;font-weight:600}
+p{margin:0}
+.sample{font-size:12.5px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.grid{display:flex;flex-wrap:wrap;gap:20px;align-items:stretch}
+.card{flex:1 1 320px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.card.full{flex-basis:100%}
+.card.ai{border-color:var(--teal)}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.meta{font-size:12.5px;color:var(--muted)}
+.list{display:flex;flex-direction:column}
+.empty{font-size:13.5px;color:var(--muted);padding:12px 0;border-top:1px solid var(--line)}
+.btn{min-height:40px;padding:0 16px;border-radius:6px;border:1px solid var(--navy);background:var(--navy);color:#FFFFFF;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--navy-d)}
+.btn.ghost{background:var(--bg);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.teal{background:var(--teal);border-color:var(--teal)}
+.btn.sm{min-height:32px;padding:0 10px;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.inp{min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chipbtn{min-height:36px;padding:0 14px;background:var(--soft);border:1px solid var(--line);border-radius:999px;font-size:13.5px;cursor:pointer;text-align:start}
+.chipbtn:hover{border-color:var(--teal)}
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg);white-space:nowrap}
+.pill.ok{color:var(--teal);border-color:#A9D3CF;background:var(--teal-soft)}
+.pill.wait{color:#8A5A08;border-color:#F0CF94;background:var(--amber-soft)}
+.pill.bad{color:var(--red);border-color:#EDB8B2;background:var(--red-soft)}
+.pill.navy{color:var(--navy);border-color:#B7C6DA;background:#EEF2F8}
+.pill.conf{color:var(--ink);border-style:dashed}
+.tabs{display:flex;flex-wrap:wrap;gap:4px}
+.tabs button{min-height:36px;padding:0 12px;background:none;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-weight:500;cursor:pointer;font-size:13px}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.note{font-size:13px;color:var(--muted);background:var(--soft);border-radius:8px;padding:10px 14px}
+.ailbl{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.scroll{overflow-x:auto;min-width:0}
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px}
+.tbl th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:start}
+.tbl td.was{color:var(--muted);text-decoration:line-through;text-decoration-color:#B9C0C9}
+.tbl td.now{font-weight:500}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#FFFFFF;padding:10px 16px;border-radius:8px;font-size:13.5px;z-index:60;max-width:calc(100% - 32px)}
+
+/* numbers */
+.stats{display:flex;flex-wrap:wrap;gap:12px 36px}
+.stat b{display:block;font-family:var(--display);font-size:30px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+
+/* demo path */
+.path{display:flex;flex-wrap:wrap;gap:8px}
+.path button{flex:1 1 200px;text-align:start;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.path button:hover{border-color:var(--teal)}
+.path button[aria-current="step"]{border-color:var(--amber);background:var(--amber-soft)}
+.path b{width:22px;height:22px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;background:var(--soft);font-size:12px}
+.path .done b{background:var(--teal);color:#FFFFFF}
+.path span{font-size:13px;line-height:1.35}
+
+/* decisions */
+.dec{border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.dec.open{border-color:var(--amber)}
+.dec .dt{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.25}
+.quotes{display:flex;flex-wrap:wrap;gap:12px}
+.quote{flex:1 1 280px;min-width:0;border-inline-start:3px solid var(--navy);background:var(--soft);border-radius:0 8px 8px 0;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.quote .q{font-size:14.5px;line-height:1.45}
+.quote .d{font-size:12px;color:var(--muted)}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opt{flex:1 1 220px;min-width:0;text-align:start;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.opt:hover{border-color:var(--navy)}
+.opt[aria-pressed="true"]{border-color:var(--navy);box-shadow:0 0 0 2px #C9D6EA}
+.opt .ol{font-weight:600;font-size:14.5px}
+.opt .os{font-size:12.5px;color:var(--muted)}
+.prev{border:1px solid var(--teal);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;background:#FBFDFD}
+
+/* tree */
+.tree{display:flex;flex-direction:column}
+.trow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:9px 0;border-top:1px solid var(--line);padding-inline-start:calc(var(--d)*22px)}
+.trow.mine{background:linear-gradient(90deg,var(--teal-soft),transparent 60%)}
+.trow.hit{background:var(--amber-soft)}
+.caret{width:26px;height:26px;border:0;background:none;cursor:pointer;color:var(--muted);flex:none;border-radius:4px;font-size:12px}
+.caret:hover{background:var(--soft)}
+.caret[disabled]{visibility:hidden}
+.kind{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);flex:none;width:112px;white-space:nowrap}
+.tmeta{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-inline-start:auto}
+.ttl{flex:1 1 240px;min-width:0;background:none;border:0;padding:4px 6px;margin:-4px -6px;text-align:start;font-size:14.5px;font-weight:500;cursor:text;border-radius:4px;line-height:1.35}
+.ttl:hover{background:var(--soft)}
+.ttl.k-p{font-family:var(--display);font-size:16px;font-weight:700}
+.ttl.k-g{font-weight:600}
+.ttl[disabled]{cursor:default;color:var(--ink)}
+.ttl[disabled]:hover{background:none}
+.tform{flex:1 1 260px;min-width:0;display:flex;gap:6px}
+.tform input{min-height:34px;padding:4px 8px}
+.town{min-height:30px;padding:0 6px;border:1px solid transparent;border-radius:6px;background:transparent;font-size:13px;color:var(--muted);max-width:170px;cursor:pointer}
+.town:hover,.town:focus{border-color:var(--line);background:var(--bg)}
+.tdue{font-size:12.5px;color:var(--muted);flex:0 1 auto}
+.tsub{flex-basis:100%;font-size:12.5px;color:var(--muted);padding-inline-start:158px}
+.add{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--bg);cursor:pointer;color:var(--muted);flex:none}
+.add:hover{border-color:var(--teal);color:var(--teal)}
+@media(max-width:700px){.kind{width:auto}.tsub{padding-inline-start:36px}.trow{padding-inline-start:calc(var(--d)*10px)}}
+
+/* commitments */
+.cm{padding:14px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.cm .ct{font-size:15px;font-weight:500;line-height:1.3}
+.cm .cs{font-size:12.5px;color:var(--muted)}
+.cm .was{font-size:12.5px;color:var(--muted);text-decoration:line-through;text-decoration-color:#B9C0C9}
+.trace{display:flex;flex-direction:column;gap:0;border-inline-start:2px solid var(--line);margin-inline-start:6px}
+.trace div{padding:6px 0 6px 16px;position:relative;font-size:13.5px}
+.trace div::before{content:"";position:absolute;inset-inline-start:-6px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--navy)}
+.trace div:last-child::before{background:var(--teal);border-color:var(--teal)}
+.trace small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+details.how summary{cursor:pointer;font-weight:600}
+.kv{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:8px 14px;font-size:13.5px;margin:12px 0 0}
+.kv dt{color:var(--muted)}.kv dd{margin:0}
+@media(max-width:640px){.kv{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <header class="hdr gut">
+    <div class="brand">Talent Suite <small>AJMN</small></div>
+    <nav class="main" aria-label="Main"><a href="./">Talent Suite</a><a href="strategy.html" aria-current="page">Strategy Room</a></nav>
+  </header>
+  <div class="sbar"><div class="sbar-in gut" id="sbar"></div></div>
+</div>
+<main class="gut" id="app" tabindex="-1"></main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ============ people and roles (synthetic) ============ */
+const P={
+ dg:{name:'Nasser Al-Amin',short:'DG',title:'Director General'},
+ ed_edit:{name:'Rana Khoury',short:'ED Editorial',title:'Executive Director, Editorial'},
+ ed_tech:{name:'Samir Aziz',short:'ED Technology',title:'Executive Director, Technology'},
+ ed_ops:{name:'Huda Saleh',short:'ED Operations',title:'Executive Director, Operations'},
+ ed_dig:{name:'Faisal Noor',short:'ED Digital',title:'Executive Director, Digital'},
+ ed_hr:{name:'Maha Darwish',short:'ED HR',title:'Executive Director, Human Resources'},
+ dir_nw:{name:'Lina Haddad',short:'Director, Newsroom Workflow',title:'Director, Newsroom Workflow · Editorial'},
+ dir_plat:{name:'Tomas Reyes',short:'Director, Newsroom Platforms',title:'Director, Newsroom Platforms · Technology'}
+};
+const ROLES=['dg','ed_edit','ed_tech','ed_ops','dir_nw'];
+const KIND={p:'DG priority',g:'Strategic goal',m:'Annual milestone',c:'Commitment',d:'Deliverable'};
+const CHILD={p:'g',g:'m',m:'c',c:'d'};
+
+/* ============ seed ============ */
+function seed(){
+ const n=(id,par,kind,title,owner,status,src,x)=>Object.assign({id,par,kind,title,owner,status,src,due:'',open:true},x||{});
+ return {role:'dg',filter:'all',edit:null,preview:null,counter:null,decided:{},whatif:null,linked:false,log:[],seq:1,
+ nodes:[
+  n('p1',null,'p','Faster, trusted journalism','dg','Confirmed','agreed'),
+  n('g1','p1','g','Cut the time from verified footage arriving to a story ready to publish','ed_edit','Confirmed','agreed',{kpi:'Median 42 min today → 20 min by 2030',why:'Audiences get verified stories sooner; journalists stop re-keying footage details between systems. We will know from the median time measured in each newsroom.'}),
+  n('m1','g1','m','2027: pilot the new footage workflow in four newsrooms from June','ed_edit','Needs decision','agreed',{due:'Starts 1 Jun 2027'}),
+  n('c1','m1','c','Integrate verification with the newsroom system for the pilot newsrooms','ed_tech','Needs decision','ai',{due:'Four newsrooms by 31 May 2027'}),
+  n('d2','c1','d','Build and test the verification connector','dir_plat','Draft','ai',{due:'Ready for test 15 Apr 2027'}),
+  n('c2','m1','c','Newsroom readiness: training and rotas for the pilot newsrooms','ed_ops','Proposed','ai',{due:'Four newsrooms by 15 May 2027'}),
+  n('d1','m1','d','Roll out the workflow to Doha, London, Washington and Kuala Lumpur','dir_nw','Draft','ai',{due:'All four start 1 Jun 2027'}),
+  n('g2','p1','g','Verify every user-submitted video before broadcast','ed_edit','Confirmed','agreed',{kpi:'100% verified by end of 2027',open:false}),
+  n('c3','g2','c','Verification tooling available on every news desk','ed_tech','Confirmed','agreed',{due:'31 Mar 2027'}),
+  n('g3','p1','g','Elections coverage toolkit ready for the 2028 cycle','ed_dig','Confirmed','agreed',{kpi:'Used by every elections desk in 2028',open:false}),
+  n('m2','g3','m','2027: toolkit beta, built on the pilot footage workflow','ed_dig','Confirmed','agreed',{due:'Beta in Q3 2027'}),
+  n('p2',null,'p','Grow digital audiences','dg','Confirmed','agreed',{open:false}),
+  n('g4','p2','g','Double the direct audience on owned platforms','ed_dig','Confirmed','agreed',{kpi:'2× monthly direct users by 2030'}),
+  n('g5','p2','g','Launch a personalised news briefing in Arabic and English','ed_dig','Needs decision','agreed',{kpi:'1M weekly briefing readers by 2029'}),
+  n('p3',null,'p','Modern internal services','dg','Confirmed','agreed',{open:false}),
+  n('g6','p3','g','Move all eligible offices to digital HR services','ed_hr','Confirmed','agreed',{kpi:'100% of eligible offices by 2029'}),
+  n('c4','g6','c','Secure access for the offices in scope','ed_tech','Confirmed','agreed',{due:'First group by 30 Jun 2027'}),
+  n('c5','g6','c','Coordinate local rollout and office readiness','ed_ops','Proposed','ai',{due:'First group by 30 Jun 2027'}),
+  n('g7','p3','g','One service desk for every bureau','ed_ops','Needs decision','agreed',{kpi:''}),
+  n('p4',null,'p','A skilled, resilient organisation','dg','Confirmed','agreed',{open:false}),
+  n('g8','p4','g','Fill 70% of leadership roles from internal successors','ed_hr','Confirmed','agreed',{kpi:'70% by 2030'}),
+  n('g9','p4','g','Every journalist trained in verification and AI-assisted tools','ed_hr','Confirmed','agreed',{kpi:'100% by end of 2028'}),
+  n('c6','g9','c','Release journalists for two training days each','ed_edit','Confirmed','agreed',{due:'Through 2027'})
+ ]};
+}
+
+/* ============ decisions the reconciliation raised (scripted in the sandbox) ============ */
+const DEC=[
+ {id:'x1',goal:'g1',title:'Two plans disagree on the June footage-workflow pilot',
+  body:'The Editorial plan starts four newsrooms in June. The Technology plan can integrate two by then. One milestone and three commitments depend on the answer.',
+  sources:[{d:'Editorial annual plan 2027 · page 4',q:'“The pilot begins in four newsrooms on 1 June 2027.”'},{d:'Technology delivery plan 2027 · page 9',q:'“Integration capacity in the first half supports two newsroom integrations by 31 May, and two more by 31 August.”'}],
+  whatif:true,
+  opts:[
+   {k:'a',label:'Two in June, two in September',sub:'Fits confirmed capacity. Nothing else moves.',forecast:'Forecast median at year end: 30 min',
+    ch:[{id:'m1',f:'title',to:'2027: pilot the new footage workflow in two newsrooms from June and two more from September'},
+        {id:'c1',f:'due',to:'Two newsrooms by 31 May 2027, two more by 31 Aug 2027'},
+        {id:'c2',f:'due',to:'Two newsrooms by 15 May 2027, two more by 15 Aug 2027'},
+        {id:'d1',f:'title',to:'Roll out the workflow to Doha and London in June, then Washington and Kuala Lumpur in September'},
+        {id:'d1',f:'due',to:'First wave 1 Jun 2027 · second wave 1 Sep 2027'}]},
+   {k:'b',label:'All four in September',sub:'One launch, three months later. The elections toolkit beta moves too.',forecast:'Forecast median at year end: 34 min',
+    ch:[{id:'m1',f:'title',to:'2027: pilot the new footage workflow in four newsrooms from September'},
+        {id:'m1',f:'due',to:'Starts 1 Sep 2027'},
+        {id:'c1',f:'due',to:'Four newsrooms by 31 Aug 2027'},
+        {id:'c2',f:'due',to:'Four newsrooms by 15 Aug 2027'},
+        {id:'d1',f:'due',to:'All four start 1 Sep 2027'},
+        {id:'m2',f:'due',to:'Beta in Q4 2027'}]},
+   {k:'c',label:'Fund extra capacity for four in June',sub:'Keeps the date. Needs two contract engineers; the budget is an assumption until confirmed.',forecast:'Forecast median at year end: 28 min',
+    ch:[{id:'c1',f:'due',to:'Four newsrooms by 31 May 2027, with added capacity'},
+        {add:{id:'c9',par:'m1',kind:'c',title:'Bring in two contract integration engineers, April to June',owner:'ed_tech',due:'Contracts signed by 15 Mar 2027 · budget not yet confirmed',open:true}},
+        {id:'m1',f:'due',to:'Starts 1 Jun 2027'},{id:'c2',f:'due',to:'Four newsrooms by 15 May 2027'},{id:'d1',f:'due',to:'All four start 1 Jun 2027'}]}
+  ]},
+ {id:'x2',goal:'g5',title:'The personalised briefing depends on audience data nobody has committed to deliver',
+  body:'The Digital plan needs consented audience data in one place by March. No division’s plan includes it. Technology’s mandate covers data platforms, so it is the suggested owner.',
+  sources:[{d:'Digital annual plan 2027 · page 6',q:'“Personalisation requires a single consented audience profile, available from March 2027.”'}],
+  opts:[
+   {k:'a',label:'Ask ED Technology to deliver it',sub:'Suggested from division mandates.',ch:[{add:{id:'c7',par:'g5',kind:'c',title:'Provide a single consented audience profile for personalisation',owner:'ed_tech',due:'By 31 Mar 2027',open:true}},{id:'g5',f:'status',to:'Confirmed',keep:true}]},
+   {k:'b',label:'Keep it inside Digital',sub:'Digital builds it within its own plan.',ch:[{add:{id:'c7',par:'g5',kind:'c',title:'Provide a single consented audience profile for personalisation',owner:'ed_dig',due:'By 31 Mar 2027',open:true}},{id:'g5',f:'status',to:'Confirmed',keep:true}]}
+  ]},
+ {id:'x3',goal:'g7',title:'“One service desk for every bureau” has no measure or target',
+  body:'The goal was agreed without a target, so progress cannot be reported. A target is suggested from last year’s service desk figures.',
+  sources:[{d:'Strategy session notes · 14 Oct 2026',q:'“One service desk for every bureau. Operations to own. Target to follow.”'}],
+  opts:[
+   {k:'a',label:'Use the suggested target',sub:'90% of requests resolved within two working days by 2028.',ch:[{id:'g7',f:'kpi',to:'90% of requests resolved within two working days by 2028'}]},
+   {k:'b',label:'Ask ED Operations for a target',sub:'Goes to Operations as a request.',ch:[{id:'g7',f:'status',to:'Target requested',keep:true}]}
+  ]}
+];
+
+/* ============ state ============ */
+let S;
+try{S=JSON.parse(localStorage.getItem('ajmn-strategy-room'))}catch(e){}
+if(!S||!S.nodes)S=seed();
+function save(){try{localStorage.setItem('ajmn-strategy-room',JSON.stringify(S))}catch(e){}}
+const N=id=>S.nodes.find(n=>n.id===id);
+const kids=id=>S.nodes.filter(n=>n.par===id);
+const me=()=>S.role;
+const goalOf=n=>{while(n&&n.kind!=='g'&&n.par)n=N(n.par);return n&&n.kind==='g'?n:null};
+const chain=n=>{const c=[];while(n){c.unshift(n);n=n.par?N(n.par):null}return c};
+const nowStr=()=>'12 Nov 2026, '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+function log(what){S.log.push({ts:nowStr(),who:P[me()].name+' · '+P[me()].short,what})}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+const TONE={Confirmed:'ok','In plan':'ok',Proposed:'navy',Draft:'','Needs decision':'bad','Awaiting confirmation':'wait','Change proposed':'wait','Target requested':'wait'};
+const pill=(s,tone)=>`<span class="pill ${tone??TONE[s]??''}">${esc(s)}</span>`;
+const SRC={agreed:['Agreed',''],ai:['AI proposed','conf'],dg:['DG decision','navy'],edit:['By hand','']};
+const srcPill=n=>pill(SRC[n.src][0],SRC[n.src][1]);
+const openDecs=()=>DEC.filter(d=>!S.decided[d.id]);
+const settled=n=>['Confirmed','In plan'].includes(n.status);
+const canEdit=n=>me()==='dg'||n.owner===me()||(goalOf(n)||{}).owner===me();
+const needsMe=n=>n.owner===me()&&['Awaiting confirmation','Proposed'].includes(n.status);
+
+/* ============ shell ============ */
+function renderBar(){
+ const u=P[me()];
+ document.getElementById('sbar').innerHTML=`<span class="tag-sandbox">Sandbox</span><label for="rolesel">Viewing as</label>
+ <select id="rolesel" data-chg="role">${ROLES.map(r=>`<option value="${r}" ${S.role===r?'selected':''}>${esc(P[r].short)}</option>`).join('')}</select>
+ <span class="who">${esc(u.name)} · ${esc(u.title)}</span><span class="sp"></span>
+ <button class="btn ghost sm" data-act="reset">Reset sandbox</button>`;
+}
+function head(eyebrow,title){return `<div class="phead"><div><div class="eyebrow">${esc(eyebrow)}</div><h1>${esc(title)}</h1></div><span class="sample">Synthetic data</span></div>`}
+
+/* ============ demo path ============ */
+function path(){
+ const d1=!!S.decided.x1,c1=N('c1').status==='Confirmed';
+ const st=[['dg','See the conflict AI found between two plans',d1],['dg','Choose an option and preview what changes',d1],['ed_tech','ED Technology confirms the revised commitment',c1],['dir_nw','The director traces it back to the DG goal',false]];
+ const cur=!d1?(S.preview?1:0):!c1?2:3;
+ return `<section class="card full"><div class="chead"><h2>Demo path</h2><span class="meta">One decision, traced from the DG to a director’s plan</span></div>
+ <div class="path">${st.map((s,i)=>`<button data-act="role" data-r="${s[0]}" class="${s[2]?'done':''}" ${i===cur?'aria-current="step"':''}><b>${s[2]?'✓':i+1}</b><span>${esc(s[1])}</span></button>`).join('')}</div></section>`;
+}
+
+/* ============ DG: decisions ============ */
+function previewRows(opt){
+ return opt.ch.map(ch=>{
+  if(ch.add)return `<tr><td>${esc(KIND[ch.add.kind])} · new</td><td>${esc(P[ch.add.owner].short)}</td><td class="was">—</td><td class="now">${esc(ch.add.title)} · ${esc(ch.add.due)}</td></tr>`;
+  const n=N(ch.id);if(n[ch.f]===ch.to)return '';
+  return `<tr><td>${esc(KIND[n.kind])}${ch.f==='due'?' · date':ch.f==='kpi'?' · target':ch.f==='status'?' · status':''}<div class="meta">${esc((goalOf(n)||n).title)}</div></td><td>${esc(P[n.owner].short)}</td><td class="was">${esc(n[ch.f]||'None')}</td><td class="now">${esc(ch.to)}</td></tr>`;
+ }).join('');
+}
+function decCard(d){
+ const pv=S.preview&&S.preview.id===d.id?d.opts.find(o=>o.k===S.preview.k):null;
+ return `<div class="dec open">
+  <div class="row" style="justify-content:space-between"><span class="ailbl">Found by AI · sources shown</span>${pill('Needs decision')}</div>
+  <div class="dt">${esc(d.title)}</div><p>${esc(d.body)}</p>
+  <div class="quotes">${d.sources.map(s=>`<div class="quote"><div class="q">${esc(s.q)}</div><div class="d">${esc(s.d)}</div></div>`).join('')}</div>
+  ${d.whatif?`<form data-form="whatif" class="row"><input class="inp" name="q" style="flex:1 1 260px;width:auto;border-color:var(--teal)" aria-label="Ask what would change" placeholder="Ask what would change, e.g. “If we move this to September, what else moves?”" value="${esc(S.whatif||'')}"><button class="btn teal">Ask</button><span class="meta">Prototype · scripted</span></form>`:''}
+  <div class="opts">${d.opts.map(o=>`<button class="opt" data-act="opt" data-id="${d.id}" data-k="${o.k}" aria-pressed="${!!pv&&pv.k===o.k}"><span class="ol">${esc(o.label)}</span><span class="os">${esc(o.sub)}</span></button>`).join('')}</div>
+  ${pv?`<div class="prev"><div class="chead"><h3>If you choose “${esc(pv.label)}”</h3><span class="meta">${esc(pv.forecast||'Nothing changes until you record it')}</span></div>
+   <div class="scroll"><table class="tbl"><thead><tr><th>What changes</th><th>Owner</th><th>Now</th><th>After</th></tr></thead><tbody>${previewRows(pv)}</tbody></table></div>
+   <div class="row"><button class="btn" data-act="apply" data-id="${d.id}" data-k="${pv.k}">Record decision</button><button class="btn ghost" data-act="unpreview">Cancel</button><span class="meta">Owners are asked to confirm their part. Nobody else gets a task.</span></div></div>`:''}
+ </div>`;
+}
+function dgView(){
+ const open=openDecs(),goals=S.nodes.filter(n=>n.kind==='g'),cs=S.nodes.filter(n=>n.kind==='c'||n.kind==='m');
+ const waiting=cs.filter(n=>n.status==='Awaiting confirmation'||n.status==='Change proposed');
+ const by={};waiting.forEach(n=>by[n.owner]=(by[n.owner]||0)+1);
+ return head('Director General · decisions',open.length?`${open.length} decision${open.length>1?'s':''} need${open.length>1?'':'s'} you`:'Nothing needs you today')+
+ `<div class="grid"><section class="card full"><div class="stats">
+   <div class="stat"><b>${goals.length}</b><span>strategic goals, each with one accountable ED</span></div>
+   <div class="stat"><b>${cs.filter(settled).length} of ${cs.length}</b><span>milestones and commitments confirmed</span></div>
+   <div class="stat"><b>${waiting.length}</b><span>waiting for an ED to confirm</span></div>
+   <div class="stat"><b>${open.length}</b><span>decisions only you can make</span></div></div>
+   ${waiting.length?`<p class="note">Waiting on ${Object.entries(by).map(([o,c])=>esc(P[o].short)+' ('+c+')').join(', ')}. ${waiting.filter(n=>n.status==='Change proposed').map(n=>esc(P[n.owner].short)+' proposed a change: “'+esc(n.counter)+'”').join(' ')}</p>`:''}
+  </section>
+  <section class="card full"><div class="chead"><h2>Decisions</h2><span class="meta">Plans reconciled: approved strategy, 5 divisional plans, project milestones</span></div>
+   ${open.map(decCard).join('')||'<div class="empty">Every conflict found in the plans has a recorded decision.</div>'}
+   ${Object.entries(S.decided).map(([id,v])=>{const d=DEC.find(x=>x.id===id);return `<div class="cm"><div class="row" style="justify-content:space-between"><div class="ct">${esc(d.title)}</div>${pill('Decided','ok')}</div><div class="cs">${esc(d.opts.find(o=>o.k===v.k).label)} · ${esc(v.by)} · ${esc(v.at)}</div></div>`}).join('')}
+  </section></div>`;
+}
+
+/* ============ ED: my commitments ============ */
+function cmRow(n,act){
+ const g=goalOf(n)||n;
+ return `<div class="cm"><div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap"><div class="ct">${esc(n.title)}</div>${pill(n.status)}</div>
+  ${n.prev&&n.prev.title?`<div class="was">${esc(n.prev.title)}</div>`:''}
+  <div class="cs">${n.due?esc(n.due)+' · ':''}${n.kpi?esc(n.kpi)+' · ':''}${n.kind==='g'?'':'for “'+esc(g.title)+'” · owned by '+esc(P[g.owner].short)}${n.owner!==me()?' · from '+esc(P[n.owner].short):''}</div>
+  ${n.prev&&n.prev.due?`<div class="was">${esc(n.prev.due)}</div>`:''}
+  ${n.counter?`<div class="note">Change proposed: “${esc(n.counter)}”</div>`:''}
+  ${act&&needsMe(n)?(S.counter===n.id?`<form data-form="counter" data-id="${n.id}" class="row"><input class="inp" name="t" required style="flex:1 1 220px;width:auto" aria-label="Your proposed change" placeholder="What can you deliver instead? A date, a scope, or what you need"><button class="btn sm">Send</button><button type="button" class="btn ghost sm" data-act="nocounter">Cancel</button></form>`
+   :`<div class="row"><button class="btn sm" data-act="confirm" data-id="${n.id}">Confirm</button><button class="btn ghost sm" data-act="counter" data-id="${n.id}">Propose a change</button>${srcPill(n)}</div>`):''}
+ </div>`;
+}
+function edView(){
+ const u=me();
+ const own=S.nodes.filter(n=>n.owner===u&&(n.kind==='g'||n.kind==='m'));
+ const owe=S.nodes.filter(n=>n.owner===u&&n.kind==='c'&&(goalOf(n)||{}).owner!==u);
+ const wait=S.nodes.filter(n=>n.kind==='c'&&n.owner!==u&&(goalOf(n)||{}).owner===u&&!settled(n));
+ const todo=S.nodes.filter(needsMe);
+ const col=(t,m,rows,act,emp)=>`<section class="card"><div class="chead"><h2>${t}</h2><span class="meta">${m}</span></div><div class="list">${rows.map(n=>cmRow(n,act)).join('')||`<div class="empty">${emp}</div>`}</div></section>`;
+ return head(P[u].short+' · my commitments',todo.length?`${todo.length} commitment${todo.length>1?'s':''} to confirm`:'Everything you owe is confirmed')+
+ (todo.length>1?`<div class="row"><button class="btn" data-act="confirmall">Confirm all ${todo.length}</button><span class="meta">Or open one to offer a different date or scope.</span></div>`:'')+
+ `<div class="grid">${col('I own',own.length+' goals and milestones',own,true,'No strategic goals are owned by your division.')}
+ ${col('I owe',owe.length+' to other divisions',owe,true,'No other division is counting on you this year.')}
+ ${col('I’m waiting on',wait.length+' not yet confirmed',wait,false,'Everyone you depend on has confirmed.')}</div>`;
+}
+
+/* ============ director: my delivery plan ============ */
+function dirView(){
+ const u=me(),mine=S.nodes.filter(n=>n.owner===u&&n.kind==='d');
+ return head(P[u].short+' · my delivery plan','This year’s work, and where it comes from')+
+ `<div class="grid">${mine.map(n=>{const ch=chain(n),deps=kids(n.par).filter(x=>x.kind==='c');
+  return `<section class="card" style="flex-basis:460px"><div class="chead"><h2>${esc(n.title)}</h2>${pill(n.status)}</div>
+   ${n.prev&&n.prev.title?`<div class="cm" style="border:0;padding:0"><div class="was">${esc(n.prev.title)}</div></div>`:''}
+   <dl class="kv" style="margin:0"><dt>Accountable</dt><dd>${esc(P[u].name)} · one named person</dd><dt>When</dt><dd>${esc(n.due)}</dd><dt>Result expected</dt><dd>${esc(goalOf(n).kpi)}</dd>
+   <dt>In your team plan</dt><dd>${S.linked?'Linked to team goal “Newsroom workflow rollout 2027” · <a href="./#goals">open in Goals</a>':'<button class="btn ghost sm" data-act="link">Link an existing team goal</button>'}</dd></dl>
+   <h3>What has to arrive first</h3>
+   <div class="list">${deps.map(d=>`<div class="cm"><div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap"><div class="ct">${esc(d.title)}</div>${pill(d.status)}</div><div class="cs">${esc(P[d.owner].short)} · ${esc(P[d.owner].name)} · needed: ${esc(d.due)}</div>${d.prev&&d.prev.due?`<div class="was">${esc(d.prev.due)}</div>`:''}</div>`).join('')}</div>
+  </section>
+  <section class="card"><div class="chead"><h2>Where this comes from</h2><span class="meta">Same records the DG sees</span></div>
+   <div class="trace">${ch.map(x=>`<div><small>${esc(KIND[x.kind])} · ${esc(P[x.owner].short)}</small>${esc(x.title)}</div>`).join('')}</div>
+   ${S.decided.x1?`<p class="note">Changed by a DG decision on ${esc(S.decided.x1.at)}. Individual goals for your team come from the work you agree with each person.</p>`:`<p class="note">This is still a draft: the June start depends on a decision the DG has not made yet.</p>`}
+  </section>`}).join('')||'<section class="card full"><div class="empty">No deliverables are assigned to you this year.</div></section>'}</div>`;
+}
+
+/* ============ the tree ============ */
+function visible(){
+ if(S.filter==='all')return null;
+ const keep=new Set();
+ S.nodes.filter(n=>S.filter==='mine'?n.owner===me():!settled(n)).forEach(n=>chain(n).forEach(x=>keep.add(x.id)));
+ return keep;
+}
+function rowHtml(n,d,vis){
+ if(vis&&!vis.has(n.id))return '';
+ const ks=kids(n.id),open=vis?true:n.open,ed=canEdit(n);
+ const title=S.edit===n.id?`<form class="tform" data-form="title" data-id="${n.id}"><input class="inp" name="t" id="tedit" value="${esc(n.title)}" required aria-label="Title"><button class="btn sm">Save</button></form>`
+  :`<button class="ttl k-${n.kind}" ${ed?`data-act="edit" data-id="${n.id}" title="Click to edit"`:'disabled'}>${esc(n.title)}</button>`;
+ const sub=[n.due,n.kpi&&'Target: '+n.kpi,n.counter&&'Change proposed: “'+n.counter+'”'].filter(Boolean).join(' · ');
+ return `<div class="trow ${n.owner===me()&&n.kind!=='p'?'mine':''}" style="--d:${d}">
+  <button class="caret" data-act="toggle" data-id="${n.id}" aria-label="${open?'Collapse':'Expand'}" ${ks.length?'':'disabled'}>${open?'▾':'▸'}</button>
+  <span class="kind">${KIND[n.kind]}</span>${title}
+  <span class="tmeta">${ed&&n.kind!=='p'?`<select class="town" data-chg="owner" data-id="${n.id}" aria-label="Owner">${Object.keys(P).map(k=>`<option value="${k}" ${n.owner===k?'selected':''}>${esc(P[k].short)}</option>`).join('')}</select>`:`<span class="tdue">${esc(P[n.owner].short)}</span>`}
+  ${n.kind==='p'?'':srcPill(n)+pill(n.status)}
+  ${CHILD[n.kind]&&ed?`<button class="add" data-act="add" data-id="${n.id}" title="Add a ${KIND[CHILD[n.kind]].toLowerCase()} here" aria-label="Add a ${KIND[CHILD[n.kind]].toLowerCase()} under this row">+</button>`:''}</span>
+  ${sub?`<div class="tsub">${esc(sub)}</div>`:''}
+ </div>${open?ks.map(k=>rowHtml(k,d+1,vis)).join(''):''}`;
+}
+function tree(){
+ const vis=visible(),f=(k,l)=>`<button data-act="filter" data-k="${k}" aria-pressed="${S.filter===k}">${l}</button>`;
+ return `<section class="card full"><div class="chead"><h2>Strategy tree</h2><div class="tabs">${f('all','Everything')}${f('open','Needs attention')}${me()==='dg'?'':f('mine','Mine')}</div></div>
+ <p class="meta">“Agreed” came from the strategy session; “AI proposed” was inferred from the plans and still needs its owner’s yes. One record per row. Click a title to edit it, change an owner in place, or use + to add a row under its parent. A commitment shown here is the same one in its owner’s plan.</p>
+ <div class="tree">${kids(null).map(n=>rowHtml(n,0,vis)).join('')||'<div class="empty">Nothing matches this filter.</div>'}</div></section>`;
+}
+function record(){
+ return `<div class="grid"><section class="card" style="flex-basis:520px"><div class="chead"><h2>Record</h2><span class="meta">Who decided or confirmed what, and when</span></div>
+ <div class="list">${S.log.slice().reverse().map(l=>`<div class="cm"><div class="ct" style="font-size:14px">${esc(l.what)}</div><div class="cs">${esc(l.who)} · ${esc(l.ts)}</div></div>`).join('')||'<div class="empty">Nothing recorded yet. Decisions and confirmations appear here.</div>'}</div></section>
+ <section class="card"><details class="how" open><summary>The five practices behind this</summary><dl class="kv">
+  <dt>Amazon · Working Backwards</dt><dd>Each goal says who benefits and how AJMN will know.</dd>
+  <dt>Toyota · Catchball</dt><dd>An ED can confirm, or offer a different date or scope.</dd>
+  <dt>Google · Cross-team OKRs</dt><dd>One accountable ED per goal; each contributor carries its part in its own plan.</dd>
+  <dt>GitLab · One responsible person</dt><dd>Every deliverable has one named person.</dd>
+  <dt>Atlassian · Dependency mapping</dt><dd>Each dependency has an owner and a needed-by date.</dd></dl></details></section></div>`;
+}
+
+/* ============ render ============ */
+function render(){
+ renderBar();
+ const r=me(),top=r==='dg'?dgView():r.startsWith('ed_')?edView():dirView();
+ document.getElementById('app').innerHTML=top+`<div class="grid">${path()}${tree()}</div>`+record();
+ const te=document.getElementById('tedit');if(te){te.focus();te.select();}
+ save();
+}
+
+/* ============ actions ============ */
+function applyDecision(d,o){
+ o.ch.forEach(ch=>{
+  if(ch.add){S.nodes.push(Object.assign({},ch.add,{status:'Awaiting confirmation',src:'dg'}));return;}
+  const n=N(ch.id);if(n[ch.f]===ch.to)return;
+  n.prev=n.prev||{};if(!(ch.f in n.prev))n.prev[ch.f]=n[ch.f];n[ch.f]=ch.to;n.src='dg';
+  if(!ch.keep)n.status=n.kind==='d'?'In plan':'Awaiting confirmation';
+ });
+ S.nodes.filter(n=>n.status==='Needs decision'&&(goalOf(n)||n).id===d.goal).forEach(n=>n.status=n.kind==='g'?'Confirmed':'Awaiting confirmation');
+ S.decided[d.id]={k:o.k,by:P[me()].name,at:nowStr()};S.preview=null;S.whatif=null;
+ log('Decision: '+d.title+' → '+o.label);
+}
+const ACT={
+ reset:()=>{S=seed();render();toast('Sandbox reset to seed data')},
+ role:el=>{S.role=el.dataset.r;S.edit=null;S.counter=null;if(S.filter==='mine'&&S.role==='dg')S.filter='all';render();window.scrollTo(0,0)},
+ opt:el=>{S.preview={id:el.dataset.id,k:el.dataset.k};render()},
+ unpreview:()=>{S.preview=null;render()},
+ apply:el=>{const d=DEC.find(x=>x.id===el.dataset.id);applyDecision(d,d.opts.find(o=>o.k===el.dataset.k));toast('Decision recorded. Owners have been asked to confirm.');render()},
+ confirm:el=>{const n=N(el.dataset.id);n.status='Confirmed';n.counter=null;log('Confirmed: '+n.title+(n.due?' · '+n.due:''));toast('Confirmed');render()},
+ confirmall:()=>{const l=S.nodes.filter(needsMe);l.forEach(n=>{n.status='Confirmed';log('Confirmed: '+n.title+(n.due?' · '+n.due:''))});toast(l.length+' commitments confirmed');render()},
+ counter:el=>{S.counter=el.dataset.id;render()},
+ nocounter:()=>{S.counter=null;render()},
+ link:()=>{S.linked=true;log('Linked a team goal to: '+S.nodes.find(n=>n.owner===me()&&n.kind==='d').title);render()},
+ toggle:el=>{const n=N(el.dataset.id);n.open=!n.open;render()},
+ filter:el=>{S.filter=el.dataset.k;render()},
+ edit:el=>{S.edit=el.dataset.id;render()},
+ add:el=>{const p=N(el.dataset.id),k=CHILD[p.kind],id='n'+(S.seq++)+Date.now().toString(36);p.open=true;
+  S.nodes.push({id,par:p.id,kind:k,title:'New '+KIND[k].toLowerCase(),owner:me()==='dg'?p.owner:me(),status:'Draft',src:'edit',due:'',open:true});S.edit=id;S.filter='all';render()}
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=ACT[el.dataset.act];if(f)f(el,e)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(S.edit||S.counter)){S.edit=null;S.counter=null;render()}});
+document.addEventListener('change',e=>{const el=e.target;
+ if(el.dataset.chg==='role'){ACT.role({dataset:{r:el.value}});}
+ if(el.dataset.chg==='owner'){const n=N(el.dataset.id),b=n.owner;n.owner=el.value;if(n.kind==='c'||n.kind==='d')n.status=el.value===me()?n.status:'Awaiting confirmation';log('Owner changed: '+n.title+' · '+P[b].short+' → '+P[n.owner].short);render();}});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target,fd=new FormData(f),k=f.dataset.form;
+ if(k==='title'){const n=N(f.dataset.id),v=String(fd.get('t')).trim();if(v&&v!==n.title){log('Edited: '+n.title+' → '+v);n.title=v;}S.edit=null;render();}
+ if(k==='counter'){const n=N(f.dataset.id);n.counter=String(fd.get('t')).trim();n.status='Change proposed';S.counter=null;log('Proposed a change to: '+n.title+' · “'+n.counter+'”');toast('Sent to '+P[(goalOf(n)||n).owner].short+' and the DG');render();}
+ if(k==='whatif'){const q=String(fd.get('q')).trim().toLowerCase();if(!q)return;S.whatif=fd.get('q');
+  const pick=/sept|later|delay|move/.test(q)?'b':/fund|capacity|budget|hire|contract/.test(q)?'c':/two|split|phase|six/.test(q)?'a':null;
+  if(pick){S.preview={id:'x1',k:pick};render();}else{render();toast('Scripted in the sandbox: try September, splitting the pilot, or funding capacity');}}
+});
+render();
+</script>
+</body>
+</html>

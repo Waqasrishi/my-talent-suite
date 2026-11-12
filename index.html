@@ -371,7 +371,7 @@ function deny(what){return `<div class="deny"><h2>${t('denied')}</h2><p style="m
 const NAV={employee:['home','goals','performance','growth','opportunities'],manager:['home','goals','performance','growth','opportunities','talent','insights'],hrbp:['home','goals','performance','talent','insights','audit'],talent:['home','performance','talent','insights','audit'],exec:['home','goals','talent','insights'],admin:['home','admin','audit','insights']};
 function renderShell(){
  document.getElementById('hdr').innerHTML=`<div class="brand">Talent Suite <small>AJMN</small></div>
-  <nav class="main" aria-label="Main">${NAV[S.role].map(r=>`<a href="#${r}" ${S.route===r?'aria-current="page"':''}>${t(r)}</a>`).join('')}</nav>
+  <nav class="main" aria-label="Main">${NAV[S.role].map(r=>`<a href="#${r}" ${S.route===r?'aria-current="page"':''}>${t(r)}</a>`).join('')}<a href="strategy.html">Strategy Room</a></nav>
   <div class="lang"><button data-act="lang" data-l="en" aria-pressed="${S.lang==='en'}">English</button><button data-act="lang" data-l="ar" lang="ar" aria-pressed="${S.lang==='ar'}">العربية</button></div>`;
  const u=me();
  document.getElementById('sbar').innerHTML=`<span class="tag-sandbox">${t('sandbox')}</span><label for="rolesel">${t('viewas')}</label>

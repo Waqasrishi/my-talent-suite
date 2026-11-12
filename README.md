@@ -1,7 +1,8 @@
-# AJMN Talent Suite – Sandbox prototype
+# AJMN Talent Suite
 
-A clickable prototype of the Talent Suite with synthetic data. It is one static file (index.html):
-no database, no server code, no installation.
+A clickable sandbox prototype of the Talent Suite and its Strategy Room, for showing management how goals, reviews and strategy decisions would work. Synthetic data only.
+
+It is two static pages (index.html and strategy.html): no database, no installation.
 
 ## Deploy on the AJMN sandbox server
 
