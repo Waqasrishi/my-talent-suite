@@ -41,17 +41,18 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Calibration**: A session with rating columns, drag between them, save, undo and finalize.
 
 ### Goals Cycle Hub
-- **My goals**: Next steps with one button each, then the person's goals with what each supports, its progress and its status.
-- **Pass goals down**: Ask the direct team to adapt a goal, or push it to them as it is; a pushed goal can be adjusted and goes back for approval.
-- **Approval**: Submit, send back with a comment, revise, resubmit and approve.
-- **Strategy map**: Pillars to staff as connected boxes, one column per level, with open adapt requests shown dashed.
-- **Dashboard**: Approved goals, coverage by level, progress by pillar and who is waiting on what, for everyone or one team.
+- **Outbound alignment**: Link a goal to the goals it supports, including goals in other departments; each link waits for that goal's owner.
+- **Inbound alignment**: See the goals that support yours, and accept or reject each link with a reason.
+- **Main alignment**: One outbound link per goal is its main one; it sets the path to a pillar and counts the goal once in reports.
+- **Approval**: Submit, send back with a comment, revise and approve; approving also accepts the goal's link to the approver's own goal.
+- **Strategy map**: Pillars to staff as connected boxes, with cross-department and pending links shown, and goals not aligned to strategy flagged.
+- **Dashboard**: Approved goals, how many trace to a pillar, coverage by level, progress by pillar, unaligned goals and who is waiting on what.
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
 - **Talent Suite**: / — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
-- **Goals Cycle Hub**: /goals-hub.html — Cascade goals from strategy pillars down to staff, with approvals and a strategy map.
+- **Goals Cycle Hub**: /goals-hub.html — Goals aligned inbound and outbound, from strategy pillars down to staff, with approvals and a strategy map.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
 
 ## Decisions

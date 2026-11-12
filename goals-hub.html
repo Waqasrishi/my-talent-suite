@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Goals Cycle Hub</title>
 <style>
-/* Goals Cycle Hub: cascade goals from strategy pillars down to staff. Fictional data, kept in this browser only. */
+/* Goals Cycle Hub: goals align outbound to the goals they support and receive inbound links from goals that support them. Sample data, kept in this browser only. */
 :root{--bg:#F6F7F9;--card:#fff;--ink:#16202B;--muted:#5D6B7A;--line:#E2E6EB;--accent:#0B5CAD;--accent-d:#094C8F;--accent-soft:#E8F1FB;
  --ok:#1E7B46;--ok-soft:#E6F4EC;--wait:#8A5A00;--wait-soft:#FFF4DE;--bad:#B3261E;--bad-soft:#FDECEA;--ai:#5B3FB0;--ai-soft:#F3F0FB}
 *{box-sizing:border-box}
@@ -134,189 +134,220 @@ textarea.in{min-height:70px;resize:vertical}
 .foot{color:var(--muted);font-size:13px;text-align:center;padding:20px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:10px 16px;z-index:60;max-width:90vw}
 @media(max-width:760px){.row{grid-template-columns:1fr;gap:8px}.stats,.two{grid-template-columns:1fr}.lv{grid-template-columns:110px 1fr 60px}.top{padding:10px 16px}}
+/* alignment */
+.al{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
+.links{list-style:none;margin:8px 0 0;padding:0}
+.links li{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 10px;padding:8px 0;border-top:1px dashed var(--line)}
+.links li:first-child{border-top:0}
+.dir{font-weight:700;color:var(--accent);width:16px;flex:none}
+.lt{flex:1;min-width:0}.lt b{display:block;font-weight:600}.lt small{display:block;color:var(--muted);font-size:12.5px}.lt .link{text-align:left}
+.la{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rs{font-style:italic}
+.prim{color:var(--accent);font-weight:600}
+.dec{flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;padding-left:26px}.dec .in{flex:1;min-width:150px;padding:4px 8px}
+.addl{background:#FAFBFC;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}.addl .btns{display:flex;gap:8px}
+.flag{color:var(--bad);font-weight:600}
+.io{color:var(--muted)}
+.ln{fill:none;stroke:#B9C3CE;stroke-width:1.5}.ln.x{stroke:#5A8FD0;stroke-dasharray:6 4}.ln.pend{stroke-dasharray:2 4}.ln.x.pend{stroke:#9DBBE3}
+.box.loose{border-color:var(--bad)}
+.bandh{position:absolute;left:16px;font-size:12px;font-weight:700;color:var(--bad);text-transform:uppercase;letter-spacing:.04em}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <script>
-/* ---------- fictional organisation ---------- */
+/* ---------- sample organisation: fictional people in two departments ---------- */
 const LEVELS=['Corporate strategy','Executive Directors','Directors','Managers','Section Heads','Staff'];
 const PEOPLE={
- ed1:{name:'Omar Rahman',title:'Executive Director, Operations',lv:1,mgr:null},
- ed2:{name:'Sara Nasser',title:'Executive Director, Digital',lv:1,mgr:null},
- d1:{name:'Marco Silva',title:'Director, Studio Operations',lv:2,mgr:'ed1'},
- d2:{name:'Hana Yousef',title:'Director, Digital Products',lv:2,mgr:'ed2'},
- m1:{name:'Daniel Okafor',title:'Manager, Broadcast Engineering',lv:3,mgr:'d1'},
- m2:{name:'Rana Aziz',title:'Manager, Studio Production',lv:3,mgr:'d1'},
- m3:{name:'Leo Martins',title:'Manager, Audience Growth',lv:3,mgr:'d2'},
- s1:{name:'Nadia Karim',title:'Section Head, Playout',lv:4,mgr:'m1'},
- s2:{name:'Yusuf Ali',title:'Section Head, Studio Crew',lv:4,mgr:'m2'},
- t1:{name:'Mei Chen',title:'Broadcast Engineer',lv:5,mgr:'s1'},
- t2:{name:'Tomas Ruiz',title:'Playout Technician',lv:5,mgr:'s1'},
- t3:{name:'Aisha Bello',title:'Floor Manager',lv:5,mgr:'s2'},
- t4:{name:'Priya Nair',title:'Audience Analyst',lv:5,mgr:'m3'}};
-const KEY='ajmn-goals-hub-v1',TODAY=new Date().toISOString().slice(0,10);
+ ed1:{name:'Omar Rahman',title:'Executive Director, Operations',lv:1,mgr:null,dept:'Operations'},
+ ed2:{name:'Sara Nasser',title:'Executive Director, Digital',lv:1,mgr:null,dept:'Digital'},
+ d1:{name:'Marco Silva',title:'Director, Studio Operations',lv:2,mgr:'ed1',dept:'Operations'},
+ d2:{name:'Hana Yousef',title:'Director, Digital Products',lv:2,mgr:'ed2',dept:'Digital'},
+ m1:{name:'Daniel Okafor',title:'Manager, Broadcast Engineering',lv:3,mgr:'d1',dept:'Operations'},
+ m2:{name:'Rana Aziz',title:'Manager, Studio Production',lv:3,mgr:'d1',dept:'Operations'},
+ m3:{name:'Leo Martins',title:'Manager, Audience Growth',lv:3,mgr:'d2',dept:'Digital'},
+ s1:{name:'Nadia Karim',title:'Section Head, Playout',lv:4,mgr:'m1',dept:'Operations'},
+ s2:{name:'Yusuf Ali',title:'Section Head, Studio Crew',lv:4,mgr:'m2',dept:'Operations'},
+ t1:{name:'Mei Chen',title:'Broadcast Engineer',lv:5,mgr:'s1',dept:'Operations'},
+ t2:{name:'Tomas Ruiz',title:'Playout Technician',lv:5,mgr:'s1',dept:'Operations'},
+ t3:{name:'Aisha Bello',title:'Floor Manager',lv:5,mgr:'s2',dept:'Operations'},
+ t4:{name:'Priya Nair',title:'Audience Analyst',lv:5,mgr:'m3',dept:'Digital'}};
+const KEY='ajmn-goals-hub-v2',TODAY=new Date().toISOString().slice(0,10);
 function seed(){
- const g=(id,owner,parent,title,krs,x)=>Object.assign({id,owner,parent,title,desc:'',krs:krs.map(t=>({t})),status:'approved',progress:0,contrib:[],via:null,by:null,back:'',updates:[],hist:[{at:'2026-01-15',by:owner,w:'Goal approved'}]},x||{});
+ const g=(id,owner,title,krs,x)=>Object.assign({id,owner,title,desc:'',krs:krs.map(t=>({t})),status:'approved',progress:0,back:'',updates:[],hist:[{at:'2026-01-15',by:owner,w:'Goal approved'}]},x||{});
+ const l=(id,from,to,status,primary)=>({id,from,to,status,primary:!!primary,at:'2026-02-01',reason:''});
  return {as:'d1',seq:100,
   pillars:[{id:'p1',name:'Grow trusted digital audiences'},{id:'p2',name:'Operational excellence'},{id:'p3',name:'Invest in our people'}],
   goals:[
-   g('g1','ed1','p2','Cut unplanned studio downtime across all channels',['Unplanned downtime below 30 minutes a month by Q4','Mean time to restore under 15 minutes'],{progress:40}),
-   g('g2','ed2','p1','Double weekly active users on digital platforms',['Weekly active users from 1.2M to 2.4M by December','Returning visitors up 30%'],{progress:25}),
-   g('g3','ed1','p3','Build a skilled, adaptable operations workforce',['Every operations employee completes two learning paths','Internal moves fill 30% of open roles'],{progress:15}),
-   g('g4','d2','g2','Launch a personalised homepage in three markets',['Live in 3 markets by Q3','Click-through on recommendations above 8%'],{progress:30,hist:[{at:'2026-02-03',by:'d2',w:'Submitted for approval'},{at:'2026-02-05',by:'ed2',w:'Approved'}]}),
-   g('g5','m3','g4','Grow newsletter sign-ups by 40%',['Sign-ups from 50k to 70k by Q4','Welcome series open rate above 45%'],{status:'submitted',hist:[{at:'2026-11-10',by:'m3',w:'Submitted for approval'}]}),
-   g('g6','m1','g1','Keep playout incidents under three a month',['Playout incidents at most 3 a month','All incidents reviewed within 5 working days'],{progress:55,via:'push',by:'d1',hist:[{at:'2026-03-02',by:'d1',w:'Pushed down by Marco Silva'}]})],
-  reqs:[{id:'r1',goal:'g1',to:'d1',by:'ed1',status:'open',result:null,at:'2026-11-01'},{id:'r2',goal:'g4',to:'m3',by:'d2',status:'done',result:'g5',at:'2026-11-02'}]};
+   g('g1','ed1','Cut unplanned studio downtime across all channels',['Unplanned downtime below 30 minutes a month by Q4','Mean time to restore under 15 minutes'],{progress:40}),
+   g('g2','ed2','Double weekly active users on digital platforms',['Weekly active users from 1.2M to 2.4M by December','Returning visitors up 30%'],{progress:25}),
+   g('g3','ed1','Build a skilled, adaptable operations workforce',['Every operations employee completes two learning paths','Internal moves fill 30% of open roles'],{progress:15}),
+   g('g4','d1','Keep studio service levels above 99.5%',['Studio availability at 99.5% or better every month','No live show lost to a studio fault'],{progress:50}),
+   g('g5','d2','Launch a personalised homepage in three markets',['Live in 3 markets by Q3','Click-through on recommendations above 8%'],{progress:30}),
+   g('g9','d2','Publish breaking stories within 10 minutes',['90% of breaking stories live within 10 minutes','Median filing-to-publish time under 20 minutes'],{progress:45}),
+   g('g6','m1','Keep playout incidents under three a month',['Playout incidents at most 3 a month','All incidents reviewed within 5 working days'],{progress:55}),
+   g('g7','m3','Grow newsletter sign-ups by 40%',['Sign-ups from 50k to 70k by Q4','Welcome series open rate above 45%'],{status:'submitted',hist:[{at:'2026-11-10',by:'m3',w:'Submitted for approval'}]}),
+   g('g8','t4','Build audience dashboards for the studio team',['Weekly studio audience dashboard live by Q2','Used in 4 of 5 weekly planning meetings'],{progress:35}),
+   g('g10','s1','Cut playout recovery time to under 15 minutes',['Median recovery under 15 minutes by Q3'],{progress:20}),
+   g('g11','t1','Automate playout health checks',['Automated checks on 100% of playout servers by Q2'],{progress:30}),
+   g('g12','m2','Reduce studio changeover time to 20 minutes',['Average changeover under 20 minutes by Q3'],{progress:10})],
+  links:[l('l1','g1','p2','accepted',1),l('l2','g2','p1','accepted',1),l('l3','g3','p3','accepted',1),l('l4','g4','g1','accepted',1),l('l5','g5','g2','accepted',1),l('l6','g9','g2','accepted',1),
+   l('l7','g6','g4','accepted',1),l('l8','g7','g5','pending',1),l('l9','g8','g5','accepted',1),l('l10','g8','g4','pending'),l('l11','g4','g9','pending'),l('l12','g10','g6','accepted',1),l('l13','g11','g10','accepted',1)]};
 }
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(x){}
-if(!S||!S.goals||!PEOPLE[S.as])S=seed();
-const U={page:'mine',dr:null,form:null,ai:null,err:{},map:null,scope:'all'};
+if(!S||!S.goals||!S.links||!PEOPLE[S.as])S=seed();
+const U={page:'mine',dr:null,form:null,ai:null,err:{},scope:'all',add:null,saveErr:false};
 /* storage can fail (private mode, quota): say so instead of losing changes silently */
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));U.saveErr=false}catch(x){if(!U.saveErr){U.saveErr=true;setTimeout(render)}}};
 /* another tab changed the data: take its copy, so this tab's next save does not overwrite it */
-window.addEventListener('storage',ev=>{if(ev.key!==KEY||!ev.newValue)return;try{const n=JSON.parse(ev.newValue);if(n&&n.goals){S=n;if(U.dr&&U.dr.k==='goal'&&!G(U.dr.id))U.dr=null;render();toast('Updated with changes from another tab')}}catch(x){}});
+window.addEventListener('storage',ev=>{if(ev.key!==KEY||!ev.newValue)return;try{const n=JSON.parse(ev.newValue);if(n&&n.goals&&n.links){S=n;if(U.dr&&U.dr.k==='goal'&&!G(U.dr.id))U.dr=null;render();toast('Updated with changes from another tab')}}catch(x){}});
 
 /* ---------- helpers ---------- */
 const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const P=id=>PEOPLE[id],ME=()=>S.as,G=id=>S.goals.find(g=>g.id===id),PL=id=>S.pillars.find(p=>p.id===id);
+const P=id=>PEOPLE[id],ME=()=>S.as,G=id=>S.goals.find(g=>g.id===id),PL=id=>S.pillars.find(p=>p.id===id),LK=id=>S.links.find(l=>l.id===id);
 const isPillar=id=>!!PL(id);
 const reports=id=>Object.keys(PEOPLE).filter(k=>PEOPLE[k].mgr===id);
 const below=id=>reports(id).flatMap(r=>[r,...below(r)]);
 const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
-const parentName=id=>isPillar(id)?PL(id).name:G(id)?G(id).title:'';
-const rootPillar=g=>{for(let x=g,i=0;x&&i<20;i++){if(isPillar(x.parent))return x.parent;x=G(x.parent)}return null};
-const mine=id=>S.goals.filter(g=>g.owner===id||g.contrib.includes(id));
-const children=id=>S.goals.filter(g=>g.parent===id&&g.status!=='draft');
-const openReqs=id=>S.reqs.filter(r=>r.goal===id&&r.status==='open');
 const hist=(g,w)=>g.hist.push({at:TODAY,by:ME(),w});
+const who=id=>`${P(id).name}${P(id).dept!==P(ME()).dept?' ('+P(id).dept+')':''}`;
+const nodeName=id=>isPillar(id)?PL(id).name:G(id)?G(id).title:'';
+const nodeOwner=id=>isPillar(id)?null:G(id)&&G(id).owner;
 const STATUS={draft:['Draft','draft'],submitted:['Waiting for approval','wait'],approved:['Approved','ok'],returned:['Sent back','bad']};
-const pill=s=>`<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
+const LST={pending:['Pending','wait'],accepted:['Accepted','ok'],rejected:['Rejected','bad']};
+const pill=s=>`<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`,lpill=s=>`<span class="pill ${LST[s][1]}">${LST[s][0]}</span>`;
 const prog=(n,g)=>g&&!g.updates.length&&!n?`<div class="prog"><div class="bar"></div>No update yet</div>`:`<div class="prog"><div class="bar"><i style="width:${n}%"></i></div>${n}%</div>`;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
-/* who can still receive a goal passed down: direct reports with no request for it and no goal under it yet */
-const passable=(g,by)=>reports(by).filter(r=>!S.reqs.some(q=>q.goal===g.id&&q.to===r)&&!S.goals.some(x=>x.parent===g.id&&x.owner===r));
-const canEditStrategy=()=>P(ME()).lv===1;
-/* every action is checked here, not only by hiding its button */
-const canSee=g=>!!g&&(g.status!=='draft'||g.owner===ME()||g.contrib.includes(ME()));
-const may={approve:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),sendback:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),
- edit:g=>g.owner===ME()&&(g.status==='draft'||g.status==='returned'||(g.status==='approved'&&g.via==='push')),
- delete:g=>g.owner===ME()&&g.status==='draft',push:g=>g.status==='approved'&&(g.owner===ME()||g.contrib.includes(ME())),
- progress:g=>g.status==='approved'&&(g.owner===ME()||g.contrib.includes(ME()))};
-const denied=()=>toast('You cannot do that on this goal.');
-const descendants=id=>S.goals.filter(g=>g.parent===id).flatMap(g=>[g.id,...descendants(g.id)]);
-const chainOf=g=>{const c=[];for(let x=g,i=0;x&&!isPillar(x.parent)&&i<20;i++){x=G(x.parent);if(x)c.unshift(x)}return c};
 
-/* ---------- actions on goals ---------- */
-function submitGoal(g){if(!P(g.owner).mgr){g.status='approved';hist(g,'Approved (no manager above)')}else{g.status='submitted';g.back='';hist(g,'Submitted for approval to '+P(P(g.owner).mgr).name)}
- const r=S.reqs.find(q=>q.result===g.id&&q.status==='open');if(r)r.status='done'}
-function passDown(g,how){const to=passable(g,ME());if(!to.length)return 0;
- to.forEach(r=>{if(how==='adapt')S.reqs.push({id:'r'+(S.seq++),goal:g.id,to:r,by:ME(),status:'open',result:null,at:TODAY});
-  else S.goals.push({id:'g'+(S.seq++),owner:r,parent:g.id,title:g.title,desc:g.desc,krs:g.krs.map(k=>({t:k.t})),status:'approved',progress:0,contrib:[],via:'push',by:ME(),back:'',updates:[],hist:[{at:TODAY,by:ME(),w:'Pushed down by '+P(ME()).name}]})});
- hist(g,(how==='adapt'?'Asked to adapt: ':'Pushed as it is to: ')+to.map(r=>P(r).name).join(', '));return to.length}
+/* ---------- alignment: outbound = links from a goal, inbound = links to it ---------- */
+const canSee=g=>!!g&&(g.status!=='draft'||g.owner===ME());
+const out=g=>S.links.filter(l=>l.from===g.id);
+const inb=g=>S.links.filter(l=>l.to===g.id&&canSee(G(l.from)));
+const primary=g=>out(g).find(l=>l.primary&&l.status!=='rejected');
+/* the path to strategy follows accepted primary links only, so each goal counts once */
+function path(g){const c=[];let x=g,ok=true;for(let i=0;i<20;i++){const l=primary(x);if(!l)return {pillar:null,chain:c,ok:false};if(l.status!=='accepted')ok=false;if(isPillar(l.to))return {pillar:l.to,chain:c,ok};x=G(l.to);if(!x)return {pillar:null,chain:c,ok:false};c.unshift(x)}return {pillar:null,chain:c,ok:false}}
+const aligned=g=>{const p=path(g);return p.ok&&!!p.pillar};
+const rootPillar=g=>{const p=path(g);return p.ok?p.pillar:null};
+/* goals that already support this one, directly or further down: linking to any of them would close a loop.
+   Targets are goals of people at the same level or above. */
+function supporters(id){const seen=new Set(),st=[id];while(st.length){const x=st.pop();S.links.forEach(l=>{if(l.to===x&&l.status!=='rejected'&&!seen.has(l.from)){seen.add(l.from);st.push(l.from)}})}return seen}
+function targets(g){const mgr=P(g.owner).mgr,sup=supporters(g.id),taken=new Set(out(g).filter(l=>l.status!=='rejected').map(l=>l.to));
+ const gs=S.goals.filter(x=>x.status==='approved'&&x.owner!==g.owner&&x.id!==g.id&&!sup.has(x.id)&&!taken.has(x.id)&&P(x.owner).lv<=P(g.owner).lv);
+ return {mine:gs.filter(x=>x.owner===mgr),other:gs.filter(x=>x.owner!==mgr),pillars:P(g.owner).lv===1?S.pillars.filter(p=>!taken.has(p.id)):[]}}
+const validTarget=(g,to)=>{const t=targets(g);return [...t.mine,...t.other,...t.pillars].some(x=>x.id===to)};
+
+/* ---------- every action is checked here, not only by hiding its button ---------- */
+const may={approve:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),sendback:g=>g.status==='submitted'&&P(g.owner).mgr===ME(),
+ edit:g=>g.owner===ME()&&(g.status==='draft'||g.status==='returned'),delete:g=>g.owner===ME()&&g.status==='draft',
+ progress:g=>g.status==='approved'&&g.owner===ME(),align:g=>g.owner===ME(),
+ decide:l=>nodeOwner(l.to)===ME()&&canSee(G(l.from)),withdraw:l=>G(l.from)&&G(l.from).owner===ME()};
+const denied=()=>toast('You cannot do that on this goal.');
+const canEditStrategy=()=>P(ME()).lv===1;
+function propose(g,to){if(!may.align(g)||!validTarget(g,to))return false;const first=!primary(g),pillar=isPillar(to);
+ S.links.push({id:'l'+(S.seq++),from:g.id,to,status:pillar?'accepted':'pending',primary:first,at:TODAY,reason:''});
+ hist(g,`Aligned to “${nodeName(to)}”${pillar?'':' (waiting for '+P(nodeOwner(to)).name+')'}`);if(!pillar)hist(G(to),`${P(g.owner).name} asked to align “${g.title}” to this goal`);return true}
+function promote(g){if(!primary(g)){const n=out(g).find(l=>l.status!=='rejected');if(n)n.primary=true}}
+function submitGoal(g){if(!P(g.owner).mgr){g.status='approved';hist(g,'Approved (no manager above)')}else{g.status='submitted';g.back='';hist(g,'Submitted for approval to '+P(P(g.owner).mgr).name)}}
 
 /* ---------- next steps for the person viewing ---------- */
-function nextSteps(){const me=ME(),out=[];
- S.reqs.filter(r=>r.to===me&&r.status==='open').forEach(r=>{const d=r.result&&G(r.result);out.push({t:`${P(r.by).name} asked you to adapt “${G(r.goal).title}” for your area.`,b:d?'Continue':'Start',a:'adapt',id:r.id})});
- mine(me).filter(g=>g.owner===me&&(g.status==='draft'||g.status==='returned')&&!S.reqs.some(r=>r.result===g.id&&r.status==='open')).forEach(g=>out.push({t:g.status==='returned'?`“${g.title}” was sent back${g.back?': '+g.back:''}.`:`“${g.title}” is still a draft.`,b:'Finish and submit',a:'edit',id:g.id}));
- S.goals.filter(g=>g.status==='submitted'&&P(g.owner).mgr===me).forEach(g=>out.push({t:`${P(g.owner).name} submitted “${g.title}” for your approval.`,b:'Review',a:'open',id:g.id}));
- mine(me).filter(g=>g.status==='approved'&&passable(g,me).length).forEach(g=>out.push({t:`Pass “${g.title}” down to your team.`,b:'Open',a:'open',id:g.id}));
- return out}
+function nextSteps(){const me=ME(),r=[],my=S.goals.filter(g=>g.owner===me);
+ my.forEach(g=>inb(g).filter(l=>l.status==='pending'&&G(l.from).status!=='draft').forEach(l=>{const f=G(l.from);r.push({t:`${who(f.owner)} wants “${f.title}” to support your goal “${g.title}”.`,b:'Review',id:g.id,pri:1})}));
+ S.goals.filter(g=>g.status==='submitted'&&P(g.owner).mgr===me).forEach(g=>r.push({t:`${P(g.owner).name} submitted “${g.title}” for your approval.`,b:'Review',id:g.id,pri:1}));
+ my.filter(g=>g.status==='draft'||g.status==='returned').forEach(g=>r.push({t:g.status==='returned'?`“${g.title}” was sent back${g.back?': '+g.back:''}.`:`“${g.title}” is still a draft.`,b:'Finish and submit',id:g.id,edit:1,pri:1}));
+ my.forEach(g=>out(g).filter(l=>l.status==='rejected').forEach(l=>r.push({t:`${P(nodeOwner(l.to)).name} declined to align “${g.title}” to “${nodeName(l.to)}”${l.reason?': '+l.reason:''}.`,b:'Open',id:g.id})));
+ my.filter(g=>g.status==='approved'&&!primary(g)).forEach(g=>r.push({t:`“${g.title}” is not aligned to strategy.`,b:'Align it',id:g.id}));
+ return r}
 
 /* ---------- pages ---------- */
-function pageMine(){const me=ME(),st=nextSteps(),gs=mine(me),rep=reports(me).length;
- return `<div class="wrap"><div class="head"><div><h1>My goals</h1><p>${e(P(me).name)} · ${e(P(me).title)}</p></div><span class="sp"></span><button class="btn pri" data-a="new">${rep?'Add a goal for me or my team':'Add a goal'}</button></div>
- <div class="card"><h2 style="margin-bottom:10px">Next steps</h2>${st.length?`<ul class="steps">${st.map(s=>`<li><span>${e(s.t)}</span><button class="btn sm ${s.a==='adapt'||s.a==='edit'?'pri':''}" data-a="${s.a}" data-id="${s.id}">${s.b}</button></li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nothing is waiting on you.</p>'}</div>
- <div class="rows">${gs.map(g=>`<button class="row" data-a="open" data-id="${g.id}"><span><b>${e(g.title)}</b><small>Supports: ${e(parentName(g.parent))}${g.owner!==me?' · contributor':''}${g.via==='push'?' · pushed down by '+e(P(g.by).name):''}</small></span>${prog(g.progress,g)}<span>${pill(g.status)}</span></button>`).join('')||'<div class="empty">You have no goals yet.</div>'}</div></div>`}
+function alignLine(g){const p=primary(g);if(!p)return '<span class="flag">Not aligned</span>';const n=out(g).filter(l=>l.status!=='rejected').length,i=inb(g).filter(l=>l.status!=='rejected').length;
+ return `Supports: ${e(nodeName(p.to))}${p.status==='pending'?' (pending)':''} · <span class="io">out ${n} · in ${i}</span>`}
+function pageMine(){const me=ME(),st=nextSteps(),gs=S.goals.filter(g=>g.owner===me);
+ return `<div class="wrap"><div class="head"><div><h1>My goals</h1><p>${e(P(me).name)} · ${e(P(me).title)} · ${e(P(me).dept)}</p></div><span class="sp"></span><button class="btn pri" data-a="new">Add a goal</button></div>
+ <div class="card"><h2 style="margin-bottom:10px">Next steps</h2>${st.length?`<ul class="steps">${st.map(s=>`<li><span>${e(s.t)}</span><button class="btn sm ${s.pri?'pri':''}" data-a="${s.edit?'edit':'open'}" data-id="${s.id}">${s.b}</button></li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nothing is waiting on you.</p>'}</div>
+ <div class="rows">${gs.map(g=>`<button class="row" data-a="open" data-id="${g.id}"><span><b>${e(g.title)}</b><small>${alignLine(g)}</small></span>${prog(g.progress,g)}<span>${pill(g.status)}</span></button>`).join('')||'<div class="empty">You have no goals yet.</div>'}</div></div>`}
 
-function layout(){const W=210,H=74,CW=260,RH=90,TOP=46,nodes=[],edges=[];let row=0;
- const kids=id=>[...S.goals.filter(g=>g.parent===id&&g.status!=='draft').map(g=>({k:'g',id:g.id,lv:P(g.owner).lv})),...openReqs(id).map(r=>({k:'r',id:r.id,lv:P(r.to).lv}))];
- const place=(n,depthLv)=>{const ks=n.k==='g'||n.k==='p'?kids(n.id):[];let y;
-  if(!ks.length)y=row++;else{const ys=ks.map(c=>{edges.push([n,c]);return place(c)});y=(ys[0]+ys[ys.length-1])/2}
-  n.y=y;nodes.push(n);return y};
+function layout(){const W=210,H=74,CW=260,RH=90,TOP=46,nodes=[],tree=[];let row=0;const vis=S.goals.filter(g=>g.status!=='draft'),placed=new Set();
+ const kids=id=>vis.filter(g=>{const p=primary(g);return p&&p.to===id}).map(g=>({k:'g',id:g.id,lv:P(g.owner).lv}));
+ const place=n=>{if(n.k==='g')placed.add(n.id);const ks=n.k==='u'?[]:kids(n.id).filter(c=>!placed.has(c.id));let y;if(!ks.length)y=row++;else{const ys=ks.map(c=>{tree.push([n,c]);return place(c)});y=(ys[0]+ys[ys.length-1])/2}n.y=y;nodes.push(n);return y};
  S.pillars.forEach(p=>{place({k:'p',id:p.id,lv:0});row+=.35});
- nodes.forEach(n=>{n.x=16+n.lv*CW;n.top=TOP+12+n.y*RH});
- return {nodes,edges,W,H,CW,width:16+LEVELS.length*CW,height:TOP+24+Math.max(row,1)*RH}}
-function pageMap(){const L=layout(),sel=U.map;
+ const loose=vis.filter(g=>!placed.has(g.id)&&!primary(g));let band=null;if(loose.length){row+=.4;band=row;loose.forEach(g=>place({k:'g',id:g.id,lv:P(g.owner).lv}))}
+ const rest=vis.filter(g=>!placed.has(g.id));rest.forEach(g=>place({k:'g',id:g.id,lv:P(g.owner).lv}));
+ nodes.forEach(n=>{n.x=16+n.lv*CW;n.top=TOP+12+n.y*RH});const at=id=>nodes.find(n=>n.id===id);
+ const extra=S.links.filter(l=>!l.primary&&l.status!=='rejected'&&at(l.from)&&at(l.to)).map(l=>[at(l.to),at(l.from),l]);
+ return {nodes,tree,extra,band:band==null?null:TOP+12+band*RH-26,W,H,CW,width:16+LEVELS.length*CW,height:TOP+24+Math.max(row,1)*RH}}
+function pageMap(){const L=layout();
  const box=n=>{const st=`left:${n.x}px;top:${n.top}px;width:${L.W}px;height:${L.H}px`;
-  if(n.k==='p'){const p=PL(n.id);return `<button class="box pillar ${sel===p.id?'on':''}" style="${st}" data-a="pillar" data-id="${p.id}"><small>Pillar</small><b>${e(p.name)}</b></button>`}
-  if(n.k==='r'){const r=S.reqs.find(x=>x.id===n.id);return `<div class="box ask" style="${st}"><b>Asked to adapt</b><small>${e(P(r.to).name)}</small><small>since ${fmt(r.at)}</small></div>`}
-  const g=G(n.id);return `<button class="box ${g.status!=='approved'?'wait':''}" style="${st}" data-a="open" data-id="${g.id}"><b>${e(g.title)}</b><small>${e(P(g.owner).name)}${g.status!=='approved'?' · '+STATUS[g.status][0]:''}</small><div class="bar"><i style="width:${g.progress}%"></i></div></button>`};
- const line=([a,b])=>{const x1=a.x+L.W,y1=a.top+L.H/2,x2=b.x,y2=b.top+L.H/2,m=(x1+x2)/2;return `<path d="M${x1} ${y1} C${m} ${y1} ${m} ${y2} ${x2} ${y2}" fill="none" stroke="#B9C3CE" stroke-width="1.5" ${b.k==='r'?'stroke-dasharray="4 4"':''}/>`};
- return `<div class="wrap wide"><div class="head"><div><h1>Strategy map</h1><p>From each pillar down to staff, left to right. Select a pillar to ${canEditStrategy()?'edit it or add a goal under it':'see its goals'}; select a goal to open it.</p></div></div>
+  if(n.k==='p'){const p=PL(n.id);return `<button class="box pillar" style="${st}" data-a="pillar" data-id="${p.id}"><small>Pillar</small><b>${e(p.name)}</b></button>`}
+  const g=G(n.id),pr=primary(g);return `<button class="box ${g.status!=='approved'?'wait':''} ${!pr?'loose':''}" style="${st}" data-a="open" data-id="${g.id}"><b>${e(g.title)}</b><small>${e(P(g.owner).name)} · ${e(P(g.owner).dept)}${g.status!=='approved'?' · '+STATUS[g.status][0]:''}</small><div class="bar"><i style="width:${g.progress}%"></i></div></button>`};
+ const curve=(a,b,cls)=>{const x1=a.x+L.W,y1=a.top+L.H/2,x2=b.x,y2=b.top+L.H/2,m=(x1+x2)/2;return `<path d="M${x1} ${y1} C${m} ${y1} ${m} ${y2} ${x2} ${y2}" class="${cls}"/>`};
+ const pl=l=>l.status==='pending'?'pend':'';
+ return `<div class="wrap wide"><div class="head"><div><h1>Strategy map</h1><p>Pillars to staff, left to right. Grey lines are each goal’s main alignment; blue dashed lines are extra links, often across departments. Dotted lines are waiting to be accepted.</p></div></div>
  <div class="mapwrap"><div class="map" style="width:${L.width}px;height:${L.height}px"><div class="colh" style="width:${L.width}px">${LEVELS.map(l=>`<div style="width:${L.CW}px">${l}</div>`).join('')}</div>
- <svg width="${L.width}" height="${L.height}" aria-hidden="true">${L.edges.map(line).join('')}</svg>${L.nodes.map(box).join('')}</div></div>
- <div class="legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Pillar</span><span><i></i>Approved goal</span><span><i style="border-color:#E3C27A"></i>Waiting for approval or sent back</span><span><i style="border-style:dashed"></i>Asked to adapt, not done yet</span><span>Drafts are not shown.</span></div></div>`}
+ <svg width="${L.width}" height="${L.height}" aria-hidden="true">${L.tree.map(([a,b])=>curve(a,b,'ln '+(b.k==='g'?pl(primary(G(b.id))):''))).join('')}${L.extra.map(([a,b,l])=>curve(a,b,'ln x '+pl(l))).join('')}</svg>
+ ${L.band!=null?`<div class="bandh" style="top:${L.band}px">Not aligned to strategy</div>`:''}${L.nodes.map(box).join('')}</div></div>
+ <div class="legend"><span><i style="background:var(--accent);border-color:var(--accent)"></i>Pillar</span><span><i></i>Approved goal</span><span><i style="border-color:#E3C27A"></i>Waiting for approval</span><span><i style="border-color:var(--bad)"></i>Not aligned</span><span>Drafts are not shown.</span></div></div>`}
 
 function pageDash(){const me=ME(),team=U.scope==='team',ppl=team?[me,...below(me)]:Object.keys(PEOPLE),gs=S.goals.filter(g=>ppl.includes(g.owner)),ap=gs.filter(g=>g.status==='approved');
- const has=p=>ap.some(g=>g.owner===p),avg=l=>l.length?Math.round(l.reduce((s,g)=>s+g.progress,0)/l.length):0,cov=ppl.filter(has).length;
- const waits=[...S.reqs.filter(r=>r.status==='open'&&ppl.includes(r.to)).map(r=>({who:r.to,t:`Adapt “${G(r.goal).title}”`,since:r.at})),
+ const has=p=>ap.some(g=>g.owner===p),avg=l=>l.length?Math.round(l.reduce((s,g)=>s+g.progress,0)/l.length):0,al=ap.filter(aligned),cov=ppl.filter(has).length;
+ const waits=[...S.links.filter(l=>l.status==='pending'&&!isPillar(l.to)&&canSee(G(l.from))&&G(l.from).status!=='draft'&&(ppl.includes(nodeOwner(l.to))||ppl.includes(G(l.from).owner))).map(l=>({who:nodeOwner(l.to),t:`Accept or reject “${G(l.from).title}” → “${nodeName(l.to)}”`,id:l.to})),
   ...gs.filter(g=>g.status==='submitted').map(g=>({who:P(g.owner).mgr,t:`Approve “${g.title}” from ${P(g.owner).name}`,id:g.id})),
   ...gs.filter(g=>g.status==='returned'||g.status==='draft').map(g=>canSee(g)?{who:g.owner,t:`Finish “${g.title}”`,id:g.id}:{who:g.owner,t:'Finish a draft goal'})];
  const lv=[1,2,3,4,5].map(l=>{const at=ppl.filter(p=>P(p).lv===l);return at.length?`<div class="lv"><span>${LEVELS[l]}</span><div class="bar"><i style="width:${Math.round(at.filter(has).length/at.length*100)}%"></i></div><em>${at.filter(has).length} of ${at.length}</em></div>`:''}).join('');
- const pl=S.pillars.map(p=>{const l=ap.filter(g=>rootPillar(g)===p.id);return `<div class="lv"><span>${e(p.name)}</span><div class="bar"><i style="width:${avg(l)}%"></i></div><em>${l.length?avg(l)+'%':'no goals'}</em></div>`}).join('');
+ const pls=S.pillars.map(p=>{const l=al.filter(g=>rootPillar(g)===p.id);return `<div class="lv"><span>${e(p.name)}</span><div class="bar"><i style="width:${avg(l)}%"></i></div><em>${l.length?avg(l)+'%':'no goals'}</em></div>`}).join('');
+ const un=ap.filter(g=>!aligned(g));
  return `<div class="wrap"><div class="head"><div><h1>Dashboard</h1></div><span class="sp"></span><div class="seg"><button data-a="scope" data-s="all" aria-pressed="${!team}">Everyone</button><button data-a="scope" data-s="team" aria-pressed="${team}">Me and my team</button></div></div>
- <div class="stats"><div class="stat"><b>${ap.length}</b><span>approved goals${gs.length>ap.length?` · ${gs.length-ap.length} in progress`:''}</span></div><div class="stat"><b>${ppl.length?Math.round(cov/ppl.length*100):0}%</b><span>of people have an approved goal (${cov} of ${ppl.length})</span></div><div class="stat"><b>${avg(ap)}%</b><span>average progress on approved goals</span></div></div>
- <div class="two"><div class="card"><h2 style="margin-bottom:8px">Coverage by level</h2>${lv||'<p class="muted">No one in this view.</p>'}</div><div class="card"><h2 style="margin-bottom:8px">Progress by pillar</h2>${pl}</div></div>
- <div class="card"><h2 style="margin-bottom:6px">Waiting on</h2>${waits.length?`<ul class="steps">${waits.map(w=>`<li><span><b>${e(P(w.who).name)}</b> · ${e(w.t)}</span>${w.id?`<button class="btn sm" data-a="open" data-id="${w.id}">Open</button>`:w.since?`<span class="muted small" style="flex:none">since ${fmt(w.since)}</span>`:''}</li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nobody is waiting on anything.</p>'}</div></div>`}
+ <div class="stats"><div class="stat"><b>${ap.length}</b><span>approved goals${gs.length>ap.length?` · ${gs.length-ap.length} in progress`:''}</span></div><div class="stat"><b>${ap.length?Math.round(al.length/ap.length*100):0}%</b><span>of approved goals trace to a pillar through accepted links (${al.length} of ${ap.length})</span></div><div class="stat"><b>${avg(ap)}%</b><span>average progress on approved goals</span></div></div>
+ <div class="two"><div class="card"><h2 style="margin-bottom:8px">Coverage by level</h2><p class="small muted" style="margin:0 0 6px">People with an approved goal</p>${lv||'<p class="muted">No one in this view.</p>'}</div><div class="card"><h2 style="margin-bottom:8px">Progress by pillar</h2><p class="small muted" style="margin:0 0 6px">Each goal counted once, through its main alignment</p>${pls}</div></div>
+ <div class="card"><h2 style="margin-bottom:6px">Not aligned to strategy (${un.length})</h2>${un.length?`<ul class="steps">${un.map(g=>`<li><span><b>${e(P(g.owner).name)}</b> · ${e(g.title)} <span class="muted small">· ${primary(g)?'link waiting to be accepted':'no alignment'}</span></span><button class="btn sm" data-a="open" data-id="${g.id}">Open</button></li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Every approved goal traces to a pillar.</p>'}</div>
+ <div class="card"><h2 style="margin-bottom:6px">Waiting on</h2>${waits.length?`<ul class="steps">${waits.map(w=>`<li><span><b>${e(P(w.who).name)}</b> · ${e(w.t)}</span>${w.id?`<button class="btn sm" data-a="open" data-id="${w.id}">Open</button>`:''}</li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Nobody is waiting on anything.</p>'}</div></div>`}
 
-/* ---------- drawer: one goal ---------- */
-function drawerGoal(g){const me=ME(),own=g.owner===me,mgr=P(g.owner).mgr===me,contrib=g.contrib.includes(me),to=passable(g,me),down=[...S.goals.filter(x=>x.parent===g.id&&canSee(x)),...openReqs(g.id)];
+/* ---------- drawer: one goal, with its outbound and inbound alignment ---------- */
+function drawerGoal(g){const me=ME(),own=g.owner===me,mgr=P(g.owner).mgr===me,p=path(g),os=out(g),is=inb(g);
  let next='';
  if(own&&(g.status==='draft'||g.status==='returned'))next=`<div class="next"><h3>${g.status==='returned'?'Sent back':'Not submitted yet'}</h3>${g.back?`<p>“${e(g.back)}”</p>`:''}<p>Finish it and submit it to ${P(g.owner).mgr?e(P(P(g.owner).mgr).name):'approve it'}.</p><div class="btns"><button class="btn pri" data-a="edit" data-id="${g.id}">Edit and submit</button><button class="btn" data-a="delete" data-id="${g.id}">Delete draft</button></div></div>`;
- else if(mgr&&g.status==='submitted')next=`<div class="next"><h3>Your approval</h3><p>${e(P(g.owner).name)} submitted this goal.</p><label class="f" for="backmsg" style="font-weight:400">If you send it back, say what to change</label><textarea class="in" id="backmsg" maxlength="400"></textarea><div class="btns" style="margin-top:10px"><button class="btn pri" data-a="approve" data-id="${g.id}">Approve</button><button class="btn" data-a="sendback" data-id="${g.id}">Send back</button></div></div>`;
- else if(g.status==='approved'&&(own||contrib)&&to.length)next=`<div class="next"><h3>Pass it down to your team</h3><p>Goes to ${to.map(r=>e(P(r).name)).join(', ')}.</p><div class="btns"><button class="btn pri" data-a="adaptdown" data-id="${g.id}">Ask them to adapt it</button><button class="btn" data-a="push" data-id="${g.id}">Push it as it is</button></div><p class="small muted" style="margin:10px 0 0">Adapt: each person writes their own version for your approval. Push: it lands with each of them as an approved goal.</p></div>`;
+ else if(mgr&&g.status==='submitted')next=`<div class="next"><h3>Your approval</h3><p>${e(P(g.owner).name)} submitted this goal.${os.some(l=>l.status==='pending'&&nodeOwner(l.to)===me)?' Approving also accepts its link to your goal.':''}</p><label class="f" for="backmsg" style="font-weight:400">If you send it back, say what to change</label><textarea class="in" id="backmsg" maxlength="400"></textarea><div class="btns" style="margin-top:10px"><button class="btn pri" data-a="approve" data-id="${g.id}">Approve</button><button class="btn" data-a="sendback" data-id="${g.id}">Send back</button></div></div>`;
  else if(own&&g.status==='submitted')next=`<div class="next"><h3>Waiting for approval</h3><p style="margin:0">With ${e(P(P(g.owner).mgr).name)}.</p></div>`;
- const canUpd=g.status==='approved'&&(own||contrib);
- return `<div class="dh"><div style="flex:1">${pill(g.status)}<h2 style="margin-top:8px">${e(g.title)}</h2><div class="meta">${e(P(g.owner).name)} · ${e(P(g.owner).title)}</div></div><button class="x" data-a="close" aria-label="Close">×</button></div>
- <div class="db"><div class="meta">Supports: <b>${e(parentName(g.parent))}</b>${isPillar(g.parent)?' (pillar)':' · '+e(P(G(g.parent).owner).name)}</div>
- ${(()=>{const c=chainOf(g),pl=rootPillar(g);return pl?`<div class="meta small">Path to strategy: ${[e(PL(pl).name)+' (pillar)',...c.map(x=>e(x.title)+' · '+e(P(x.owner).name))].join(' › ')} › <b>this goal</b></div>`:'<div class="note">This goal does not trace back to a pillar.</div>'})()}
- ${g.via==='push'?`<div class="meta">Pushed down by ${e(P(g.by).name)}${own&&g.status==='approved'?` · <button class="link" data-a="edit" data-id="${g.id}">Adjust this goal</button> <span class="small">(it goes back to ${e(P(P(g.owner).mgr).name)} for approval)</span>`:''}</div>`:''}
- ${g.contrib.length?`<div class="meta">Contributors: ${g.contrib.map(c=>e(P(c).name)).join(', ')}</div>`:''}
- <div style="margin-top:14px">${prog(g.progress,g)}</div>
+ const pathHtml=p.pillar?`<div class="meta small">Path to strategy: ${[e(PL(p.pillar).name)+' (pillar)',...p.chain.map(x=>e(x.title)+' · '+e(P(x.owner).name))].join(' › ')} › <b>this goal</b>${p.ok?'':' · <b>a link on this path is not accepted yet</b>'}</div>`:'<div class="note">Not aligned to strategy yet. Align it to a goal it supports.</div>';
+ const oli=l=>{const t=isPillar(l.to);return `<li><span class="dir">→</span><span class="lt"><b>${e(nodeName(l.to))}</b><small>${t?'Pillar':e(who(nodeOwner(l.to)))}${l.primary?' · <span class="prim">Main alignment</span>':''}</small>${l.status==='rejected'&&l.reason?`<small class="rs">“${e(l.reason)}”</small>`:''}</span><span class="la">${lpill(l.status)}${own&&!l.primary&&l.status!=='rejected'?`<button class="link small" data-a="primary" data-id="${l.id}">Make main</button>`:''}${own?`<button class="link small" data-a="withdraw" data-id="${l.id}">${l.status==='rejected'?'Remove':'Withdraw'}</button>`:''}</span></li>`};
+ const ili=l=>{const f=G(l.from),dec=own&&l.status!=='rejected';return `<li><span class="dir">←</span><span class="lt"><button class="link" data-a="open" data-id="${f.id}">${e(f.title)}</button><small>${e(who(f.owner))}${f.status!=='approved'?' · '+STATUS[f.status][0]:''}</small>${l.status==='rejected'&&l.reason?`<small class="rs">“${e(l.reason)}”</small>`:''}</span><span class="la">${lpill(l.status)}</span>${dec?`<div class="dec">${l.status==='pending'?`<button class="btn sm pri" data-a="accept" data-id="${l.id}">Accept</button>`:''}<input class="in" id="why-${l.id}" placeholder="${l.status==='pending'?'Reason, if you reject':'Reason for removing'}" maxlength="200" aria-label="Reason"><button class="btn sm" data-a="reject" data-id="${l.id}">${l.status==='pending'?'Reject':'Remove'}</button></div>`:''}</li>`};
+ const T=targets(g),opts=[...T.pillars.map(x=>[x.id,'Pillar · '+x.name]),...T.mine.map(x=>[x.id,x.title+' · '+P(x.owner).name]),...T.other.map(x=>[x.id,x.title+' · '+who(x.owner)])];
+ return `<div class="dh"><div style="flex:1">${pill(g.status)}<h2 style="margin-top:8px">${e(g.title)}</h2><div class="meta">${e(P(g.owner).name)} · ${e(P(g.owner).title)} · ${e(P(g.owner).dept)}</div></div><button class="x" data-a="close" aria-label="Close">×</button></div>
+ <div class="db">${pathHtml}<div style="margin-top:12px">${prog(g.progress,g)}</div>
  <h3 style="margin-top:16px">Key results</h3><ul class="krs">${g.krs.map(k=>`<li>${e(k.t)}</li>`).join('')}</ul>${g.desc?`<p class="muted">${e(g.desc)}</p>`:''}
  ${next}
- ${canUpd?`<details ${next?'':'open'}><summary>Update progress</summary><div style="display:flex;gap:10px;align-items:center"><input type="range" id="pval" min="0" max="100" step="5" value="${g.progress}" style="flex:1" aria-label="Progress"><output id="pout">${g.progress}%</output></div><input class="in" id="pnote" placeholder="What changed? (optional)" maxlength="200" style="margin-top:8px"><p style="margin:8px 0 0"><button class="btn sm pri" data-a="progress" data-id="${g.id}">Save progress</button></p>${g.updates.length?`<ul class="hist" style="margin-top:10px">${g.updates.slice().reverse().map(u=>`<li><b>${u.pct}%</b> · ${fmt(u.at)} · ${e(P(u.by).name)}${u.note?' · '+e(u.note):''}</li>`).join('')}</ul>`:''}</details>`:''}
- <details><summary>Passed down (${down.length})</summary>${down.length?`<ul class="hist">${down.map(x=>x.goal?`<li><b>${e(P(x.to).name)}</b> · asked to adapt, not done yet</li>`:`<li><b>${e(P(x.owner).name)}</b> · <button class="link" data-a="open" data-id="${x.id}">${e(x.title)}</button> · ${STATUS[x.status][0]}${x.via==='push'?' · pushed':''}</li>`).join('')}</ul>`:'<p class="muted small" style="margin:0">Not passed down yet.</p>'}</details>
+ <section class="al"><h3>Outbound alignment <span class="muted small">· goals this one supports (${os.length})</span></h3><ul class="links">${os.map(oli).join('')||'<li class="muted small">None yet.</li>'}</ul>
+ ${own?(U.add===g.id?`<div class="addl"><label class="f" for="ato">Align to</label><select class="in" id="ato">${T.pillars.length?`<optgroup label="Pillars">${T.pillars.map(x=>`<option value="${x.id}">${e(x.name)}</option>`).join('')}</optgroup>`:''}${T.mine.length?`<optgroup label="Your manager’s goals">${T.mine.map(x=>`<option value="${x.id}">${e(x.title)}</option>`).join('')}</optgroup>`:''}${T.other.length?`<optgroup label="Other teams and departments">${T.other.map(x=>`<option value="${x.id}">${e(x.title)} · ${e(who(x.owner))}</option>`).join('')}</optgroup>`:''}</select>
+  <p class="hint">${T.pillars.length?'Links to a pillar are accepted at once. ':''}The owner of the goal you pick accepts or rejects the link.</p><div class="btns"><button class="btn sm pri" data-a="propose" data-id="${g.id}" ${opts.length?'':'disabled'}>Send link</button><button class="btn sm" data-a="addcancel">Cancel</button></div></div>`
+  :`<button class="link" data-a="addlink" data-id="${g.id}" style="margin-top:8px">+ Align to another goal</button>`):''}</section>
+ <section class="al"><h3>Inbound alignment <span class="muted small">· goals that support this one (${is.length})</span></h3><ul class="links">${is.map(ili).join('')||'<li class="muted small">None yet.</li>'}</ul></section>
+ ${may.progress(g)?`<details ${next?'':'open'}><summary>Update progress</summary><div style="display:flex;gap:10px;align-items:center"><input type="range" id="pval" min="0" max="100" step="5" value="${g.progress}" style="flex:1" aria-label="Progress"><output id="pout">${g.progress}%</output></div><input class="in" id="pnote" placeholder="What changed? (optional)" maxlength="200" style="margin-top:8px"><p style="margin:8px 0 0"><button class="btn sm pri" data-a="progress" data-id="${g.id}">Save progress</button></p>${g.updates.length?`<ul class="hist" style="margin-top:10px">${g.updates.slice().reverse().map(u=>`<li><b>${u.pct}%</b> · ${fmt(u.at)} · ${e(P(u.by).name)}${u.note?' · '+e(u.note):''}</li>`).join('')}</ul>`:''}</details>`:''}
  <details><summary>History</summary><ul class="hist">${g.hist.slice().reverse().map(h=>`<li>${fmt(h.at)} · <b>${e(P(h.by).name)}</b> · ${e(h.w)}</li>`).join('')}</ul></details></div>`}
 
-/* ---------- drawer: create, adapt or edit ---------- */
-function parentOptions(owner){const m=P(owner).mgr,ups=m?S.goals.filter(g=>g.status==='approved'&&(g.owner===m||g.contrib.includes(m))):[];return [...ups.map(g=>[g.id,g.title]),...(P(owner).lv===1||!ups.length?S.pillars.map(p=>[p.id,'Pillar · '+p.name]):[])]}
-function openForm(o){U.form=Object.assign({id:null,req:null,owner:ME(),parent:'',title:'',krs:[''],desc:'',contrib:[],hint:''},o);if(!U.form.parent){const op=parentOptions(U.form.owner);U.form.parent=op.length?op[0][0]:''}U.ai=null;U.err={};U.dr={k:'form'};render()}
-function drawerForm(){const f=U.form,me=ME(),g=f.id&&G(f.id),team=reports(me),forOther=f.owner!==me,ops=parentOptions(f.owner),req=f.req&&S.reqs.find(r=>r.id===f.req),peers=Object.keys(PEOPLE).filter(k=>k!==f.owner&&P(k).lv===P(f.owner).lv),er=U.err;
- const title=req?'Adapt a goal for your area':g?(g.status==='approved'?'Adjust this goal':'Edit goal'):'Add a goal';
- const ai=U.ai;
- return `<div class="dh"><h2>${title}</h2><button class="x" data-a="close" aria-label="Close">×</button></div><div class="db">
- ${req?`<div class="note">${e(P(req.by).name)} asked you to adapt: <b>${e(G(req.goal).title)}</b></div>`:''}
- ${!f.id&&!req&&team.length?`<label class="f" for="fowner">Whose goal is this?</label><select class="in" id="fowner" data-ff="owner"><option value="${me}">Mine</option>${team.map(r=>`<option value="${r}" ${f.owner===r?'selected':''}>${e(P(r).name)} · ${e(P(r).title)}</option>`).join('')}</select>${forOther?'<div class="hint">It goes straight to them as an approved goal, marked as pushed down by you.</div>':''}`:''}
- ${req?'':`<label class="f" for="fparent">Supports</label><select class="in" id="fparent" data-ff="parent">${ops.map(([v,l])=>`<option value="${v}" ${v===f.parent?'selected':''}>${e(l)}</option>`).join('')}</select>`}
+/* ---------- drawer: add or edit a goal ---------- */
+function openForm(o){U.form=Object.assign({id:null,to:'',title:'',krs:[''],desc:'',hint:''},o);if(!U.form.id&&!U.form.to){const t=targets({id:'_new',owner:ME()}),f=[...t.pillars,...t.mine,...t.other][0];U.form.to=f?f.id:''}U.ai=null;U.err={};U.dr={k:'form'};render()}
+function drawerForm(){const f=U.form,me=ME(),g=f.id&&G(f.id),er=U.err,ai=U.ai,T=targets(g||{id:'_new',owner:me});
+ return `<div class="dh"><h2>${g?'Edit goal':'Add a goal'}</h2><button class="x" data-a="close" aria-label="Close">×</button></div><div class="db">
+ ${g?'<p class="hint" style="margin-top:0">Alignment is managed on the goal itself.</p>':`<label class="f" for="fto">Supports <span class="muted small" style="font-weight:400">(main outbound alignment)</span></label><select class="in" id="fto" data-ff="to" ${er.to?'aria-invalid="true"':''}>${T.pillars.length?`<optgroup label="Pillars">${T.pillars.map(x=>`<option value="${x.id}" ${x.id===f.to?'selected':''}>${e(x.name)}</option>`).join('')}</optgroup>`:''}${T.mine.length?`<optgroup label="Your manager’s goals">${T.mine.map(x=>`<option value="${x.id}" ${x.id===f.to?'selected':''}>${e(x.title)}</option>`).join('')}</optgroup>`:''}${T.other.length?`<optgroup label="Other teams and departments">${T.other.map(x=>`<option value="${x.id}" ${x.id===f.to?'selected':''}>${e(x.title)} · ${e(who(x.owner))}</option>`).join('')}</optgroup>`:''}</select>${er.to?`<div class="err">${er.to}</div>`:''}<div class="hint">${P(me).lv===1?'Links to a pillar are accepted at once.':'A link to your manager’s goal is accepted when they approve this goal. A link to anyone else’s goal waits for its owner.'}</div>`}
  <label class="f" for="ftitle">Goal</label><input class="in" id="ftitle" data-ff="title" maxlength="200" value="${e(f.title)}" placeholder="An outcome, for example: Cut playout incidents to under three a month" ${er.title?'aria-invalid="true"':''}>${er.title?`<div class="err">${er.title}</div>`:''}
  <div class="aibar"><div class="r"><button class="btn sm ai" data-a="aisuggest">✦ Suggest goals for me</button><button class="btn sm ai" data-a="aireview">✦ Review my draft</button><input class="in" data-ff="hint" value="${e(f.hint)}" placeholder="Priorities, in a few words (optional)" aria-label="Priorities for suggestions" maxlength="120"></div>
  ${ai?`<div style="margin-top:6px"><span class="tag" style="margin-left:0">Prototype · scripted, not from a model</span></div>`+(ai.kind==='suggest'?ai.items.map((s,i)=>`<div class="sug"><b>${e(s.title)}</b><ul>${s.krs.map(k=>`<li>${e(k)}</li>`).join('')}</ul><p>${e(s.why)}</p><button class="btn sm" data-a="aiuse" data-i="${i}">Use this</button></div>`).join(''):`<ul class="chk">${ai.checks.map(c=>`<li>${c.ok?'✅':'⚠️'} ${e(c.label)}${c.tip?`<small>${e(c.tip)}</small>`:''}</li>`).join('')}</ul>`)+`<p style="margin:8px 0 0"><button class="link small" data-a="aiclose">Hide</button></p>`:''}</div>
  <label class="f">Key results</label>${f.krs.map((k,i)=>`<div class="kr"><input class="in" data-ff="kr" data-i="${i}" value="${e(k)}" maxlength="200" placeholder="Measurable: a number, a percentage or a date" aria-label="Key result ${i+1}" ${er.krs&&!i?'aria-invalid="true"':''}>${f.krs.length>1?`<button class="x" data-a="krdel" data-i="${i}" aria-label="Remove key result ${i+1}">×</button>`:''}</div>`).join('')}${er.krs?`<div class="err">${er.krs}</div>`:''}
  ${f.krs.length<5?'<button class="link" data-a="kradd">+ Add another</button>':''}
- <details ${f.desc||f.contrib.length?'open':''} style="margin-top:14px"><summary>More details</summary><label class="f" for="fdesc">Description</label><textarea class="in" id="fdesc" data-ff="desc" maxlength="1000">${e(f.desc)}</textarea>
- <label class="f">Contributors <span class="muted small" style="font-weight:400">(people at the same level)</span></label>${peers.map(p=>`<label style="display:block;margin:4px 0"><input type="checkbox" data-ff="contrib" value="${p}" ${f.contrib.includes(p)?'checked':''}> ${e(P(p).name)} <span class="muted small">${e(P(p).title)}</span></label>`).join('')||'<p class="muted small" style="margin:0">No one else at this level.</p>'}</details></div>
- <div class="df"><button class="btn" data-a="close">Cancel</button>${forOther||(g&&g.status==='approved')?'':`<button class="btn" data-a="fsave" data-d="1">Save draft</button>`}<button class="btn pri" data-a="fsave">${forOther?'Push to '+e(P(f.owner).name.split(' ')[0]):P(f.owner).mgr?'Submit for approval':'Save'}</button></div>`}
-function readForm(t){const f=U.form,k=t.dataset.ff;if(!f||!k)return;
- if(k==='kr')f.krs[+t.dataset.i]=t.value;else if(k==='contrib')f.contrib=t.checked?[...new Set([...f.contrib,t.value])]:f.contrib.filter(x=>x!==t.value);else f[k]=t.value;
- if(k==='owner'){f.contrib=[];const op=parentOptions(f.owner);f.parent=op.length?op[0][0]:'';render()}}
-function saveForm(draft){const f=U.form,me=ME(),krs=f.krs.map(x=>x.trim()).filter(Boolean),title=f.title.trim(),err={};
+ <details ${f.desc?'open':''} style="margin-top:14px"><summary>Description</summary><textarea class="in" id="fdesc" data-ff="desc" maxlength="1000" aria-label="Description">${e(f.desc)}</textarea></details></div>
+ <div class="df"><button class="btn" data-a="close">Cancel</button><button class="btn" data-a="fsave" data-d="1">Save draft</button><button class="btn pri" data-a="fsave">${P(me).mgr?'Submit for approval':'Save'}</button></div>`}
+function readForm(t){const f=U.form,k=t.dataset.ff;if(!f||!k)return;if(k==='kr')f.krs[+t.dataset.i]=t.value;else f[k]=t.value}
+function saveForm(draft){const f=U.form,me=ME(),g0=f.id&&G(f.id),krs=f.krs.map(x=>x.trim()).filter(Boolean),title=f.title.trim(),err={};
+ if(g0&&!may.edit(g0)){U.dr=U.form=null;render();return denied()}
  if(!title)err.title='Add a goal.';if(!krs.length&&!draft)err.krs='Add at least one key result.';
- if(!f.parent&&!f.req)err.title=(err.title?err.title+' ':'')+'Choose what it supports.';
- const req0=f.req&&S.reqs.find(r=>r.id===f.req),g0=f.id&&G(f.id),par0=req0?req0.goal:f.parent;
- if(req0&&req0.to!==me||g0&&!may.edit(g0)||!g0&&f.owner!==me&&!reports(me).includes(f.owner)){U.dr=null;U.form=null;render();denied();return}
- if(draft&&g0&&g0.status==='approved'){toast('An approved goal cannot be saved as a draft. Submit it for approval.');return}
- if(par0&&!req0&&(!parentOptions(f.owner).some(([v])=>v===par0)||par0===f.id||(f.id&&descendants(f.id).includes(par0))))err.title=(err.title?err.title+' ':'')+'Choose what it supports from the list.';
+ if(!g0&&(!f.to||!validTarget({id:'_new',owner:me},f.to)))err.to='Choose a goal or pillar from the list.';
  U.err=err;if(Object.keys(err).length){render();const x=document.querySelector('[aria-invalid=true]');if(x)x.focus();return}
- const req=f.req&&S.reqs.find(r=>r.id===f.req),parent=req?req.goal:f.parent;let g=f.id&&G(f.id);
- if(!g){g={id:'g'+(S.seq++),owner:f.owner,parent,title,desc:'',krs:[],status:'draft',progress:0,contrib:[],via:null,by:null,back:'',updates:[],hist:[]};S.goals.push(g);hist(g,f.owner!==me?'Created by '+P(me).name:'Created');if(req)req.result=g.id}
- Object.assign(g,{title,desc:f.desc.trim(),parent,krs:krs.map(t=>({t})),contrib:f.contrib});
- if(f.owner!==me&&!f.id){g.status='approved';g.via='push';g.by=me;hist(g,'Pushed down by '+P(me).name);toast('Goal pushed to '+P(f.owner).name)}
- else if(draft){g.status=g.status==='approved'?'approved':'draft';hist(g,'Saved as draft');toast('Draft saved')}
- else{if(g.status==='approved')hist(g,'Adjusted by the owner');submitGoal(g);toast(g.status==='approved'?'Goal saved':'Submitted to '+P(P(g.owner).mgr).name)}
- U.form=null;U.ai=null;U.dr={k:'goal',id:g.id};render()}
+ let g=g0;if(!g){g={id:'g'+(S.seq++),owner:me,title,desc:'',krs:[],status:'draft',progress:0,back:'',updates:[],hist:[]};S.goals.push(g);hist(g,'Created');propose(g,f.to)}
+ Object.assign(g,{title,desc:f.desc.trim(),krs:krs.map(t=>({t}))});
+ if(draft){hist(g,'Saved as draft');toast('Draft saved')}else{submitGoal(g);if(g.status==='approved')acceptOwnLinks(g);toast(g.status==='approved'?'Goal saved':'Submitted to '+P(P(g.owner).mgr).name)}
+ U.form=U.ai=null;U.dr={k:'goal',id:g.id};render()}
+/* approving a goal also accepts its links to the approver's own goals */
+function acceptOwnLinks(g){out(g).filter(l=>l.status==='pending'&&nodeOwner(l.to)===ME()).forEach(l=>{l.status='accepted';hist(G(l.to),`Accepted “${g.title}” as support`)})}
 
 /* ---------- AI goal design: scripted in this sandbox ---------- */
 const LIB={
@@ -329,35 +360,35 @@ const LIB={
  p3:[['Build core skills across {a}',['Every team member completes two learning paths by Q4','Skills gaps in the team plan reduced by half'],'a workforce ready for new formats'],
   ['Grow future leaders in {a}',['Two successors named for each key role','Four internal moves or stretch assignments this year'],'more roles filled from inside'],
   ['Make {a} a place people stay',['Voluntary turnover below 8%','Engagement score up 5 points in the next survey'],'keeping the skills we invest in']]};
-function aiSuggest(){const f=U.form,o=f.owner,parentId=f.req?S.reqs.find(r=>r.id===f.req).goal:f.parent,par=isPillar(parentId)?null:G(parentId),pl=par?rootPillar(par):parentId,area=(P(o).title.split(',')[1]||P(o).title).trim(),own=mine(o).map(g=>g.title.toLowerCase());
- const lv=P(o).lv,scope=lv>=5?' (your own work)':lv===4?' (your section)':'';let items=(LIB[pl]||LIB.p2).map(([t,k,w])=>({title:t.replace('{a}',area)+scope,krs:k,why:`Supports “${par?par.title:PL(pl).name}” through ${w}.`}));
- const h=f.hint.trim();if(h)items=[{title:`${h[0].toUpperCase()+h.slice(1)} in ${area}`,krs:items[0].krs,why:`Built from your priority “${h}”. Supports “${par?par.title:PL(pl).name}”.`},...items.slice(0,2)];
+function aiSuggest(){const f=U.form,me=ME(),to=f.id?(primary(G(f.id))||{}).to:f.to,tg=to&&!isPillar(to)?G(to):null,pl=tg?(rootPillar(tg)||'p2'):(to||'p2'),area=(P(me).title.split(',')[1]||P(me).title).trim(),own=S.goals.filter(g=>g.owner===me).map(g=>g.title.toLowerCase());
+ const lv=P(me).lv,scope=lv>=5?' (your own work)':lv===4?' (your section)':'',above=tg?tg.title:PL(pl).name;let items=(LIB[pl]||LIB.p2).map(([t,k,w])=>({title:t.replace('{a}',area)+scope,krs:k,why:`Supports “${above}” through ${w}.`}));
+ const h=f.hint.trim();if(h)items=[{title:`${h[0].toUpperCase()+h.slice(1)} in ${area}`,krs:items[0].krs,why:`Built from your priority “${h}”. Supports “${above}”.`},...items.slice(0,2)];
  return items.filter(s=>!own.includes(s.title.toLowerCase())).slice(0,3)}
-function aiReview(){const f=U.form,t=f.title.trim(),krs=f.krs.map(x=>x.trim()).filter(Boolean),lv=P(f.owner).lv,low=t.toLowerCase(),c=[];
+function aiReview(){const f=U.form,t=f.title.trim(),krs=f.krs.map(x=>x.trim()).filter(Boolean),lv=P(ME()).lv,c=[];
  const act=/^(attend|hold|do|work on|help|support|participate|join|try|complete training|be )/i.test(t);
  c.push(!t?{ok:false,label:'There is no goal yet',tip:'Start with the result you want, not the task.'}:act?{ok:false,label:'Reads as an activity, not an outcome',tip:'Say what will be different when it is done, for example “Cut … to …”.'}:{ok:true,label:'Reads as an outcome'});
  const vague=krs.filter(k=>!/\d|%/.test(k));c.push(!krs.length?{ok:false,label:'No key results yet',tip:'Add one to three measurable key results.'}:vague.length?{ok:false,label:`${vague.length} key result(s) have no number, percentage or date`,tip:'For example: “… from 50k to 70k by Q4”.'}:{ok:true,label:'Key results are measurable'});
  if(krs.length>3)c.push({ok:false,label:'More than three key results',tip:'Keep the ones that matter most.'});
- const broad=/all channels|whole network|company-wide|across the network|every market/i.test(t);c.push(lv>=4&&broad?{ok:false,label:'The scope looks too wide for your level',tip:'Narrow it to what your section or your own work controls.'}:{ok:true,label:'Scope fits your level'});
- const parentId=f.req?S.reqs.find(r=>r.id===f.req).goal:f.parent;c.push(parentId?{ok:true,label:'Supports “'+parentName(parentId)+'”'}:{ok:false,label:'Not linked to a goal above',tip:'Choose what it supports.'});
- const words=s=>new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>3)),tw=words(t),dup=mine(f.owner).find(g=>g.id!==f.id&&tw.size&&[...words(g.title)].filter(w=>tw.has(w)).length/tw.size>=.5);
+ c.push(lv>=4&&/all channels|whole network|company-wide|across the network|every market/i.test(t)?{ok:false,label:'The scope looks too wide for your level',tip:'Narrow it to what your section or your own work controls.'}:{ok:true,label:'Scope fits your level'});
+ const to=f.id?(primary(G(f.id))||{}).to:f.to;c.push(to?{ok:true,label:'Supports “'+nodeName(to)+'”'}:{ok:false,label:'Not aligned to a goal above',tip:'Choose what it supports.'});
+ const words=s=>new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>3)),tw=words(t),dup=S.goals.find(g=>g.owner===ME()&&g.id!==f.id&&tw.size&&[...words(g.title)].filter(w=>tw.has(w)).length/tw.size>=.5);
  c.push(dup?{ok:false,label:'Overlaps a goal you already have',tip:'“'+dup.title+'”'}:{ok:true,label:'No overlap with your other goals'});return c}
 
 /* ---------- drawer: pillar ---------- */
-function drawerPillar(p){const gs=S.goals.filter(g=>g.parent===p.id&&g.status!=='draft'),ed=canEditStrategy();
+function drawerPillar(p){const gs=S.links.filter(l=>l.to===p.id).map(l=>G(l.from)).filter(canSee),ed=canEditStrategy();
  return `<div class="dh"><div style="flex:1"><span class="pill ok">Pillar</span><h2 style="margin-top:8px">${e(p.name)}</h2></div><button class="x" data-a="close" aria-label="Close">×</button></div><div class="db">
  ${ed?`<label class="f" for="pname">Pillar name</label><div style="display:flex;gap:8px"><input class="in" id="pname" value="${e(p.name)}" maxlength="120"><button class="btn" data-a="prename" data-id="${p.id}">Save</button></div>
  <div class="next"><h3>Add a goal under this pillar</h3><p>It becomes one of your goals as ${e(P(ME()).title)}.</p><button class="btn pri" data-a="pgoal" data-id="${p.id}">Add a goal</button></div>`:`<p class="muted">Pillars are managed by the Executive Directors.</p>`}
- <h3 style="margin-top:14px">Goals under it (${gs.length})</h3><ul class="hist">${gs.map(g=>`<li><b>${e(P(g.owner).name)}</b> · <button class="link" data-a="open" data-id="${g.id}">${e(g.title)}</button></li>`).join('')||'<li>None yet.</li>'}</ul>
+ <h3 style="margin-top:14px">Goals aligned to it (${gs.length})</h3><ul class="hist">${gs.map(g=>`<li><b>${e(P(g.owner).name)}</b> · <button class="link" data-a="open" data-id="${g.id}">${e(g.title)}</button></li>`).join('')||'<li>None yet.</li>'}</ul>
  ${ed?`<details><summary>Add a pillar</summary><div style="display:flex;gap:8px"><input class="in" id="pnew" maxlength="120" placeholder="Pillar name"><button class="btn" data-a="padd">Add</button></div></details>`:''}</div>`}
 
 /* ---------- render ---------- */
 function render(){const me=ME(),dr=U.dr,was=!!document.querySelector('.drawer'),af=document.activeElement,keep=af&&af.closest&&af.closest('.drawer')&&af.dataset&&af.dataset.ff?{ff:af.dataset.ff,i:af.dataset.i}:null;
  const nav=[['mine','My goals'],['map','Strategy map'],['dash','Dashboard']];
- let page=U.page==='map'?pageMap():U.page==='dash'?pageDash():pageMine();
- let d='';if(dr){const inner=dr.k==='form'?drawerForm():dr.k==='pillar'&&PL(dr.id)?drawerPillar(PL(dr.id)):dr.k==='goal'&&G(dr.id)?drawerGoal(G(dr.id)):'';if(inner)d=`<div class="mask" data-a="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">${inner}</aside>`;else U.dr=null}
+ const page=U.page==='map'?pageMap():U.page==='dash'?pageDash():pageMine();
+ let d='';if(dr){const inner=dr.k==='form'?drawerForm():dr.k==='pillar'&&PL(dr.id)?drawerPillar(PL(dr.id)):dr.k==='goal'&&canSee(G(dr.id))?drawerGoal(G(dr.id)):'';if(inner)d=`<div class="mask" data-a="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">${inner}</aside>`;else U.dr=null}
  document.getElementById('app').innerHTML=`<header class="top"><div class="brand">Goals Cycle Hub<small>Sample data · fictional people</small></div><nav class="nav" aria-label="Pages">${nav.map(([k,l])=>`<button data-a="page" data-p="${k}" ${U.page===k?'aria-current="page"':''}>${l}</button>`).join('')}</nav><span class="sp"></span>
- <label class="as">Viewing as <select data-a="as">${Object.keys(PEOPLE).map(k=>`<option value="${k}" ${k===me?'selected':''}>${e(P(k).name)} · ${e(LEVELS[P(k).lv].replace(/s$/,''))}</option>`).join('')}</select></label><button class="btn sm" data-a="reset">Reset</button></header>
+ <label class="as">Viewing as <select data-a="as">${Object.keys(PEOPLE).map(k=>`<option value="${k}" ${k===me?'selected':''}>${e(P(k).name)} · ${e(LEVELS[P(k).lv].replace(/s$/,''))}, ${e(P(k).dept)}</option>`).join('')}</select></label><button class="btn sm" data-a="reset">Reset</button></header>
  ${U.saveErr?'<div class="wrap" style="padding-bottom:0"><div class="note" role="alert">Changes could not be saved in this browser. They will be lost when you reload. Check that site data is allowed, then try again.</div></div>':''}${page}<div class="foot"><a href="./">Talent Suite</a> · <a href="strategy.html">Strategy Room</a> · <a href="successfactors.html">SuccessFactors replica</a> · Data stays in this browser.</div>${d}`;
  const dw=document.querySelector('.drawer');
  if(dw&&keep){const x=dw.querySelector(`[data-ff="${keep.ff}"]${keep.i!=null?`[data-i="${keep.i}"]`:''}`);if(x)x.focus()}
@@ -368,17 +399,22 @@ function render(){const me=ME(),dr=U.dr,was=!!document.querySelector('.drawer'),
 /* ---------- events ---------- */
 const A={
  page:el=>{U.page=el.dataset.p;U.dr=null;render();window.scrollTo(0,0)},
- reset:()=>{if(!confirm('Reset the hub to the example cycle? Everything entered here is cleared.'))return;S=seed();U.dr=U.form=null;render();toast('Example cycle restored')},
- open:el=>{if(!canSee(G(el.dataset.id)))return denied();U.dr={k:'goal',id:el.dataset.id};U.form=null;render()},
- close:()=>{U.dr=null;U.form=null;U.ai=null;U.map=null;render()},
+ reset:()=>{if(!confirm('Reset the hub to the sample data? Everything entered here is cleared.'))return;S=seed();U.dr=U.form=null;render();toast('Sample data restored')},
+ open:el=>{if(!canSee(G(el.dataset.id)))return denied();U.dr={k:'goal',id:el.dataset.id};U.form=null;U.add=null;render()},
+ close:()=>{U.dr=U.form=U.ai=U.add=null;render()},
  new:()=>openForm({}),
- adapt:el=>{const r=S.reqs.find(x=>x.id===el.dataset.id);if(!r||r.to!==ME()||r.status!=='open')return denied();const d=r.result&&G(r.result);openForm(d?{id:d.id,req:r.id,owner:d.owner,parent:d.parent,title:d.title,krs:d.krs.map(k=>k.t).concat(d.krs.length?[]:['']),desc:d.desc,contrib:d.contrib}:{req:r.id,parent:r.goal})},
- edit:el=>{const g=G(el.dataset.id);if(!g||!may.edit(g))return denied();const r=S.reqs.find(q=>q.result===g.id&&q.status==='open');openForm({id:g.id,req:r?r.id:null,owner:g.owner,parent:g.parent,title:g.title,krs:g.krs.length?g.krs.map(k=>k.t):[''],desc:g.desc,contrib:g.contrib})},
- delete:el=>{if(!may.delete(G(el.dataset.id)||{}))return denied();if(!confirm('Delete this draft?'))return;const id=el.dataset.id;S.goals=S.goals.filter(g=>g.id!==id);S.reqs.forEach(r=>{if(r.result===id)r.result=null});U.dr=null;render();toast('Draft deleted')},
- approve:el=>{const g=G(el.dataset.id);if(!g||!may.approve(g))return denied();g.status='approved';g.back='';hist(g,'Approved');render();toast('Approved')},
- sendback:el=>{const g=G(el.dataset.id);if(!g||!may.sendback(g))return denied();const m=document.getElementById('backmsg').value.trim();if(!m){document.getElementById('backmsg').setAttribute('aria-invalid','true');document.getElementById('backmsg').focus();toast('Say what to change before sending it back');return}g.status='returned';g.back=m;hist(g,'Sent back: '+m);render();toast('Sent back to '+P(g.owner).name)},
- adaptdown:el=>{if(!may.push(G(el.dataset.id)||{}))return denied();const n=passDown(G(el.dataset.id),'adapt');render();toast(`Asked ${n} ${n===1?'person':'people'} to adapt it`)},
- push:el=>{if(!may.push(G(el.dataset.id)||{}))return denied();const n=passDown(G(el.dataset.id),'push');render();toast(`Pushed to ${n} ${n===1?'person':'people'}`)},
+ edit:el=>{const g=G(el.dataset.id);if(!g||!may.edit(g))return denied();openForm({id:g.id,title:g.title,krs:g.krs.length?g.krs.map(k=>k.t):[''],desc:g.desc})},
+ delete:el=>{const g=G(el.dataset.id);if(!g||!may.delete(g))return denied();if(!confirm('Delete this draft?'))return;S.goals=S.goals.filter(x=>x!==g);S.links=S.links.filter(l=>l.from!==g.id&&l.to!==g.id);U.dr=null;render();toast('Draft deleted')},
+ approve:el=>{const g=G(el.dataset.id);if(!g||!may.approve(g))return denied();g.status='approved';g.back='';hist(g,'Approved');acceptOwnLinks(g);render();toast('Approved')},
+ sendback:el=>{const g=G(el.dataset.id);if(!g||!may.sendback(g))return denied();const t=document.getElementById('backmsg'),m=t.value.trim();if(!m){t.setAttribute('aria-invalid','true');t.focus();toast('Say what to change before sending it back');return}g.status='returned';g.back=m;hist(g,'Sent back: '+m);render();toast('Sent back to '+P(g.owner).name)},
+ addlink:el=>{U.add=el.dataset.id;render();const s=document.getElementById('ato');if(s)s.focus()},
+ addcancel:()=>{U.add=null;render()},
+ propose:el=>{const g=G(el.dataset.id),to=document.getElementById('ato').value;if(!g||!may.align(g))return denied();if(!propose(g,to)){toast('That link is not allowed. It would point to your own goal or close a loop.');return}U.add=null;render();toast(isPillar(to)?'Aligned to the pillar':'Link sent to '+P(nodeOwner(to)).name)},
+ accept:el=>{const l=LK(el.dataset.id);if(!l||!may.decide(l)||l.status!=='pending')return denied();l.status='accepted';hist(G(l.to),`Accepted “${G(l.from).title}” as support`);hist(G(l.from),`${P(ME()).name} accepted the link to “${nodeName(l.to)}”`);render();toast('Link accepted')},
+ reject:el=>{const l=LK(el.dataset.id);if(!l||!may.decide(l)||l.status==='rejected')return denied();const t=document.getElementById('why-'+l.id),r=t.value.trim();if(!r){t.setAttribute('aria-invalid','true');t.focus();toast('Give a reason so the owner knows what to change');return}
+  const was=l.status;l.status='rejected';l.reason=r;hist(G(l.to),`${was==='pending'?'Rejected':'Removed'} “${G(l.from).title}”: ${r}`);hist(G(l.from),`${P(ME()).name} ${was==='pending'?'rejected':'removed'} the link to “${nodeName(l.to)}”: ${r}`);render();toast(was==='pending'?'Link rejected':'Link removed')},
+ withdraw:el=>{const l=LK(el.dataset.id);if(!l||!may.withdraw(l))return denied();const g=G(l.from);S.links=S.links.filter(x=>x!==l);hist(g,`Removed the link to “${nodeName(l.to)}”`);promote(g);render();toast('Link removed')},
+ primary:el=>{const l=LK(el.dataset.id);if(!l||!may.withdraw(l)||l.status==='rejected')return denied();out(G(l.from)).forEach(x=>x.primary=false);l.primary=true;hist(G(l.from),`Main alignment set to “${nodeName(l.to)}”`);render();toast('Main alignment changed')},
  progress:el=>{const g=G(el.dataset.id);if(!g||!may.progress(g))return denied();const v=+document.getElementById('pval').value,n=document.getElementById('pnote').value.trim();g.progress=v;g.updates.push({at:TODAY,by:ME(),pct:v,note:n});hist(g,'Progress set to '+v+'%');render();toast('Progress saved')},
  fsave:el=>saveForm(!!el.dataset.d),
  kradd:()=>{U.form.krs.push('');render();const x=document.querySelectorAll('[data-ff=kr]');x[x.length-1].focus()},
@@ -387,15 +423,15 @@ const A={
  aireview:()=>{U.ai={kind:'review',checks:aiReview()};render()},
  aiuse:el=>{const s=U.ai.items[+el.dataset.i];U.form.title=s.title;U.form.krs=s.krs.slice();U.ai=null;U.err={};render();toast('Filled in. Change anything before you submit.')},
  aiclose:()=>{U.ai=null;render()},
- pillar:el=>{U.map=el.dataset.id;U.dr={k:'pillar',id:el.dataset.id};render()},
+ pillar:el=>{U.dr={k:'pillar',id:el.dataset.id};render()},
  prename:el=>{if(!canEditStrategy())return denied();const v=document.getElementById('pname').value.trim();if(!v)return;PL(el.dataset.id).name=v;render();toast('Pillar renamed')},
  padd:()=>{if(!canEditStrategy())return denied();const v=document.getElementById('pnew').value.trim();if(!v)return;S.pillars.push({id:'p'+(S.seq++),name:v});render();toast('Pillar added')},
- pgoal:el=>{if(!canEditStrategy())return denied();openForm({parent:el.dataset.id})},
+ pgoal:el=>{if(!canEditStrategy())return denied();openForm({to:el.dataset.id})},
  scope:el=>{U.scope=el.dataset.s;render()}};
 document.addEventListener('click',ev=>{const el=ev.target.closest('[data-a]');if(!el||el.tagName==='SELECT')return;const f=A[el.dataset.a];if(f){ev.preventDefault();if(!document.querySelector('.drawer')&&el.tagName==='BUTTON')U.opener=`[data-a="${el.dataset.a}"]`+(el.dataset.id?`[data-id="${el.dataset.id}"]`:'')+(el.dataset.p?`[data-p="${el.dataset.p}"]`:'');f(el,ev)}});
-document.addEventListener('input',ev=>{const t=ev.target;if(t.id==='pval')document.getElementById('pout').textContent=t.value+'%';if(t.dataset.ff&&t.dataset.ff!=='owner')readForm(t)});
-document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset.a==='as'){S.as=t.value;U.dr=U.form=U.ai=null;render();toast('Viewing as '+P(t.value).name)}else if(t.dataset.ff==='owner'||t.dataset.ff==='parent'||t.dataset.ff==='contrib')readForm(t)});
-document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&U.dr){U.dr=U.form=U.ai=null;U.map=null;render();return}
+document.addEventListener('input',ev=>{const t=ev.target;if(t.id==='pval')document.getElementById('pout').textContent=t.value+'%';if(t.getAttribute('aria-invalid')&&t.value)t.removeAttribute('aria-invalid');if(t.dataset.ff)readForm(t)});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset.a==='as'){S.as=t.value;U.dr=U.form=U.ai=U.add=null;render();toast('Viewing as '+P(t.value).name)}else if(t.dataset.ff)readForm(t)});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&U.dr){U.dr=U.form=U.ai=U.add=null;render();return}
  const dw=document.querySelector('.drawer');if(ev.key==='Tab'&&dw){const f=[...dw.querySelectorAll('button,input,select,textarea,summary,[href]')].filter(x=>!x.disabled&&x.offsetParent!==null);if(!f.length)return;
   if(ev.shiftKey&&(document.activeElement===f[0]||!dw.contains(document.activeElement))){ev.preventDefault();f[f.length-1].focus()}else if(!ev.shiftKey&&document.activeElement===f[f.length-1]){ev.preventDefault();f[0].focus()}}});
 render();
