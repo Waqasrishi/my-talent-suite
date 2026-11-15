@@ -1,10 +1,10 @@
 ---
 name: describe-app
 audience: end-user
-description: Use after a new app's first feature (not straight after `canvas init`) and at the end of every
-  `build-feature`; when score.yaml lacks `canvas.dev/title` or `canvas.dev/tags`; when the user renames,
+description: Use after a new app's first feature (not straight after `canvas init`), and before a
+  deploy whose change added, changed or removed what a person can do (not a fix or a tweak); when score.yaml lacks `canvas.dev/title` or `canvas.dev/tags`; when the user renames,
   describes or tags the app ("call it…", "tag it sport", "not ai"); when BRIEF.md is missing, lists no
-  features or has neither `## Pages` nor `## API`; when the user says "Complete the architecture map" or "complete the architecture info", the words the portal's Architecture tab gives them; and once per app before a deploy, to ask for an icon and cover. Writes the title, description,
+  features or has neither `## Pages` nor `## API`; when the user says "Complete the architecture map" or "complete the architecture info", the words the portal's Architecture tab gives them; and once per app after its first deploy, to ask for an icon and cover. Writes the title, description,
   category and tags the portal shows and filters by, and BRIEF.md, the brief its team reads and the map of how it is built. Who sees it and opens it is share-app.
 ---
 
@@ -63,10 +63,10 @@ A shorter address (`<name>.<base>`, beside that one) is `canvas domain request <
 5. Uncomment `annotations:` if it is still a comment; keep the keys and any others already there.
 6. Set the README's heading to the title and its first line to the description.
 7. Write `BRIEF.md` (below) — made, if the app has none.
-8. `canvas validate`, then the change ships with the next `canvas deploy` — the portal shows it once
-   the source is uploaded.
+8. `canvas deploy` (`deploy`): the portal shows what the uploaded source says, so these
+   are written first.
 
-**At the end of every `build-feature`** — re-evaluate, do not assume. Read the title, description and
+**Before a deploy whose change added, changed or removed what the app does** — re-evaluate, do not assume; a fix or a tweak skips this. Read the title, description and
 tags against the app as it now is, with the feature just added, changed, expanded or removed:
 
 | The change | Then |
@@ -145,8 +145,8 @@ and asks for what is not there yet.
 - Under it, **one to three sentences that say more than the description, never the same words**: who
   it is for and why it helps. The portal shows them under the description. No "used to…" story.
 - `## Features` — one bullet for each thing a person can do **today**: `- **Name**: one sentence`,
-  about twelve words, never a list of actions run together with semicolons. At the end of every
-  `build-feature`, add what was just built and remove what was taken out; a fix or a tweak changes
+  about twelve words, never a list of actions run together with semicolons. Before every deploy,
+  add what was just built and remove what was taken out; a fix or a tweak changes
   nothing. Plans are not features.
   - `### Step` headings, two to six, when using the app has an order (prepare, then seat, then print):
     each feature under the step it belongs to. A dashboard, a chat or a search has none.
@@ -179,7 +179,7 @@ and asks for what is not there yet.
     `NOTES.md` and the code. None worth saying, and the section is left out; never invented.
   - In a pair the portal reads the web app's brief: there, Pages from `web/` and API and Tables from
     `../api/`. The API app's own brief says the same API and Tables, without Pages.
-  - At the end of every `build-feature`, as for Features: a page, route, table, state or call added or
+  - Before every deploy, as for Features: a page, route, table, state or call added or
     removed is added or removed here; a fix or a tweak changes nothing.
 - Features, roles and sentences in the person's language (Arabic when the app is), with no file names,
   routes or code. Paths, methods, tables and columns exactly as in the code. Headings exactly as here.
@@ -198,7 +198,7 @@ read the code, fill in whatever of `BRIEF.md` is missing or no longer true, keep
 The portal shows a **cover** on the app's card and its page, and an **icon** beside its name. With
 neither, it draws a cover from the app's name — that is fine, and nothing waits for one.
 
-**Ask once per app, before a deploy**, when `score.yaml` names neither `canvas.dev/icon` nor `canvas.dev/cover` and
+**Ask once per app, after its first deploy** — with its URL, so nothing waits on the answer — when `score.yaml` names neither `canvas.dev/icon` nor `canvas.dev/cover` and
 `.canvas/pictures-asked` does not exist. Then write that file (`asked <date>`), whatever the answer:
 it is what makes it once — never again, on later deploys or in a new conversation, unless the user
 brings it up.
@@ -208,7 +208,7 @@ brings it up.
 | They | Then |
 |---|---|
 | give a file | copy it to `src/static/icon.png` (square, 512×512, at most 100 KB) or `src/static/cover.jpg` (**1600×600**, at most 300 KB) — keep its own type: `.png`, `.jpg` or `.webp` — and name it in `score.yaml`. Not that shape: crop it to it, with their OK |
-| say no, later, or nothing | deploy as it is; do not ask again |
+| say no, later, or nothing | leave it; do not ask again |
 | ask you to make one | read `pictures.md` beside this skill, make it in that house style at that size, show it, and write it only on a yes |
 
 **Where a cover is seen**: on the app's card at about 2:1, and across its page as a wide band — so

@@ -1,0 +1,152 @@
+{
+	"_version": "1.60.0",
+	"sap.app": {
+		"id": "ajmn.talent",
+		"type": "application",
+		"title": "AJMN Talent Suite",
+		"description": "Sandbox prototype of the Talent Suite on SAP Fiori (UI5). Synthetic data only.",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"dependencies": {
+			"minUI5Version": "1.144.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.f": {},
+				"sap.tnt": {},
+				"sap.ui.layout": {},
+				"sap.suite.ui.microchart": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
+		},
+		"rootView": {
+			"viewName": "ajmn.talent.view.App",
+			"type": "XML",
+			"id": "app",
+			"async": true
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"type": "View",
+				"viewType": "XML",
+				"path": "ajmn.talent.view",
+				"controlId": "pages",
+				"controlAggregation": "pages",
+				"transition": "fade",
+				"async": true
+			},
+			"routes": [
+				{
+					"name": "root",
+					"pattern": "",
+					"target": "home"
+				},
+				{
+					"name": "home",
+					"pattern": "home",
+					"target": "home"
+				},
+				{
+					"name": "goals",
+					"pattern": "goals",
+					"target": "goals"
+				},
+				{
+					"name": "performance",
+					"pattern": "performance",
+					"target": "performance"
+				},
+				{
+					"name": "growth",
+					"pattern": "growth",
+					"target": "growth"
+				},
+				{
+					"name": "opportunities",
+					"pattern": "opportunities",
+					"target": "opportunities"
+				},
+				{
+					"name": "talent",
+					"pattern": "talent",
+					"target": "talent"
+				},
+				{
+					"name": "insights",
+					"pattern": "insights",
+					"target": "insights"
+				},
+				{
+					"name": "admin",
+					"pattern": "admin",
+					"target": "admin"
+				},
+				{
+					"name": "audit",
+					"pattern": "audit",
+					"target": "audit"
+				}
+			],
+			"targets": {
+				"home": {
+					"name": "Home",
+					"id": "home"
+				},
+				"goals": {
+					"name": "Goals",
+					"id": "goals"
+				},
+				"performance": {
+					"name": "Performance",
+					"id": "performance"
+				},
+				"growth": {
+					"name": "Growth",
+					"id": "growth"
+				},
+				"opportunities": {
+					"name": "Opportunities",
+					"id": "opportunities"
+				},
+				"talent": {
+					"name": "Talent",
+					"id": "talent"
+				},
+				"insights": {
+					"name": "Insights",
+					"id": "insights"
+				},
+				"admin": {
+					"name": "Admin",
+					"id": "admin"
+				},
+				"audit": {
+					"name": "Audit",
+					"id": "audit"
+				}
+			}
+		}
+	}
+}

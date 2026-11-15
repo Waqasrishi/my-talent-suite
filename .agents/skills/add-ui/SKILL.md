@@ -18,3 +18,8 @@ skill; this one is only for adding it or changing the look.
    over the kit's classes (`looks.md`).
 4. **A UI library** (Bootstrap, Material, a hand-built modal or tabs): no. The kit has the part; search its index
    (`ajnkit-ui`, §1).
+5. **An app with a look of its own moving to a kit look** (its own CSS, an adapted or ported app — "use Expressive",
+   "the default style"): the block in step 2 changes only what the kit draws, so the app's own cards, grids and spacing
+   stay as they were, now beside the kit's, and fall out of line. Page by page, swap them for the kit's components
+   (`ajnkit-ui`'s `porting.md`, *Map the controls*) and delete the CSS they leave unused. Then run `ajnkit-ui`'s
+   `audit.md` on every page you changed, and open each screenshot: a page is not done until you have.

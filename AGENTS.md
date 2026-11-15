@@ -8,15 +8,15 @@ sandbox is down" all mean Canvas, and `canvas` is its command.
 ## 1. The contract
 
 Edit `score.yaml` and `src/`. **When asked for something, build it (`build-feature`), run
-`uv run pytest` and `canvas validate`, then — with `auto_deploy = true` in `pyproject.toml` (a Node
+`uv run pytest`, then — with `auto_deploy = true` in `pyproject.toml` (a Node
 app: package.json's `"canvas"`) —
-`canvas deploy` and give the URL; otherwise ask: locally (`local-run`) or deploy?** A `describe` line from `canvas validate` is done before the deploy: run `describe-app`, then validate again. Open each
+`canvas deploy` (it validates first) and give the URL; otherwise ask: locally (`local-run`) or deploy?** **Before every deploy, `BRIEF.md` says what the app does now** (`describe-app`, when the change added, changed or removed what a person can do; a fix or a tweak skips it). Open each
 conversation saying whether auto-deploy and sign-in (score.yaml's `auth`) are on, and that "turn it
 off" (or on) changes either — sign-in off is `add-auth`: `canvas share everyone` first.
 
 **An app linked to GitHub** (`canvas github status` names a repository) is deployed by `git pull --rebase` and `git push`, not `canvas deploy`, which stops: wherever AGENTS.md or a skill says `canvas deploy`, that is the push (`deploy`, *From GitHub*). The repository's CI only checks pull requests; it never deploys.
 
-**Work of three or more steps gets a board first (`show-progress`)**: every step done, in progress,
+**Work of several features — a plan, a port, an update — gets a board first (`show-progress`)**; one feature or one fix does not: every step done, in progress,
 pending or blocked, kept current as each lands — a live page where you can publish one, your to-do
 list where you cannot — so whoever is with you follows it without reading along.
 
@@ -250,7 +250,7 @@ Say this plainly to the user before they put anything they care about here.
 |---|---|
 | `kubectl apply` anything | `canvas deploy`; `canvas status` and `canvas logs` to see it. There is no kubeconfig for tenants |
 | Push an image and deploy it | `canvas deploy` — the platform builds from your source; there is no image upload |
-| Reach another team's app directly | not yet: `service` reaches your own team's apps only |
+| Call another team's app directly | its owner opens a path for your app (`canvas network allow`, or its Network tab): its own port only, never its database or cache. `service` is for your own team's apps |
 | Pull requests or code review on the app | keep the folder in a GitHub repository of your own. `canvas github link <owner/repo>` makes a push to its branch the deploy (`deploy`, *From GitHub*); reviews stay on GitHub, and the platform has none: `report-issue` stars the demand |
 | Give an app a provider API key — a model's, a search engine's or a scraping service's | the `llm` resource issues a platform key: models, and web search (`search-web`); a page's text is `load_page` / `loadPage`, with no key, through the egress proxy (`search-web`) |
 | Send email with your own SMTP server, password or mail service, or to anyone outside the team and aljazeera.net | the `email` resource — team and aljazeera.net, 20 an hour; anyone else after an admin approves (`request-email`) |

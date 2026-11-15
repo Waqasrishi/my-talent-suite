@@ -1,0 +1,99 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/growth/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/growth/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/growth/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<IconTabBar selectedKey="{vm>/growth/tab}" select=".onTab" expandable="false" applyContentPadding="false">
+				<customData><core:CustomData key="area" value="growth"/></customData>
+				<items>
+					<IconTabFilter key="development" text="{vm>/t/development}" icon="sap-icon://learning-assistant">
+						<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" class="sapUiSmallMarginTop">
+							<f:Card visible="{vm>/growth/canAdd}">
+								<f:header><card:Header title="Add development item" iconSrc="sap-icon://add"/></f:header>
+								<f:content>
+									<VBox class="tsPad tsGapS" width="100%" renderType="Bare">
+										<Label text="For" labelFor="devFor" visible="{vm>/growth/isMgr}"/>
+										<Select id="devFor" width="100%" visible="{vm>/growth/isMgr}" selectedKey="{form>/dev/pid}" items="{vm>/growth/team}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+										<Label text="Item" labelFor="devTitle" required="true"/>
+										<Input id="devTitle" value="{form>/dev/title}" placeholder="e.g. Run the data desk for one election night" submit=".onAddDev"/>
+										<Label text="Category" labelFor="devCat"/>
+										<Select id="devCat" width="100%" selectedKey="{form>/dev/cat}" items="{vm>/growth/devcats}"><core:Item key="{vm>key}" text="{vm>key}"/></Select>
+										<Label text="Linked competency or skill" labelFor="devLink"/>
+										<Select id="devLink" width="100%" selectedKey="{form>/dev/link}" items="{vm>/growth/links}"><core:Item key="{vm>key}" text="{vm>key}"/></Select>
+										<HBox><Button text="Add item" type="Emphasized" press=".onAddDev"/></HBox>
+									</VBox>
+								</f:content>
+							</f:Card>
+							<f:Card>
+								<f:header><card:Header title="Development plans" subtitle="Categories from configuration" iconSrc="sap-icon://activity-items"/></f:header>
+								<f:content>
+									<VBox width="100%" renderType="Bare">
+										<List items="{vm>/growth/plans}" noDataText="No items yet.">
+											<StandardListItem title="{vm>title}" description="{vm>sub}" info="{vm>status}" infoState="{vm>state}" wrapping="true"/>
+										</List>
+										<VBox class="tsPad" visible="{vm>/growth/showAi}" renderType="Bare">
+											<VBox class="tsAi" renderType="Bare">
+												<ObjectStatus text="{vm>/t/aigen} · suggestion" state="Information" icon="sap-icon://ai"/>
+												<Text text="Data storytelling is the main gap against the elections goal. “Data storytelling fundamentals” (3 h) and the Data visualisation sprint in the marketplace both build it."/>
+												<Text class="tsMeta" text="From the skill library, goals and catalogue. Add it yourself if it fits."/>
+											</VBox>
+										</VBox>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</grid:CSSGrid>
+					</IconTabFilter>
+					<IconTabFilter key="learning" text="{vm>/t/learning}" icon="sap-icon://course-book">
+						<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" class="sapUiSmallMarginTop">
+							<f:Card>
+								<f:layoutData><grid:GridItemLayoutData gridColumn="span 2"/></f:layoutData>
+								<f:header><card:Header title="Assigned learning" subtitle="Completion records" iconSrc="sap-icon://course-book"/></f:header>
+								<f:content>
+									<VBox width="100%" renderType="Bare">
+										<Table contextualWidth="Auto" items="{vm>/growth/learn}" noDataText="Nothing assigned.">
+											<columns>
+												<Column><Text text="Person"/></Column><Column><Text text="Item"/></Column>
+												<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Type"/></Column>
+												<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Due"/></Column>
+												<Column><Text text="Status"/></Column><Column hAlign="End"><Text text=""/></Column>
+											</columns>
+											<ColumnListItem vAlign="Middle">
+												<Text text="{vm>person}"/><ObjectIdentifier title="{vm>item}"/><Text text="{vm>type}"/><Text text="{vm>due}"/>
+												<ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true"/>
+												<Button text="Mark complete" type="Ghost" visible="{vm>canComplete}" press=".onComplete"/>
+											</ColumnListItem>
+										</Table>
+										<Text class="tsMeta tsPad" text="No content player yet. Build or keep a lightweight LMS is still an open decision."/>
+									</VBox>
+								</f:content>
+							</f:Card>
+							<f:Card>
+								<f:header><card:Header title="Catalogue" statusText="{vm>/growth/catCount}" iconSrc="sap-icon://education"/></f:header>
+								<f:content>
+									<List items="{vm>/growth/cat}">
+										<CustomListItem>
+											<HBox class="sapUiSmallMargin tsGapS" alignItems="Center" renderType="Bare">
+												<VBox><layoutData><FlexItemData growFactor="1" minWidth="0"/></layoutData><Label text="{vm>title}" design="Bold" wrapping="true"/><Text text="{vm>sub}" class="tsMeta"/></VBox>
+												<Button text="Enrol" type="Ghost" visible="{vm>canEnrol}" press=".onEnrol"/>
+											</HBox>
+										</CustomListItem>
+									</List>
+								</f:content>
+							</f:Card>
+						</grid:CSSGrid>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

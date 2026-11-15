@@ -1,0 +1,77 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" displayBlock="true" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:tnt="sap.tnt">
+	<tnt:ToolPage id="toolPage">
+		<tnt:header>
+			<tnt:ToolHeader>
+				<Button icon="sap-icon://menu2" type="Transparent" tooltip="Menu" press=".onToggleSide">
+					<layoutData><OverflowToolbarLayoutData priority="NeverOverflow"/></layoutData>
+				</Button>
+				<Title text="Talent Suite" level="H1">
+					<layoutData><OverflowToolbarLayoutData priority="NeverOverflow"/></layoutData>
+				</Title>
+				<Text text="AJMN" class="tsBrandSub" wrapping="false"/>
+				<ObjectStatus text="{vm>/t/sandbox}" inverted="true" state="Warning"/>
+				<ToolbarSpacer/>
+				<Label text="{vm>/t/viewas}" labelFor="roleSel" showColon="true"/>
+				<Select id="roleSel" items="{vm>/roles}" selectedKey="{vm>/role}" change=".onRole">
+					<core:Item key="{vm>key}" text="{vm>text}"/>
+					<layoutData><OverflowToolbarLayoutData priority="NeverOverflow"/></layoutData>
+				</Select>
+				<Text text="{vm>/user/line}"/>
+				<SegmentedButton selectedKey="{vm>/lang}" selectionChange=".onLang">
+					<items>
+						<SegmentedButtonItem key="en" text="English"/>
+						<SegmentedButtonItem key="ar" text="العربية"/>
+					</items>
+				</SegmentedButton>
+				<Button text="{vm>/t/demo}" icon="sap-icon://play" type="Emphasized" press=".onDrawer"/>
+				<Button icon="sap-icon://dark-mode" type="Transparent" tooltip="Light or dark theme" press=".onTheme"/>
+				<Button text="{vm>/t/reset}" icon="sap-icon://reset" type="Transparent" press=".onReset"/>
+				<Avatar initials="{vm>/user/initials}" displaySize="XS" backgroundColor="Accent6" tooltip="{vm>/user/line}"/>
+			</tnt:ToolHeader>
+		</tnt:header>
+		<tnt:sideContent>
+			<tnt:SideNavigation selectedKey="{vm>/route}" itemSelect=".onNav">
+				<tnt:NavigationList items="{vm>/nav}">
+					<tnt:NavigationListItem key="{vm>key}" text="{vm>text}" icon="{vm>icon}"/>
+				</tnt:NavigationList>
+				<tnt:fixedItem>
+					<tnt:NavigationList>
+						<tnt:NavigationListItem key="x-strategy" text="Strategy Room" icon="sap-icon://decision" href="../strategy.html" selectable="false"/>
+						<tnt:NavigationListItem key="x-sf" text="SuccessFactors replica" icon="sap-icon://sap-logo-shape" href="../successfactors.html" selectable="false"/>
+						<tnt:NavigationListItem key="x-orig" text="Original prototype" icon="sap-icon://past" href="../index.html" selectable="false"/>
+					</tnt:NavigationList>
+				</tnt:fixedItem>
+			</tnt:SideNavigation>
+		</tnt:sideContent>
+		<tnt:mainContents>
+			<HBox class="tsMain" renderType="Bare">
+				<NavContainer id="pages"/>
+				<VBox class="tsDemo" visible="{vm>/drawer}" renderType="Bare">
+					<VBox class="tsPad">
+						<HBox justifyContent="SpaceBetween" alignItems="Center">
+							<Label text="Gate A walkthrough"/>
+							<Button icon="sap-icon://decline" type="Transparent" tooltip="Close" press=".onDrawer"/>
+						</HBox>
+						<Title text="Demo script" level="H2"/>
+						<Text text="{vm>/demo/meta}" class="tsMeta"/>
+						<ProgressIndicator percentValue="{vm>/demo/pct}" showValue="false" state="Success" displayOnly="true"/>
+					</VBox>
+					<List items="{vm>/demo/steps}">
+						<CustomListItem>
+							<HBox class="tsDemoStep sapUiSmallMargin" renderType="Bare">
+								<ObjectStatus text="{= ${vm>done} ? '' : ${vm>n} }" icon="{= ${vm>done} ? 'sap-icon://accept' : '' }" state="{= ${vm>done} ? 'Success' : 'None' }" inverted="true"/>
+								<VBox>
+									<layoutData><FlexItemData growFactor="1" minWidth="0"/></layoutData>
+									<Title text="{vm>t}" level="H3" wrapping="true" titleStyle="H6"/>
+									<Text text="{vm>s}" class="tsMeta"/>
+								</VBox>
+								<Button text="Go" type="Ghost" press=".onDemoGo"/>
+							</HBox>
+						</CustomListItem>
+					</List>
+				</VBox>
+			</HBox>
+		</tnt:mainContents>
+	</tnt:ToolPage>
+</mvc:View>

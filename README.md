@@ -4,6 +4,8 @@ A clickable sandbox prototype of the Talent Suite and its Strategy Room, beside 
 
 It is three static pages (index.html, strategy.html and successfactors.html): no database, no installation.
 
+The folder `fiori/` is the Talent Suite page rebuilt as an SAP Fiori app (SAPUI5 1.144, loaded from ui5.sap.com). It is static too: serve the folder and open `/fiori/`. It needs a web server (it will not run from a double-clicked file) and internet access to ui5.sap.com.
+
 ## Deploy on the AJMN sandbox server
 
 Put index.html in any web folder the server already serves.

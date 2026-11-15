@@ -1,0 +1,163 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/talent/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/talent/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/talent/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<IllustratedMessage visible="{vm>/talent/denied}" illustrationType="sapIllus-UnableToLoad" title="{vm>/t/denied}" description="{vm>/talent/denyText}">
+					<additionalContent><Button text="Back to home" press=".onHome"/></additionalContent>
+				</IllustratedMessage>
+				<IconTabBar visible="{= !${vm>/talent/denied} }" selectedKey="{vm>/talent/tab}" select=".onTab" expandable="false" applyContentPadding="false">
+					<customData><core:CustomData key="area" value="talent"/></customData>
+					<items>
+						<IconTabFilter key="calibration" text="{vm>/t/calibration}" icon="sap-icon://grid">
+							<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" class="sapUiSmallMarginTop">
+								<f:Card>
+									<f:layoutData><grid:GridItemLayoutData gridColumn="span 2"/></f:layoutData>
+									<f:header><card:Header title="{vm>/talent/calib/head}" subtitle="Distribution is a guideline, not forced" iconSrc="sap-icon://grid"/></f:header>
+									<f:content>
+										<VBox class="tsPad tsGap" width="100%" renderType="Bare">
+											<MessageStrip text="{vm>/talent/calib/note}" showIcon="true"/>
+											<ScrollContainer horizontal="true" vertical="false" width="100%">
+												<grid:CSSGrid class="tsNine" gridTemplateColumns="3.5rem repeat(3, minmax(9rem, 1fr))" gridGap="0.5rem" items="{vm>/talent/calib/cells}">
+													<VBox class="tsCell" renderType="Bare">
+														<customData>
+															<core:CustomData key="kind" value="{vm>kind}" writeToDom="true"/>
+															<core:CustomData key="tone" value="{= ${vm>tone} || 'none' }" writeToDom="true"/>
+														</customData>
+														<dragDropConfig><dnd:DropInfo drop=".onDrop" enabled="{= ${vm>kind} === 'cell' &amp;&amp; ${vm>/talent/calib/canMove} }"/></dragDropConfig>
+														<Text text="{vm>label}" visible="{= ${vm>kind} === 'ax' }" textAlign="Center"/>
+														<HBox justifyContent="SpaceBetween" visible="{= ${vm>kind} === 'cell' }" renderType="Bare">
+															<Label text="{vm>label}" design="Bold" wrapping="true"/>
+															<Text text="{vm>count}" class="tsMeta"/>
+														</HBox>
+														<HBox class="tsWrap" renderType="Bare" items="{path: 'vm>people', templateShareable: false}">
+															<Button text="{vm>name}" icon="{= ${vm>moved} ? 'sap-icon://accept' : '' }" type="{= ${vm>moved} ? 'Emphasized' : 'Default' }"
+																enabled="{vm>/talent/calib/canMove}" press=".onChip">
+																<dragDropConfig><dnd:DragInfo enabled="{vm>/talent/calib/canMove}"/></dragDropConfig>
+															</Button>
+														</HBox>
+													</VBox>
+												</grid:CSSGrid>
+											</ScrollContainer>
+											<VBox renderType="Bare" class="tsGapS">
+												<Title text="Not yet placed" level="H3" titleStyle="H6"/>
+												<HBox class="tsWrap" renderType="Bare" items="{vm>/talent/calib/unrated}">
+													<ObjectStatus text="{vm>text}" state="None" inverted="true"/>
+												</HBox>
+												<Text text="Everyone is placed." class="tsMeta" visible="{vm>/talent/calib/allPlaced}"/>
+												<Text class="tsMeta" text="People join the grid when their review is released, placed by the normalised band. Potential starts from the manager’s proposal."/>
+											</VBox>
+											<HBox visible="{vm>/talent/calib/isTalent}">
+												<Button text="{vm>/talent/calib/releaseText}" type="Accept" icon="sap-icon://paper-plane" enabled="{= !${vm>/talent/calib/released} }" press=".onRelease"/>
+											</HBox>
+										</VBox>
+									</f:content>
+								</f:Card>
+								<f:Card>
+									<f:header><card:Header title="Before and after" statusText="{vm>/talent/calib/trailCount}" iconSrc="sap-icon://compare"/></f:header>
+									<f:content>
+										<VBox width="100%" renderType="Bare">
+											<List items="{vm>/talent/calib/trail}" noDataText="No moves yet in this session.">
+												<StandardListItem title="{vm>name}" description="{vm>desc}" info="{vm>by}" wrapping="true"/>
+											</List>
+											<VBox class="tsPad" visible="{vm>/talent/calib/showAi}" renderType="Bare">
+												<VBox class="tsAi" renderType="Bare">
+													<ObjectStatus text="{vm>/t/aigen} · preparation pack" state="Information" icon="sap-icon://ai"/>
+													<Text text="Aisha is the only Star and holds a single-successor role. Ravi’s placement rests on one rating; ask for evidence. Tariq’s potential comes partly from matrix feedback in Digital."/>
+													<Text class="tsMeta" text="From 7 placements, 9 reviews and 4 feedback notes. The AI proposes; the session decides."/>
+												</VBox>
+											</VBox>
+										</VBox>
+									</f:content>
+								</f:Card>
+							</grid:CSSGrid>
+						</IconTabFilter>
+						<IconTabFilter key="succession" text="{vm>/t/succession}" icon="sap-icon://org-chart">
+							<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" class="sapUiSmallMarginTop">
+								<f:Card>
+									<f:layoutData><grid:GridItemLayoutData gridColumn="span 2"/></f:layoutData>
+									<f:header><card:Header title="Key positions" subtitle="Readiness levels from configuration" iconSrc="sap-icon://org-chart"/></f:header>
+									<f:content>
+										<VBox width="100%" renderType="Bare">
+											<Table contextualWidth="Auto" items="{vm>/talent/succ/rows}">
+												<columns>
+													<Column><Text text="Key position"/></Column>
+													<Column minScreenWidth="Tablet" demandPopin="true" width="8rem"><Text text="Risk of loss"/></Column>
+													<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Successors"/></Column>
+													<Column width="7rem"><Text text="Bench"/></Column>
+													<Column minScreenWidth="Desktop" demandPopin="true" visible="{vm>/talent/succ/canNom}"><Text text="{vm>/t/nominate}"/></Column>
+												</columns>
+												<ColumnListItem vAlign="Middle">
+													<VBox><Label text="{vm>title}" design="Bold" wrapping="true"/><Link text="{vm>holderName}" press=".onCard"/></VBox>
+													<ObjectStatus text="{vm>risk}" state="{vm>riskState}" inverted="true"/>
+													<VBox>
+														<HBox class="tsWrap" renderType="Bare" items="{path: 'vm>succ', templateShareable: false}">
+															<Button text="{vm>text}" type="{vm>type}" press=".onCard"/>
+														</HBox>
+														<Text text="None" class="tsMeta" visible="{vm>none}"/>
+													</VBox>
+													<ObjectStatus text="{vm>bench}" state="{vm>benchState}" inverted="true"/>
+													<HBox class="tsWrap" renderType="Bare" alignItems="Center">
+														<Select width="10rem" selectedKey="{vm>pick}" items="{path: 'vm>cands', templateShareable: false}" tooltip="Candidate"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+														<Select width="12rem" selectedKey="{vm>ready}" items="{path: 'vm>/talent/succ/readiness', templateShareable: false}" tooltip="Readiness"><core:Item key="{vm>key}" text="{vm>key}"/></Select>
+														<Button text="{vm>/t/nominate}" type="Emphasized" press=".onNominate"/>
+													</HBox>
+												</ColumnListItem>
+											</Table>
+											<VBox class="tsPad tsGapS" renderType="Bare">
+												<Title text="Team talent cards" level="H3" titleStyle="H6"/>
+												<HBox class="tsWrap" renderType="Bare" items="{vm>/talent/succ/team}">
+													<Button text="{vm>name}" type="Ghost" press=".onCard"/>
+												</HBox>
+											</VBox>
+										</VBox>
+									</f:content>
+								</f:Card>
+								<f:Card>
+									<f:header><card:Header title="{= ${vm>/talent/card/mode} === 'card' ? ${vm>/talent/card/name} : 'Talent card' }" subtitle="{vm>/talent/card/meta}" iconInitials="{vm>/talent/card/initials}" iconSrc="{= ${vm>/talent/card/mode} === 'card' ? '' : 'sap-icon://person-placeholder' }" iconDisplayShape="Circle"/></f:header>
+									<f:content>
+										<VBox class="tsPad" width="100%" renderType="Bare">
+											<Text visible="{= ${vm>/talent/card/mode} === 'empty' }" text="Select a person to open their talent card."/>
+											<MessageStrip visible="{= ${vm>/talent/card/mode} === 'deny' }" type="Error" showIcon="true" text="{vm>/t/denied}. {vm>/talent/card/denyText}"/>
+											<VBox visible="{= ${vm>/talent/card/mode} === 'card' }" renderType="Bare">
+												<VBox items="{vm>/talent/card/rows}" renderType="Bare">
+													<HBox class="tsKv" renderType="Bare"><Label text="{vm>k}" wrapping="true"/><ObjectStatus text="{vm>v}" state="{vm>state}" icon="{vm>icon}"/></HBox>
+												</VBox>
+												<Text class="tsMeta sapUiSmallMarginTop" text="Tier 3 fields are never shown to the person they describe unless configuration releases them."/>
+											</VBox>
+										</VBox>
+									</f:content>
+								</f:Card>
+							</grid:CSSGrid>
+						</IconTabFilter>
+					</items>
+				</IconTabBar>
+			</VBox>
+		</f:content>
+		<f:dependents>
+			<Dialog id="moveDialog" title="Move {form>/move/name}" contentWidth="28rem" draggable="true">
+				<VBox class="sapUiSmallMargin tsGapS" renderType="Bare">
+					<Label text="From"/>
+					<ObjectStatus text="{form>/move/fromLabel}" inverted="true"/>
+					<Label text="To" labelFor="moveTo"/>
+					<Select id="moveTo" width="100%" selectedKey="{form>/move/to}" items="{form>/move/boxes}"><core:Item key="{form>key}" text="{form>text}"/></Select>
+					<Label text="Reason (required, written to the audit log)" labelFor="moveReason" required="true"/>
+					<TextArea id="moveReason" width="100%" rows="4" value="{form>/move/reason}" valueLiveUpdate="true" placeholder="e.g. Led election desk under pressure; potential evidenced by coaching two juniors"/>
+				</VBox>
+				<beginButton><Button text="{vm>/t/confirm} move" type="Emphasized" press=".onMoveConfirm"/></beginButton>
+				<endButton><Button text="{vm>/t/cancel}" press=".onMoveCancel"/></endButton>
+			</Dialog>
+		</f:dependents>
+	</f:DynamicPage>
+</mvc:View>

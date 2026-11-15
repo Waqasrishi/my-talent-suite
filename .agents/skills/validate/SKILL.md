@@ -1,8 +1,8 @@
 ---
 name: validate
 audience: end-user
-description: Use before every deploy, after editing score.yaml, adding or renaming a top-level file,
-  or when a deploy stopped at `validate` or the controller said "run `canvas validate`".
+description: Use after editing score.yaml, adding or renaming a top-level file, before a push to a
+  linked app, or when a deploy stopped at `validate` or the controller said "run `canvas validate`".
 ---
 
 ## Files

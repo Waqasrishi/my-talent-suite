@@ -1,0 +1,155 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/admin/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/admin/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/admin/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<IllustratedMessage visible="{vm>/admin/denied}" illustrationType="sapIllus-UnableToLoad" title="{vm>/t/denied}" description="{vm>/admin/denyText}">
+					<additionalContent><Button text="Back to home" press=".onHome"/></additionalContent>
+				</IllustratedMessage>
+				<IconTabBar visible="{= !${vm>/admin/denied} }" selectedKey="{vm>/admin/tab}" select=".onTab" expandable="false" applyContentPadding="false">
+					<customData><core:CustomData key="area" value="admin"/></customData>
+					<items>
+						<IconTabFilter key="scales" text="Rating scales" icon="sap-icon://measure">
+							<VBox class="sapUiSmallMarginTop tsGap" renderType="Bare" items="{vm>/admin/scales}">
+								<f:Card>
+									<f:header><card:Header title="{vm>name}" subtitle="{vm>use}" statusText="{vm>ver}" iconSrc="sap-icon://measure"/></f:header>
+									<f:content>
+										<VBox width="100%" renderType="Bare">
+											<Table contextualWidth="Auto" items="{path: 'vm>values', templateShareable: false}">
+												<columns>
+													<Column width="4rem"><Text text="Value"/></Column><Column><Text text="Label (English)"/></Column>
+													<Column width="9rem"><Text text="Normalised band"/></Column>
+													<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Published label"/></Column>
+												</columns>
+												<ColumnListItem vAlign="Middle">
+													<ObjectNumber number="{vm>v}"/>
+													<Input value="{vm>label}"/>
+													<Select width="100%" selectedKey="{vm>band}" items="{path: 'vm>/admin/bands', templateShareable: false}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+													<Text text="{vm>pub}" class="tsMeta"/>
+												</ColumnListItem>
+											</Table>
+											<HBox class="tsPad tsGapS" renderType="Bare">
+												<Button text="{vm>/t/savedraft}" type="Ghost" press=".onScale"><customData><core:CustomData key="by" value="draft"/></customData></Button>
+												<Button text="{vm>/t/publish}" type="Emphasized" press=".onScale"><customData><core:CustomData key="by" value="publish"/></customData></Button>
+												<Button text="Discard draft" type="Transparent" visible="{vm>hasDraft}" press=".onDiscard"/>
+											</HBox>
+										</VBox>
+									</f:content>
+								</f:Card>
+							</VBox>
+						</IconTabFilter>
+						<IconTabFilter key="route" text="Review route" icon="sap-icon://process">
+							<f:Card class="sapUiSmallMarginTop">
+								<f:header><card:Header title="Annual review route" statusText="{vm>/admin/route/ver}" iconSrc="sap-icon://process"/></f:header>
+								<f:content>
+									<VBox width="100%" renderType="Bare">
+										<Table contextualWidth="Auto" items="{vm>/admin/route/steps}">
+											<columns><Column width="4rem"><Text text="Order"/></Column><Column><Text text="Step label"/></Column><Column><Text text="Done by"/></Column><Column><Text text="On"/></Column></columns>
+											<ColumnListItem vAlign="Middle">
+												<ObjectNumber number="{vm>n}"/><Input value="{vm>label}"/><Text text="{vm>who}"/>
+												<CheckBox selected="{vm>on}" enabled="{= !${vm>locked} }" text="{vm>hint}"/>
+											</ColumnListItem>
+										</Table>
+										<HBox class="tsPad tsGapS" renderType="Bare">
+											<Button text="{vm>/t/savedraft}" type="Ghost" press=".onRoute"><customData><core:CustomData key="by" value="draft"/></customData></Button>
+											<Button text="{vm>/t/publish}" type="Emphasized" press=".onRoute"><customData><core:CustomData key="by" value="publish"/></customData></Button>
+										</HBox>
+										<MessageStrip class="sapUiSmallMargin" showIcon="true" text="In the build, a running cycle keeps the version it started with and changes apply to new cycles. The sandbox applies a published route to open reviews so you can see the effect."/>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</IconTabFilter>
+						<IconTabFilter key="grid" text="Calibration grid" icon="sap-icon://grid">
+							<f:Card class="sapUiSmallMarginTop">
+								<f:header><card:Header title="Calibration grid labels" statusText="{vm>/admin/grid/ver}" iconSrc="sap-icon://grid"/></f:header>
+								<f:content>
+									<VBox class="tsPad tsGap" width="100%" renderType="Bare">
+										<grid:CSSGrid gridTemplateColumns="repeat(3, minmax(0, 1fr))" gridGap="1rem" items="{vm>/admin/grid/cells}">
+											<VBox><Label text="{vm>label}" wrapping="true"/><Input value="{vm>value}"/></VBox>
+										</grid:CSSGrid>
+										<HBox class="tsGapS" renderType="Bare">
+											<Button text="{vm>/t/savedraft}" type="Ghost" press=".onGrid"><customData><core:CustomData key="by" value="draft"/></customData></Button>
+											<Button text="{vm>/t/publish}" type="Emphasized" press=".onGrid"><customData><core:CustomData key="by" value="publish"/></customData></Button>
+										</HBox>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</IconTabFilter>
+						<IconTabFilter key="perm" text="Permissions" icon="sap-icon://permission">
+							<f:Card class="sapUiSmallMarginTop">
+								<f:header><card:Header title="Starter authorization matrix" subtitle="Business view · enforced cell by cell in Prompt 2" iconSrc="sap-icon://permission"/></f:header>
+								<f:content>
+									<VBox width="100%" renderType="Bare">
+										<Table contextualWidth="Auto" items="{vm>/admin/perm}" alternateRowColors="true">
+											<columns>
+												<Column><Text text="Role"/></Column><Column><Text text="Population"/></Column><Column><Text text="Goals"/></Column>
+												<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Reviews and ratings"/></Column>
+												<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Potential and successors"/></Column>
+												<Column minScreenWidth="Desktop" demandPopin="true"><Text text="Calibration"/></Column>
+												<Column minScreenWidth="Desktop" demandPopin="true"><Text text="Configuration"/></Column>
+											</columns>
+											<ColumnListItem>
+												<Label text="{vm>c0}" design="Bold" wrapping="true"/><Text text="{vm>c1}"/><Text text="{vm>c2}"/><Text text="{vm>c3}"/><Text text="{vm>c4}"/><Text text="{vm>c5}"/><Text text="{vm>c6}"/>
+											</ColumnListItem>
+										</Table>
+										<MessageStrip class="sapUiSmallMargin" showIcon="true" text="Field tiers: 1 open (goals, competencies) · 2 restricted (ratings, review comments) · 3 confidential (potential, risk of loss, successors, calibration notes). Deny by default. The AI agent role inherits the requesting user’s permissions on each call."/>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</IconTabFilter>
+						<IconTabFilter key="ai" text="AI switches" icon="sap-icon://ai">
+							<f:Card class="sapUiSmallMarginTop">
+								<f:header><card:Header title="AI feature switches" subtitle="Per role · takes effect on publish (immediate in the sandbox)" iconSrc="sap-icon://ai"/></f:header>
+								<f:content>
+									<VBox width="100%" renderType="Bare">
+										<Table contextualWidth="Auto" items="{vm>/admin/ai}">
+											<columns>
+												<Column><Text text="Feature"/></Column>
+												<Column hAlign="Center"><Text text="{vm>/t/r_employee}"/></Column><Column hAlign="Center"><Text text="{vm>/t/r_manager}"/></Column>
+												<Column hAlign="Center"><Text text="{vm>/t/r_hrbp}"/></Column><Column hAlign="Center"><Text text="{vm>/t/r_talent}"/></Column>
+												<Column hAlign="Center"><Text text="{vm>/t/r_exec}"/></Column><Column hAlign="Center"><Text text="{vm>/t/r_admin}"/></Column>
+											</columns>
+											<ColumnListItem vAlign="Middle">
+												<Label text="{vm>label}" design="Bold" wrapping="true"/>
+												<CheckBox selected="{vm>employee}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="employee"/></customData></CheckBox>
+												<CheckBox selected="{vm>manager}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="manager"/></customData></CheckBox>
+												<CheckBox selected="{vm>hrbp}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="hrbp"/></customData></CheckBox>
+												<CheckBox selected="{vm>talent}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="talent"/></customData></CheckBox>
+												<CheckBox selected="{vm>exec}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="exec"/></customData></CheckBox>
+												<CheckBox selected="{vm>admin}" enabled="{= !${vm>locked} }" select=".onAi"><customData><core:CustomData key="r" value="admin"/></customData></CheckBox>
+											</ColumnListItem>
+										</Table>
+										<MessageStrip class="sapUiSmallMargin" showIcon="true" text="Act features stay off until Gate C. The AI never sets a rating, potential value, readiness level or nomination."/>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</IconTabFilter>
+						<IconTabFilter key="transport" text="Export" icon="sap-icon://shipping-status">
+							<f:Card class="sapUiSmallMarginTop">
+								<f:header><card:Header title="Export configuration" subtitle="Transportable: test first, then move to production" iconSrc="sap-icon://shipping-status"/></f:header>
+								<f:content>
+									<VBox class="tsPad tsGapS" width="100%" renderType="Bare">
+										<TextArea value="{vm>/admin/json}" editable="false" rows="18" width="100%" class="tsMono"/>
+										<HBox><Button text="Copy" icon="sap-icon://copy" type="Emphasized" press=".onCopyCfg"/></HBox>
+									</VBox>
+								</f:content>
+							</f:Card>
+						</IconTabFilter>
+					</items>
+				</IconTabBar>
+				<MessageStrip visible="{= !${vm>/admin/denied} }" class="sapUiSmallMarginTop" showIcon="true" text="Every item is versioned, effective-dated and audited, with a draft and publish step. Nothing goes live on save."/>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

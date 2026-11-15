@@ -23,6 +23,8 @@ resources:
       auth: sso            # none: no sign-in
 ```
 
+**A request or spec that says people sign in** — "with email and password", "log in", "accounts" — means this sign-in, with each role a rule in `access.rules` (below) listing its starting accounts' emails; someone with no company account gets a Canvas local account (ADR-86). The app never keeps passwords or a login of its own unless the person insists on one after hearing this.
+
 "Turn sign-in off" (or on) is that line, then `canvas deploy` (or auto-deploy). Off needs no
 `access` left: a new app opens only for its maker, so first `canvas share everyone` — `canvas validate`
 refuses `access` without `auth: sso`. Off, the app is open

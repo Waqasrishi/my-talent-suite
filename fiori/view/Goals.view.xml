@@ -1,0 +1,67 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/goals/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/goals/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/goals/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<Button text="{vm>/goals/approveAll}" type="Emphasized" visible="{vm>/goals/isMgr}" press=".onApproveAll"/>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare" class="tsGap">
+				<f:Card visible="{vm>/goals/isEmp}">
+					<f:header><card:Header title="{vm>/t/addgoal}" subtitle="{vm>/goals/formMeta}" iconSrc="sap-icon://add"/></f:header>
+					<f:content>
+						<VBox class="tsPad" width="100%" renderType="Bare">
+							<HBox class="tsForm" renderType="Bare">
+								<VBox class="tsGrow"><Label text="Goal" labelFor="goalTitle" required="true"/><Input id="goalTitle" value="{form>/goal/title}" placeholder="e.g. Build a data storytelling segment for the evening bulletin" submit=".onAddGoal"/></VBox>
+								<VBox class="tsField"><Label text="Category" labelFor="goalCat"/><Select id="goalCat" width="100%" selectedKey="{form>/goal/cat}" items="{vm>/goals/cats}"><core:Item key="{vm>key}" text="{vm>key}"/></Select></VBox>
+								<VBox><Label text="Weight %" labelFor="goalW"/><StepInput id="goalW" value="{form>/goal/weight}" min="5" max="100" step="5" width="8rem"/></VBox>
+								<VBox class="tsField"><Label text="Aligned to" labelFor="goalAl"/><Select id="goalAl" width="100%" selectedKey="{form>/goal/align}" items="{vm>/goals/aligns}"><core:Item key="{vm>key}" text="{vm>key}"/></Select></VBox>
+								<Button text="{vm>/t/addgoal}" type="Emphasized" press=".onAddGoal"/>
+							</HBox>
+							<MessageStrip visible="{= !!${vm>/goals/warn} }" text="{vm>/goals/warn}" type="Error" showIcon="true" class="sapUiSmallMarginTop"/>
+						</VBox>
+					</f:content>
+				</f:Card>
+				<VBox renderType="Bare" class="tsGap" items="{vm>/goals/blocks}">
+					<f:Card>
+						<f:header><card:Header title="{vm>name}" subtitle="{vm>meta}" iconInitials="{vm>initials}" iconDisplayShape="Circle"/></f:header>
+						<f:content>
+							<Table contextualWidth="Auto" fixedLayout="false" items="{path: 'vm>goals', templateShareable: false}" noDataText="No goals yet.">
+								<columns>
+									<Column><Text text="Goal"/></Column>
+									<Column minScreenWidth="Desktop" demandPopin="true" width="11rem"><Text text="Category"/></Column>
+									<Column minScreenWidth="Desktop" demandPopin="true" width="5rem" hAlign="End"><Text text="Weight"/></Column>
+									<Column width="7rem"><Text text="Status"/></Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="10rem"><Text text="Progress"/></Column>
+									<Column width="9rem" hAlign="End"><Text text=""/></Column>
+								</columns>
+								<ColumnListItem vAlign="Middle">
+									<VBox>
+										<ObjectIdentifier title="{vm>title}" text="{vm>detail}"/>
+										<ObjectStatus text="{vm>updated}" state="{vm>stale}"/>
+									</VBox>
+									<ObjectStatus text="{vm>cat}" state="Information" inverted="true"/>
+									<ObjectNumber number="{vm>weight}"/>
+									<ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true"/>
+									<ProgressIndicator percentValue="{vm>progress}" displayValue="{vm>pct}" state="{vm>barState}" displayOnly="true"/>
+									<HBox justifyContent="End">
+										<Button text="+10% progress" type="Ghost" visible="{vm>canProg}" press=".onProg"/>
+										<Button text="{vm>/t/approve}" type="Emphasized" visible="{vm>canApprove}" press=".onApprove"/>
+									</HBox>
+								</ColumnListItem>
+							</Table>
+						</f:content>
+					</f:Card>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

@@ -1,0 +1,61 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/opps/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/opps/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/opps/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare" class="tsGap">
+				<f:Card visible="{vm>/opps/isMgr}">
+					<f:header><card:Header title="Post an opportunity" subtitle="Line manager approval is required before anyone starts (from configuration)." iconSrc="sap-icon://add"/></f:header>
+					<f:content>
+						<HBox class="tsPad tsForm" width="100%" renderType="Bare">
+							<VBox class="tsGrow"><Label text="Title" labelFor="oppTitle" required="true"/><Input id="oppTitle" value="{form>/opp/title}" placeholder="e.g. Gallery director cover for Ramadan schedule" submit=".onPostOpp"/></VBox>
+							<VBox class="tsField"><Label text="Type" labelFor="oppType"/><Select id="oppType" width="100%" selectedKey="{form>/opp/type}" items="{vm>/opps/types}"><core:Item key="{vm>key}" text="{vm>key}"/></Select></VBox>
+							<VBox class="tsField"><Label text="Duration" labelFor="oppDur"/><Input id="oppDur" value="{form>/opp/dur}"/></VBox>
+							<VBox class="tsField"><Label text="Main skill" labelFor="oppSkill"/><Select id="oppSkill" width="100%" selectedKey="{form>/opp/skill}" items="{vm>/opps/skills}"><core:Item key="{vm>key}" text="{vm>key}"/></Select></VBox>
+							<Button text="Post" type="Emphasized" press=".onPostOpp"/>
+						</HBox>
+					</f:content>
+				</f:Card>
+				<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" items="{vm>/opps/cards}">
+					<f:Card class="tsCard">
+						<f:header><card:Header title="{vm>title}" subtitle="{vm>meta}" statusText="{vm>match}" iconSrc="sap-icon://opportunity"/></f:header>
+						<f:content>
+							<VBox width="100%" renderType="Bare">
+								<VBox class="tsPad tsGapS" renderType="Bare">
+									<HBox class="tsWrap" renderType="Bare" items="{path: 'vm>skills', templateShareable: false}">
+										<ObjectStatus text="{vm>text}" state="{vm>state}" inverted="true"/>
+									</HBox>
+									<Text text="{vm>matchText}" class="tsMeta" visible="{vm>/opps/isEmp}"/>
+									<HBox visible="{vm>/opps/isEmp}">
+										<Button text="{vm>/t/interest}" type="Emphasized" visible="{= !${vm>hasInt} }" press=".onInterest"/>
+										<ObjectStatus text="{vm>myStatus}" state="{vm>myState}" inverted="true" visible="{vm>hasInt}"/>
+									</HBox>
+								</VBox>
+								<List visible="{vm>/opps/isMgr}" items="{path: 'vm>team', templateShareable: false}" noDataText="{vm>emptyText}">
+									<CustomListItem>
+										<HBox class="sapUiSmallMargin tsGapS" alignItems="Center" renderType="Bare">
+											<VBox><layoutData><FlexItemData growFactor="1" minWidth="0"/></layoutData><Label text="{vm>name}" design="Bold"/><Text text="{vm>sub}" class="tsMeta"/></VBox>
+											<Button text="{vm>/t/approve}" type="Emphasized" visible="{vm>waiting}" press=".onOppOk"/>
+											<Button text="Decline" type="Ghost" visible="{vm>waiting}" press=".onOppNo"/>
+											<ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true" visible="{= !${vm>waiting} }"/>
+										</HBox>
+									</CustomListItem>
+								</List>
+							</VBox>
+						</f:content>
+					</f:Card>
+				</grid:CSSGrid>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

@@ -3,8 +3,9 @@ name: arabic
 audience: end-user
 description: Use when the app is in Arabic, or in Arabic and English — "make it Arabic", "RTL",
   "right to left", "bilingual", "an English/Arabic toggle", "Arabic search doesn't find it", "the
-  numbers should be Arabic", "answer in Arabic" — or when Arabic text shows reversed, misaligned or
-  unfound. A single page's layout is `add-page`; the model itself is `request-llm`.
+  numbers should be Arabic", "answer in Arabic" — or when an app or site being ported or refactored
+  already has Arabic, or an email goes out in Arabic, or when Arabic text shows reversed, misaligned
+  or unfound. A single page's layout is `add-page`; the model itself is `request-llm`.
 ---
 
 ## Files
@@ -22,6 +23,8 @@ description: Use when the app is in Arabic, or in Arabic and English — "make i
 | **Arabic only** | the shell in `ar` / `rtl`, every string written in Arabic in the page — no dict |
 | **English, with Arabic content** (headlines, pasted articles) | keep `en` / `ltr`; each piece of content gets `dir="auto"` |
 | **Both, switchable** | one dict per language, the choice in a cookie; ask first — it doubles every string |
+| **Ported, and already Arabic** | keep what it has — its `lang`/`dir` (on the shell, never only a `div`), its words, its digits, its Arabic font file; its `ml-` `pl-` `left-` `text-left` (and `margin-left`, `float`) become their start/end forms as you move each page |
+| **An email** | `ajnkit-email`'s html: direction on every block, both languages laid out |
 | **Digits** | Western (`0-9`) unless the user asks for Arabic-Indic (`٠-٩`). One per app, everywhere |
 | **Dates** | Gregorian. Hijri only when asked — then both, Hijri beside the Gregorian |
 

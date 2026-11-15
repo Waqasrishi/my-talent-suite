@@ -53,6 +53,7 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
+- **Talent Suite on Fiori**: /fiori/ — The Talent Suite rebuilt as an SAP Fiori (UI5 1.144) app.
 - **Talent Suite**: /index.html — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
 - **AJMN People**: / (also /goals-hub.html) — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
@@ -61,7 +62,7 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 ## Decisions
 - The answers marked "Prototype · scripted" are seeded, not from a model.
 - Data lives in the browser only; "Reset sandbox" restores the seed.
-- The server serves these four pages and nothing else in the folder.
+- The server serves these four pages and /fiori/, nothing else in the folder.
 - AJMN People checks every action against the demo persona's role in the page, but with no backend those checks are a demonstration, not access control: the sample data is in the page and can be changed in browser storage.
 - Achievement percentages never become ratings; the overall rating is rating × weight ÷ 100, rounded to the configured decimals, and missing ratings give no score.
 - Succession & Career and HR Services show as not configured; Learning is a sample catalogue with no learning system behind it.

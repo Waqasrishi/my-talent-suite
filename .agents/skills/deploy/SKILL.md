@@ -9,7 +9,7 @@ description: >-
 
 ## Files
 
-Edits nothing. Runs `canvas deploy` in the app's folder. Needs `canvas login` once per 12 hours.
+Runs `canvas deploy` in the app's folder, after `describe-app` has brought `BRIEF.md` (and the title and description) up to date. Needs `canvas login` once per 12 hours.
 The team is `--team`, else `CANVAS_TEAM`, else the saved one (chosen at `canvas login`, changed with
 `canvas config set team <name>`), else the user's only team. With several and none saved it asks —
 but with no terminal, which is how an agent runs it, it stops with exit 17: ask the user which team,
@@ -33,31 +33,30 @@ fix that one thing, run it again — never run stages individually to get past o
 
 ## What to do
 
-1. If `score.yaml` has no `canvas.dev/title` or no `canvas.dev/description` (`canvas deploy` prints a
-   `describe` line for it), run `describe-app` first and write them — without, the console shows the app
-   as its bare address. With them, read them once against the app as it now is: if features were added
-   since, `describe-app`'s re-check applies (a new description is written and said; a new title is asked)
-2. If `score.yaml` names neither `canvas.dev/icon` nor `canvas.dev/cover`, and `.canvas/pictures-asked`
-   does not exist: ask for them once (`describe-app`, "The pictures"), then write that file — never
-   make one unasked. Otherwise do not ask
-3. `canvas validate` — fix what it names first; it is the same check `deploy` starts with, in a second
-4. `canvas deploy` — validate, package, upload, build, deploy, sync, stopping at the first failure.
+1. **A fix or a tweak: go to step 2.** When the change added, changed or removed what a person can do — or
+   `score.yaml` has no `canvas.dev/title` or `canvas.dev/description` (`canvas deploy` prints a `describe` line) —
+   run `describe-app` first, and read `BRIEF.md` against the code as it is now. **Never deploy a brief that says
+   what the app was**: the portal shows the brief of the source that is uploaded, so one written after the deploy is a deploy late
+2. `canvas deploy` — validate, package, upload, build, deploy, sync, stopping at the first failure.
    If score.yaml declares a `secret`, check first with `canvas secret list`: a key `NOT SET` means the
    deploy will stop at 62 after the build — ask the user to set it now, so it is ready when the build is
    Pass on what it prints beyond the result — a `needs` line (`apply-update`), `canvas N is out` (the developer
    runs `canvas update`: newest skills and blueprint) — in one plain sentence each; the developer reads you, not it
-5. If it stops, read the exit code and the FIX line, fix that, and run it again. If it stops the
+3. If it stops, read the exit code and the FIX line, fix that, and run it again. If it stops the
    same way again and nothing in the app is to blame, it is Canvas's: `debug-deployment`, then
    `report-issue`
-6. **Check it serves, not only that it is up.** Healthy means the process started; the app then opens
+4. **Check it serves, not only that it is up.** Healthy means the process started; the app then opens
    its own pages and `deploy` prints a `pages` line. `N pages open` is done. `… pages fail: /path (500:
    the error)` exits 60: read `canvas logs` for that page's traceback, fix the code, `canvas deploy`
    again — never report a URL whose pages fail. The app is online meanwhile. No `pages` line: the app's ajnkit predates the check
    (`canvas app update`) — open the main page yourself before saying it works
-7. Report the URL, and what is running: `canvas status`'s `version` line (`#4 · a1b2c3d "…"`).
+5. Report the URL, and what is running: `canvas status`'s `version` line (`#4 · a1b2c3d "…"`).
    "Is it shipped?" is its `folder` line — `same as deployed`, or the files changed since. `deploy`
    says `nothing new to ship` when the folder is already what runs. With a `volume`, say a deploy has a few seconds of downtime: the new version
    starts once the old one has let go of the disk
+6. With the URL, once per app: if `score.yaml` names neither `canvas.dev/icon` nor `canvas.dev/cover` and
+   `.canvas/pictures-asked` does not exist, ask for them (`describe-app`, "The pictures") and write that file —
+   never make one unasked
 
 ## From GitHub instead
 
@@ -73,7 +72,7 @@ this to GitHub"), link the repository once instead of running `canvas deploy` ea
 2. From then on a push **is** the deploy, as `canvas deploy` is: within a minute the controller reads
    score.yaml as `canvas validate` does, builds the commit and deploys it — the first deploy, a changed
    score.yaml and a new migration included. `canvas github status` says how it stands
-3. **Before each change** `git pull --rebase`, settle any conflict in the folder, run the tests and `canvas validate`,
+3. **Before each change** `git pull --rebase`, settle any conflict in the folder, bring `BRIEF.md` up to date (*What to do*, 1), run the tests and `canvas validate`,
    and `canvas app update --check` (a push never says the app is behind: when it does, tell the developer and offer `canvas app update`),
    then `git push`. Never `git push --force`, and never `canvas deploy` on a linked app: it stops and says so
    (an upload would replace the build the push is waiting for)

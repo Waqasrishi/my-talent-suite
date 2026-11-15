@@ -1,12 +1,12 @@
 ---
 name: show-progress
 audience: end-user
-description: Use at the start of any work with three or more steps — a feature (build-feature), a
-  deploy that needs fixing, an adapt or port, an update (apply-update) — and whenever the user asks
+description: Use at the start of work of several features — a plan, a deploy that needs fixing, an
+  adapt or port, an update (apply-update) — and whenever the user asks
   "show me what you're doing", "keep a board", "what's left". Opens a board beside the conversation
   with every step as done, in progress, pending or blocked, and keeps it current as each step starts
-  and lands, so whoever is sitting with you can follow without reading the transcript. Not for a
-  one-step change.
+  and lands, so whoever is sitting with you can follow without reading the transcript. Not for one
+  feature or one fix — a small app's first version is one feature.
 ---
 
 ## Where the board lives
@@ -14,7 +14,7 @@ description: Use at the start of any work with three or more steps — a feature
 | If you can | The board is |
 |---|---|
 | publish a live page (Claude: the Artifact tool, with the `db` capability) | **a live board page** — `board.html` beside this file, published once, its rows updated as you go |
-| not (Cursor, or anywhere without one) | **your own to-do list** — the same steps and states, in the tool's task list the user already sees |
+| not (Cursor, Antigravity, or anywhere without one) | **your own to-do list** — the same steps and states, in the tool's task list the user already sees |
 
 Never a file in the app's repository: it would change on every step and outlive the work.
 

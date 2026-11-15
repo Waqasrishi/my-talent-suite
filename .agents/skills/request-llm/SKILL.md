@@ -73,7 +73,7 @@ A `restricted` app's key, and `PLATFORM_LLM_MODELS`, hold the company's own mode
 `models`. Ask the user which it is when the app handles documents and they have not said. A team an admin classified `restricted` makes
 all its apps restricted: an app may be stricter than its team, never looser.
 
-A person's model — Claude, `qwen-coder`, gpt-oss (`peopleOnly` in the contract) — is off the app's key until an admin approves it for that app. When the user wants one:
+A model outside the apps' defaults (`defaults.apps` in the contract: here Gemini, Qwen, `d3-decision`, `whisper` are open; Claude and gpt-oss are not) is off the app's key until an admin approves it for that app. When the user wants one:
 
 1. Name it in `models` (`params: {models: [claude-sonnet]}`) — `canvas validate` accepts it — then `canvas deploy`. The deploy says `<model>: waiting for an admin`, and the app keeps its default models until then. Or the owner clicks **Request a model** on the app's Resources tab in the portal and says why.
 2. A platform admin approves it; the owner hears in the bell. `canvas models show` says where each stands. Once approved, name it in `models` and deploy again.

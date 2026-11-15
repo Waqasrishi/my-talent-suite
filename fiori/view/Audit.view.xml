@@ -1,0 +1,40 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/audit/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/audit/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/audit/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<IllustratedMessage visible="{vm>/audit/denied}" illustrationType="sapIllus-UnableToLoad" title="{vm>/t/denied}" description="{vm>/audit/denyText}">
+					<additionalContent><Button text="Back to home" press=".onHome"/></additionalContent>
+				</IllustratedMessage>
+				<Table contextualWidth="Auto" visible="{= !${vm>/audit/denied} }" items="{vm>/audit/rows}" growing="true" growingThreshold="50" sticky="ColumnHeaders" alternateRowColors="true">
+					<headerToolbar><OverflowToolbar><Title text="{vm>/audit/count}" level="H2"/><ToolbarSpacer/><Text text="Append-only · newest first" class="tsMeta"/></OverflowToolbar></headerToolbar>
+					<columns>
+						<Column width="9rem"><Text text="When"/></Column>
+						<Column><Text text="Who"/></Column>
+						<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Role"/></Column>
+						<Column><Text text="Action"/></Column>
+						<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Object"/></Column>
+						<Column minScreenWidth="Desktop" demandPopin="true"><Text text="Before"/></Column>
+						<Column minScreenWidth="Desktop" demandPopin="true"><Text text="After"/></Column>
+					</columns>
+					<ColumnListItem>
+						<Text text="{vm>ts}" wrapping="false"/><Text text="{vm>who}"/><Text text="{vm>role}"/>
+						<ObjectStatus text="{vm>action}" state="Information" class="tsMono"/>
+						<Text text="{vm>obj}"/><Text text="{vm>before}"/><Text text="{vm>after}"/>
+					</ColumnListItem>
+				</Table>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

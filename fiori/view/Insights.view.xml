@@ -1,0 +1,25 @@
+<mvc:View controllerName="ajmn.talent.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid" xmlns:dnd="sap.ui.core.dnd">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading><Title text="{vm>/insights/title}" wrapping="true"/></f:heading>
+				<f:expandedContent><Label text="{vm>/insights/eyebrow}"/></f:expandedContent>
+				<f:snappedContent><Label text="{vm>/insights/eyebrow}"/></f:snappedContent>
+				<f:actions>
+					<Select selectedKey="{form>/division}"><core:Item key="All divisions" text="All divisions"/><core:Item key="News" text="News"/><core:Item key="Digital" text="Digital"/></Select>
+					<ObjectStatus text="{vm>/t/sample}" inverted="true" state="Information" icon="sap-icon://lab"/>
+				</f:actions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<VBox renderType="Bare" class="tsGap">
+				<grid:CSSGrid gridTemplateColumns="repeat(auto-fit, minmax(20rem, 1fr))" gridGap="1rem" items="{vm>/insights/cards}">
+					<core:Fragment fragmentName="ajmn.talent.view.Card" type="XML"/>
+				</grid:CSSGrid>
+				<MessageStrip class="sapUiSmallMarginTop" showIcon="true" text="Read-only. The hub owns no data: every figure is built from events and the talent data model. Groups under 5 are hidden so individuals cannot be inferred."/>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

@@ -23,7 +23,7 @@ Every page and API route the change touched, as each kind of person who uses it:
 | Where you are | How |
 |---|---|
 | Studio | `try_app` (path, role, phone) for a page, `fetch_app` for an API route; Studio gives you one round for this once the version is live |
-| A laptop | the app's URL (`canvas status`) in the browser, signed in as yourself; an API route with `curl` and your session; a role you do not have: ask the user to look |
+| A laptop | the app's URL (`canvas status`) in a browser — your own, where you have one — signed in as yourself; an API route with `curl` and your session; a role you do not have: ask the user to look |
 
 ## What counts as working
 

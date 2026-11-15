@@ -1,0 +1,75 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards" xmlns:mc="sap.suite.ui.microchart">
+	<f:Card class="tsCard">
+		<f:header>
+			<card:Header title="{vm>title}" statusText="{vm>meta}" iconSrc="{vm>icon}"/>
+		</f:header>
+		<f:content>
+			<VBox width="100%" renderType="Bare">
+				<List visible="{= ${vm>kind} === 'list' }" items="{path: 'vm>rows', templateShareable: false}" noDataText="Nothing here right now.">
+					<StandardListItem title="{vm>title}" description="{vm>sub}" info="{vm>tag}" infoState="{vm>state}" wrapping="true"
+						type="{= ${vm>go} ? 'Navigation' : 'Inactive' }" press=".onGo"/>
+				</List>
+				<VBox visible="{= ${vm>kind} === 'bars' }" items="{path: 'vm>bars', templateShareable: false}" class="tsPad">
+					<VBox class="tsBar">
+						<HBox justifyContent="SpaceBetween" class="tsGapS">
+							<Text text="{vm>label}" wrapping="false"><layoutData><FlexItemData minWidth="0"/></layoutData></Text>
+							<Text text="{vm>n}" wrapping="false"><layoutData><FlexItemData shrinkFactor="0"/></layoutData></Text>
+						</HBox>
+						<ProgressIndicator percentValue="{vm>pct}" showValue="false" state="{vm>state}" displayOnly="true"/>
+					</VBox>
+				</VBox>
+				<VBox visible="{= ${vm>kind} === 'dual' }" class="tsPad">
+					<HBox class="tsGap sapUiTinyMarginBottom">
+						<ObjectStatus text="People who have it" state="Success" icon="sap-icon://color-fill"/>
+						<ObjectStatus text="Roles that need it" state="None" icon="sap-icon://color-fill"/>
+					</HBox>
+					<VBox items="{path: 'vm>dual', templateShareable: false}">
+						<VBox class="tsBar">
+							<HBox justifyContent="SpaceBetween"><Text text="{vm>n}"/><Text text="{vm>text}"/></HBox>
+							<ProgressIndicator percentValue="{vm>a}" showValue="false" state="Success" displayOnly="true"/>
+							<ProgressIndicator percentValue="{vm>b}" showValue="false" state="None" displayOnly="true"/>
+						</VBox>
+					</VBox>
+				</VBox>
+				<VBox visible="{= ${vm>kind} === 'bench' }" class="tsPad">
+					<HBox class="tsGap sapUiTinyMarginBottom" wrap="Wrap">
+						<ObjectStatus text="No successor" state="Error" icon="sap-icon://color-fill"/>
+						<ObjectStatus text="One successor" state="Warning" icon="sap-icon://color-fill"/>
+						<ObjectStatus text="Two or more" state="Success" icon="sap-icon://color-fill"/>
+					</HBox>
+					<VBox items="{path: 'vm>bench', templateShareable: false}">
+						<HBox alignItems="Center" class="tsBar" renderType="Bare">
+							<Text text="{vm>d}" class="tsBenchLabel"/>
+							<FlexBox class="tsBench" renderType="Bare">
+								<mc:StackedBarMicroChart size="Responsive" precision="0">
+									<mc:bars>
+										<mc:StackedBarMicroChartBar value="{vm>a}" displayValue="{vm>a}" valueColor="Error"/>
+										<mc:StackedBarMicroChartBar value="{vm>b}" displayValue="{vm>b}" valueColor="Critical"/>
+										<mc:StackedBarMicroChartBar value="{vm>c}" displayValue="{vm>c}" valueColor="Good"/>
+									</mc:bars>
+								</mc:StackedBarMicroChart>
+							</FlexBox>
+						</HBox>
+					</VBox>
+				</VBox>
+				<VBox visible="{= ${vm>kind} === 'ask' }" class="tsPad">
+					<Text visible="{= !${vm>/ask/on} }" text="Ask anything is switched off for this role in configuration."/>
+					<VBox visible="{vm>/ask/on}">
+						<Label text="{vm>/t/askhint}"/>
+						<Input value="{form>/q}" placeholder="{vm>/ask/placeholder}" submit=".onAsk" width="100%"/>
+						<HBox class="tsWrap sapUiTinyMarginTop" renderType="Bare" items="{path: 'vm>/ask/sugg', templateShareable: false}">
+							<Button text="{vm>q}" type="Ghost" press=".onAskQ"/>
+						</HBox>
+						<VBox visible="{vm>/ask/has}" class="tsAi" renderType="Bare">
+							<ObjectStatus text="{vm>/t/aigen}" state="Information" icon="sap-icon://ai"/>
+							<Text text="{vm>/ask/ans/q}" class="tsMeta"/>
+							<Text text="{vm>/ask/ans/text}"/>
+							<Text text="{vm>/ask/ans/src}" class="tsMeta"/>
+							<HBox><Button text="Discard" type="Transparent" press=".onAiDiscard"/></HBox>
+						</VBox>
+					</VBox>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:Card>
+</core:FragmentDefinition>

@@ -53,16 +53,17 @@ has groups on); `add-auth` has the steps. One role per group, never one group fo
 2. The model and its migration, if it stores something new — then read the generated SQL; a
    `volume`, if it keeps files (an upload, an export)
 3. The `lib/` function, then its endpoint in `api.py`, then the page in `views.py`
-4. Tests for all three; `uv run pytest` until they pass
+4. Tests: the endpoint (it covers `lib/`) and the page answering — not each layer again; `uv run pytest` until they pass
 5. `review-security` when the change takes input, keeps or serves files, calls out, uses an LLM's
-   answer or changes who may do what — then `canvas validate`
-6. **Auto-deploy** — `auto_deploy` under `[tool.canvas]` in `pyproject.toml`:
+   answer or changes who may do what
+6. `describe-app` — **before the deploy, when the change added, changed or removed what a person can do** (a fix or a
+   tweak: skip it): check that the title, description, tags and `BRIEF.md` (its features, pages, routes, tables and states) still say what the app
+   does now, and write new ones (then say what changed) if the feature added, changed or expanded what that is
+7. **Auto-deploy** — `auto_deploy` under `[tool.canvas]` in `pyproject.toml`:
    - **true** (the default): `canvas deploy` — a linked app: commit and `git push` (`deploy`) — and give the URL, so the user tries it at
      once. Still ask first when the change cannot be taken back — a migration that drops or renames
    - **false**: ask "See it on your computer first, or put it online?" — then `local-run` or `deploy`
    - "turn auto-deploy off" (or on): change that line, and say it is changed
-7. `describe-app` — every time: re-check that the title, description, tags and `BRIEF.md` (its features, pages, routes, tables and states) still say what the app
-   does now, and write new ones (then say what changed) if the feature added, changed or expanded what that is
 
 ## What NOT to do
 

@@ -1,0 +1,38 @@
+/* Only what the Horizon theme does not give: the nine-box, the AI note, the demo script panel. */
+.tsBrandSub { opacity: .7; letter-spacing: .08em; font-size: .75rem; }
+.tsMain { height: 100%; }
+.tsMain > .sapMNav { flex: 1 1 0; min-width: 0; }
+.tsDemo { flex: 0 0 22rem; max-width: 100%; overflow-y: auto; background: var(--sapGroup_ContentBackground); border-inline-start: 1px solid var(--sapGroup_ContentBorderColor); box-shadow: var(--sapContent_Shadow1); }
+@media (max-width: 1100px) { .tsDemo { position: absolute; inset-block: 0; inset-inline-end: 0; z-index: 5; width: min(22rem, 100%); } }
+.tsDemoStep { align-items: flex-start; gap: .75rem; }
+
+.tsCard.sapFCard { height: 100%; }
+.tsPad { padding: .75rem 1rem 1rem; }
+.tsBar { margin-bottom: .5rem; }
+.tsBar .sapMPI { margin: .125rem 0 0; }
+.tsBench { height: 1.375rem; flex: 1 1 auto; min-width: 0; }
+.tsBenchLabel { flex: 0 0 6.5rem; }
+.tsMeta { color: var(--sapContent_LabelColor); font-size: var(--sapFontSmallSize); }
+.tsWrap { gap: .375rem; flex-wrap: wrap; }
+.tsGap { gap: 1rem; }
+.tsGapS { gap: .5rem; }
+
+.tsAi { border: 1px solid var(--sapInformationBorderColor); border-inline-start-width: .25rem; background: var(--sapInformationBackground); border-radius: var(--sapElement_BorderCornerRadius); padding: .75rem 1rem; gap: .375rem; margin-top: .75rem; }
+.tsAi .sapMText { white-space: normal; }
+
+.tsNine { min-width: 36rem; }
+.tsCell { border-radius: var(--sapElement_BorderCornerRadius); min-height: 6.5rem; padding: .5rem .625rem; gap: .375rem; }
+.tsCell[data-kind="cell"] { border: 1px solid var(--sapGroup_ContentBorderColor); background: var(--sapGroup_ContentBackground); }
+.tsCell[data-kind="cell"][data-tone="hot"] { background: var(--sapSuccessBackground); border-color: var(--sapSuccessBorderColor); }
+.tsCell[data-kind="cell"][data-tone="cool"] { background: var(--sapNeutralBackground); }
+.tsCell[data-kind="ax"] { min-height: 0; justify-content: center; align-items: center; padding: .25rem; color: var(--sapContent_LabelColor); font-weight: bold; font-size: var(--sapFontSmallSize); }
+.tsCell.sapUiDnDDragging { opacity: .5; }
+
+.tsSteps { gap: .5rem; flex-wrap: wrap; }
+.tsRateHead .sapMText, .tsRateHead .sapMLabel { font-weight: bold; }
+.tsKv { padding: .375rem 0; border-bottom: 1px solid var(--sapList_BorderColor); gap: .75rem; }
+.tsKv > .sapMLabel { flex: 0 0 9rem; }
+.tsMono textarea, .tsMono .sapMText { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .75rem; }
+.tsForm { gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+.tsGrow { flex: 2 1 16rem; }
+.tsField { flex: 1 1 11rem; }
