@@ -18,16 +18,21 @@ const FIORI = new Set(["fiori", "fiori-people"].flatMap((dir) => readdirSync(joi
   .map((f) => "/" + join(f.parentPath, f.name).slice(import.meta.dirname.length + 1).split("\\").join("/"))));
 // The two component projects: /<id>/webapp/... comes from <folder>/webapp/. Their start page is built below (the project's
 // own index.html is the Web IDE one, which needs a Web IDE runtime), loading SAPUI5 from ui5.sap.com like the Fiori pages do.
-const PROJECTS = { "zajmn.hr.sucfac1.hk": "zajmn.hr.sucfac1.hk-v2", "zajmn.hr.goals.hk": "zajmn.hr.goals.hk" };
+const PROJECTS = [
+  { url: "zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v2" },
+  { url: "zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk" },
+  // the same two projects in the Al Jazeera theme, beside the plain ones; their links to each other stay inside /aj/
+  { url: "aj/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
+  { url: "aj/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v2" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
 const PTYPES = { ...TYPES, properties: "text/plain" };
-const PROJECT_FILES = new Set(Object.entries(PROJECTS).flatMap(([id, folder]) => {
+const PROJECT_FILES = new Set(PROJECTS.flatMap(({ url, folder }) => {
   const base = join(import.meta.dirname, folder, "webapp");
   return readdirSync(base, { recursive: true, withFileTypes: true })
     .filter((f) => f.isFile() && f.name.split(".").pop() in PTYPES)
-    .map((f) => "/" + id + "/webapp/" + join(f.parentPath, f.name).slice(base.length + 1).split("\\").join("/"));
+    .map((f) => "/" + url + "/webapp/" + join(f.parentPath, f.name).slice(base.length + 1).split("\\").join("/"));
 }));
-const bootPage = (id) => `<!DOCTYPE html>
+const bootPage = ({ id }) => `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${TITLES[id][0]}</title><style>html, body { margin: 0; height: 100%; background: ${TITLES[id][1]}; }</style>
 <script id="sap-ui-bootstrap" src="https://ui5.sap.com/1.144.1/resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
@@ -76,16 +81,16 @@ createServer(async (req, res) => {
     return res.writeHead(403, { ...HEADERS, "Content-Type": "text/plain; charset=utf-8" })
       .end("You do not have access to this app. Ask its owners to add you.\n");
   }
-  const proj = Object.keys(PROJECTS).find((id) => path === "/" + id || path === "/" + id + "/");
-  if (proj) return res.writeHead(308, { ...HEADERS, Location: `/${proj}/webapp/index.html` }).end();
-  const boot = Object.keys(PROJECTS).find((id) => path === `/${id}/webapp/index.html`);
+  const proj = PROJECTS.find((p) => path === "/" + p.url || path === "/" + p.url + "/");
+  if (proj) return res.writeHead(308, { ...HEADERS, Location: `/${proj.url}/webapp/index.html` }).end();
+  const boot = PROJECTS.find((p) => path === `/${p.url}/webapp/index.html`);
   if (boot) {
     res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
     return res.end(req.method === "HEAD" ? undefined : bootPage(boot));
   }
   if (PROJECT_FILES.has(path)) {
-    const id = path.split("/")[1];
-    const body = await readFile(join(import.meta.dirname, PROJECTS[id], path.slice(id.length + 2))).catch(() => null);
+    const p = PROJECTS.find((x) => path.startsWith(`/${x.url}/webapp/`));
+    const body = await readFile(join(import.meta.dirname, p.folder, path.slice(p.url.length + 2))).catch(() => null);
     if (!body) return res.writeHead(500, HEADERS).end();
     res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": "no-cache" });
     return res.end(req.method === "HEAD" ? undefined : body);
