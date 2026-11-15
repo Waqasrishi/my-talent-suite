@@ -2,14 +2,15 @@
 // (score.yaml's access, as PLATFORM_ACCESS), /healthz, and the security headers. No dependencies.
 // It serves index.html, strategy.html, successfactors.html and goals-hub.html, and the Fiori (UI5) version of the
 // Talent Suite under /fiori/ — the files found in fiori/ at start, and nothing else: no other file in this folder is reachable.
-// The front page "/" is AJMN People (goals-hub.html); the original Talent Suite page stays at /index.html, unchanged.
+// The front page "/" is AJMN People (goals-hub-v2.html: goals-hub.html plus links to the Goals module); the original
+// goals-hub.html stays at /goals-hub.html and the original Talent Suite page at /index.html, both unchanged.
 // The two component projects (the AJMN People home and the Goals module, Web IDE layout) are served under /<id>/webapp/.
 import { readdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
-const PAGES = { "/": "goals-hub.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
+const PAGES = { "/": "goals-hub-v2.html", "/goals-hub-v2.html": "goals-hub-v2.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
   "/successfactors.html": "successfactors.html", "/goals-hub.html": "goals-hub.html" };
 // The Fiori app's own files, listed once at start: a request can only name one of these.
 const TYPES = { html: "text/html", js: "text/javascript", json: "application/json", xml: "application/xml", css: "text/css" };
@@ -26,7 +27,9 @@ const PROJECTS = [
   { url: "aj/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v2" },
   // the latest goals prototype (version 3, its own navy and gold look), with the Al Jazeera themed home page
   { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3" }];
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3" },
+  // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
 const PTYPES = { ...TYPES, properties: "text/plain" };
 const PROJECT_FILES = new Set(PROJECTS.flatMap(({ url, folder }) => {
@@ -95,8 +98,14 @@ createServer(async (req, res) => {
     const p = PROJECTS.find((x) => path.startsWith(`/${x.url}/webapp/`));
     const body = await readFile(join(import.meta.dirname, p.folder, path.slice(p.url.length + 2))).catch(() => null);
     if (!body) return res.writeHead(500, HEADERS).end();
+    let out = body;
+    if (p.home && path.endsWith("/webapp/manifest.json")) {
+      const m = JSON.parse(body);
+      m["sap.ui5"].config.nav.home.url = p.home;
+      out = JSON.stringify(m);
+    }
     res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": "no-cache" });
-    return res.end(req.method === "HEAD" ? undefined : body);
+    return res.end(req.method === "HEAD" ? undefined : out);
   }
   const dir = ["/fiori", "/fiori-people"].find((d) => path === d);
   if (dir) return res.writeHead(308, { ...HEADERS, Location: dir + "/" }).end();
