@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ResponsivePopover title="Applications" placement="Bottom" contentWidth="22rem" class="sapUiNoContentPadding">
+		<List items="{vm>/sh/launcher}">
+			<StandardListItem title="{vm>text}" icon="{vm>icon}" info="{vm>badge}" type="{= ${vm>enabled} ? 'Active' : 'Inactive' }" press=".onTile"/>
+		</List>
+	</ResponsivePopover>
+</core:FragmentDefinition>

@@ -1,0 +1,33 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/app/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/app/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/app/sub}"/></f:snappedContent>
+			<f:actions></f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/app/denied} }"><MessagePage showHeader="false" text="{vm>/app/title}" description="{vm>/app/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/app/denied} }" renderType="Bare" class="tsGap">
+
+					<f:Card>
+						<f:content>
+							<VBox class="tsPad tsGapS" width="100%" renderType="Bare">
+								<HBox visible="{= !${vm>/app/internal} }" class="tsGapS" renderType="Bare"><ObjectStatus text="Not configured" state="Warning" inverted="true"/><Text text="{vm>/app/note}" wrapping="true"/></HBox>
+								<HBox class="tsGapS" renderType="Bare">
+									<Button visible="{= !!${vm>/app/internal} }" text="Open" type="Emphasized" press=".onHref"><customData><core:CustomData key="href" value="{vm>/app/href}"/></customData></Button>
+									<Button visible="{= !!${vm>/app/admin} }" text="Configure in the Admin Center" press=".onHref"><customData><core:CustomData key="href" value="#/admin"/></customData></Button>
+									<Button text="Back to Home" press=".onHome"/>
+								</HBox>
+							</VBox>
+						</f:content>
+					</f:Card>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

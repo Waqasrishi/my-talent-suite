@@ -12,9 +12,9 @@ const PAGES = { "/": "goals-hub.html", "/index.html": "index.html", "/strategy.h
   "/successfactors.html": "successfactors.html", "/goals-hub.html": "goals-hub.html" };
 // The Fiori app's own files, listed once at start: a request can only name one of these.
 const TYPES = { html: "text/html", js: "text/javascript", json: "application/json", xml: "application/xml", css: "text/css" };
-const FIORI = new Set(readdirSync(join(import.meta.dirname, "fiori"), { recursive: true, withFileTypes: true })
+const FIORI = new Set(["fiori", "fiori-people"].flatMap((dir) => readdirSync(join(import.meta.dirname, dir), { recursive: true, withFileTypes: true })
   .filter((f) => f.isFile() && f.name.split(".").pop() in TYPES)
-  .map((f) => "/" + join(f.parentPath, f.name).slice(import.meta.dirname.length + 1).split("\\").join("/")));
+  .map((f) => "/" + join(f.parentPath, f.name).slice(import.meta.dirname.length + 1).split("\\").join("/"))));
 const RULES = JSON.parse(process.env.PLATFORM_ACCESS || "{}");
 const SSO = process.env.PLATFORM_AUTH === "sso";
 // index.html is kept exactly as it is: one inline script, one inline style block, and its fonts
@@ -54,8 +54,9 @@ createServer(async (req, res) => {
     return res.writeHead(403, { ...HEADERS, "Content-Type": "text/plain; charset=utf-8" })
       .end("You do not have access to this app. Ask its owners to add you.\n");
   }
-  if (path === "/fiori") return res.writeHead(308, { ...HEADERS, Location: "/fiori/" }).end();
-  const file = path === "/fiori/" ? "/fiori/index.html" : path;
+  const dir = ["/fiori", "/fiori-people"].find((d) => path === d);
+  if (dir) return res.writeHead(308, { ...HEADERS, Location: dir + "/" }).end();
+  const file = path === "/fiori/" || path === "/fiori-people/" ? path + "index.html" : path;
   if (FIORI.has(file)) {
     const body = await readFile(join(import.meta.dirname, file)).catch(() => null);
     if (!body) return res.writeHead(500, HEADERS).end();

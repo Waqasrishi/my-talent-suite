@@ -1,0 +1,39 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/goalsAll/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/goalsAll/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/goalsAll/sub}"/></f:snappedContent>
+			<f:actions>
+				<Button text="Export CSV" icon="sap-icon://download" press=".onExport"/>
+</f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/goalsAll/denied} }"><MessagePage showHeader="false" text="{vm>/goalsAll/title}" description="{vm>/goalsAll/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/goalsAll/denied} }" renderType="Bare" class="tsGap">
+
+					<HBox class="tsForm" renderType="Bare">
+						<VBox class="tsGrow"><Label text="Search" labelFor="gfq"/><SearchField id="gfq" value="{form>/gf/q}" placeholder="Goal, person or key result" liveChange=".onFilter" search=".onFilter"/></VBox>
+						<VBox class="tsField"><Label text="Department" labelFor="gfd"/><Select id="gfd" width="100%" selectedKey="{form>/gf/fd}" items="{vm>/goalsAll/opts/depts}" change=".onFilter"><core:Item key="{vm>key}" text="{vm>text}"/></Select></VBox>
+						<VBox class="tsField"><Label text="Type" labelFor="gft"/><Select id="gft" width="100%" selectedKey="{form>/gf/ft}" items="{vm>/goalsAll/opts/types}" change=".onFilter"><core:Item key="{vm>key}" text="{vm>text}"/></Select></VBox>
+						<VBox class="tsField"><Label text="Approval" labelFor="gfs"/><Select id="gfs" width="100%" selectedKey="{form>/gf/fs}" items="{vm>/goalsAll/opts/statuses}" change=".onFilter"><core:Item key="{vm>key}" text="{vm>text}"/></Select></VBox>
+						<VBox class="tsField"><Label text="Health" labelFor="gfh"/><Select id="gfh" width="100%" selectedKey="{form>/gf/fh}" items="{vm>/goalsAll/opts/healths}" change=".onFilter"><core:Item key="{vm>key}" text="{vm>text}"/></Select></VBox>
+						<VBox class="tsField"><Label text="Sort by" labelFor="gfo"/><Select id="gfo" width="100%" selectedKey="{form>/gf/sort}" items="{vm>/goalsAll/opts/sorts}" change=".onFilter"><core:Item key="{vm>key}" text="{vm>text}"/></Select></VBox>
+						<CheckBox text="Include archived" selected="{form>/gf/farch}" select=".onFilter"/>
+					</HBox>
+					<MessageStrip visible="{= !!${vm>/goalsAll/ownerFilter} }" text="Showing goals owned by {vm>/goalsAll/ownerFilter}." showIcon="true">
+						<link><Link text="Show everyone" press=".onHref"><customData><core:CustomData key="href" value="#/goals/all"/></customData></Link></link>
+					</MessageStrip>
+					<List items="{vm>/goalsAll/rows}" noDataText="No goals match.">
+						<core:Fragment fragmentName="ajmn.people.view.GoalRowAll" type="XML"/>
+					</List>
+
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

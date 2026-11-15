@@ -1,0 +1,247 @@
+{
+	"_version": "1.60.0",
+	"sap.app": {
+		"id": "ajmn.people",
+		"type": "application",
+		"title": "AJMN People",
+		"description": "Sandbox prototype of AJMN People: goals, performance and development on SAP Fiori (UI5). Sample data only.",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"dependencies": {
+			"minUI5Version": "1.120.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.f": {},
+				"sap.tnt": {},
+				"sap.ui.layout": {},
+				"sap.uxap": {},
+				"sap.ui.unified": {},
+				"sap.suite.ui.microchart": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
+		},
+		"rootView": {
+			"viewName": "ajmn.people.view.App",
+			"type": "XML",
+			"id": "app",
+			"async": true
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"type": "View",
+				"viewType": "XML",
+				"path": "ajmn.people.view",
+				"controlId": "pages",
+				"controlAggregation": "pages",
+				"transition": "fade",
+				"async": true,
+				"bypassed": {
+					"target": "notFound"
+				}
+			},
+			"routes": [
+				{
+					"name": "root",
+					"pattern": "",
+					"target": "home"
+				},
+				{
+					"name": "home",
+					"pattern": "home:?query:",
+					"target": "home"
+				},
+				{
+					"name": "goals",
+					"pattern": "goals:?query:",
+					"target": "goals"
+				},
+				{
+					"name": "goalsAll",
+					"pattern": "goals/all:?query:",
+					"target": "goalsAll"
+				},
+				{
+					"name": "strategy",
+					"pattern": "strategy:?query:",
+					"target": "strategy"
+				},
+				{
+					"name": "performance",
+					"pattern": "performance:?query:",
+					"target": "performance"
+				},
+				{
+					"name": "appraisal",
+					"pattern": "appraisal/{id}:?query:",
+					"target": "appraisal"
+				},
+				{
+					"name": "team",
+					"pattern": "team:?query:",
+					"target": "team"
+				},
+				{
+					"name": "development",
+					"pattern": "development:?query:",
+					"target": "development"
+				},
+				{
+					"name": "devRecord",
+					"pattern": "development/{id}:?query:",
+					"target": "devRecord"
+				},
+				{
+					"name": "training",
+					"pattern": "training:?query:",
+					"target": "training"
+				},
+				{
+					"name": "activities",
+					"pattern": "activities:?query:",
+					"target": "activities"
+				},
+				{
+					"name": "learning",
+					"pattern": "learning:?query:",
+					"target": "learning"
+				},
+				{
+					"name": "learningItem",
+					"pattern": "learning/{id}:?query:",
+					"target": "learningItem"
+				},
+				{
+					"name": "approvals",
+					"pattern": "approvals:?query:",
+					"target": "approvals"
+				},
+				{
+					"name": "reports",
+					"pattern": "reports:?query:",
+					"target": "reports"
+				},
+				{
+					"name": "drill",
+					"pattern": "reports/{m}:?query:",
+					"target": "drill"
+				},
+				{
+					"name": "admin",
+					"pattern": "admin:?query:",
+					"target": "admin"
+				},
+				{
+					"name": "app",
+					"pattern": "apps/{id}:?query:",
+					"target": "app"
+				},
+				{
+					"name": "notFound",
+					"pattern": "notfound:?query:",
+					"target": "notFound"
+				}
+			],
+			"targets": {
+				"home": {
+					"name": "Home",
+					"id": "home"
+				},
+				"goals": {
+					"name": "Goals",
+					"id": "goals"
+				},
+				"goalsAll": {
+					"name": "GoalsAll",
+					"id": "goalsAll"
+				},
+				"strategy": {
+					"name": "Strategy",
+					"id": "strategy"
+				},
+				"performance": {
+					"name": "Performance",
+					"id": "performance"
+				},
+				"appraisal": {
+					"name": "Appraisal",
+					"id": "appraisal"
+				},
+				"team": {
+					"name": "Team",
+					"id": "team"
+				},
+				"development": {
+					"name": "Development",
+					"id": "development"
+				},
+				"devRecord": {
+					"name": "DevRecord",
+					"id": "devRecord"
+				},
+				"training": {
+					"name": "Training",
+					"id": "training"
+				},
+				"activities": {
+					"name": "Activities",
+					"id": "activities"
+				},
+				"learning": {
+					"name": "Learning",
+					"id": "learning"
+				},
+				"learningItem": {
+					"name": "LearningItem",
+					"id": "learningItem"
+				},
+				"approvals": {
+					"name": "Approvals",
+					"id": "approvals"
+				},
+				"reports": {
+					"name": "Reports",
+					"id": "reports"
+				},
+				"drill": {
+					"name": "Drill",
+					"id": "drill"
+				},
+				"admin": {
+					"name": "Admin",
+					"id": "admin"
+				},
+				"app": {
+					"name": "AppInfo",
+					"id": "appInfo"
+				},
+				"notFound": {
+					"name": "NotFound",
+					"id": "notFound"
+				}
+			}
+		}
+	}
+}

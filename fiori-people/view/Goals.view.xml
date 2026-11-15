@@ -1,0 +1,47 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/goals/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/goals/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/goals/sub}"/></f:snappedContent>
+			<f:actions>
+				<Button text="All goals" press=".onHref"><customData><core:CustomData key="href" value="#/goals/all"/></customData></Button>
+				<Button text="Strategy map" press=".onHref"><customData><core:CustomData key="href" value="#/strategy"/></customData></Button>
+				<Button text="Create Goal" type="Emphasized" visible="{= !${vm>/goals/closed} }" press=".onNewGoal"/>
+</f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/goals/denied} }"><MessagePage showHeader="false" text="{vm>/goals/title}" description="{vm>/goals/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/goals/denied} }" renderType="Bare" class="tsGap">
+
+					<MessageStrip visible="{= !!${vm>/goals/banner} }" text="{vm>/goals/banner}" showIcon="true"/>
+					<MessageStrip visible="{= !!${vm>/goals/weightBanner} }" text="{vm>/goals/weightBanner}" type="Warning" showIcon="true"/>
+					<f:Card visible="{= !!${vm>/goals/showSteps} }">
+						<f:header><card:Header title="Next steps" iconSrc="sap-icon://task"/></f:header>
+						<f:content>
+							<List items="{vm>/goals/steps}" noDataText="Nothing is waiting on you.">
+								<CustomListItem>
+									<HBox class="sapUiSmallMargin" alignItems="Center" justifyContent="SpaceBetween" renderType="Bare">
+										<Text text="{vm>text}" wrapping="true"><layoutData><FlexItemData growFactor="1" minWidth="0"/></layoutData></Text>
+										<Button text="{vm>btn}" type="{= ${vm>pri} ? 'Emphasized' : 'Default' }" press=".onHref"/>
+									</HBox>
+								</CustomListItem>
+							</List>
+						</f:content>
+					</f:Card>
+					<List items="{vm>/goals/rows}" noDataText="You have no goals in this cycle.">
+						<core:Fragment fragmentName="ajmn.people.view.GoalRow" type="XML"/>
+					</List>
+					<Panel visible="{= !!${vm>/goals/hasArc} }" headerText="{vm>/goals/arcTitle}" expandable="true" expanded="false">
+						<List items="{vm>/goals/arc}"><core:Fragment fragmentName="ajmn.people.view.GoalRow" type="XML"/></List>
+					</Panel>
+
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

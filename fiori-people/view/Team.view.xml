@@ -1,0 +1,41 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/team/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/team/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/team/sub}"/></f:snappedContent>
+			<f:actions></f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/team/denied} }"><MessagePage showHeader="false" text="{vm>/team/title}" description="{vm>/team/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/team/denied} }" renderType="Bare" class="tsGap">
+
+					<f:Card>
+						<f:content>
+							<Table items="{vm>/team/rows}" contextualWidth="Auto" fixedLayout="false">
+								<columns>
+									<Column><Text text="Person"/></Column><Column><Text text="Goals"/></Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="11rem"><Text text="Average progress"/></Column>
+									<Column minScreenWidth="Tablet" demandPopin="true"><Text text="Needs attention"/></Column>
+									<Column><Text text="Appraisal"/></Column><Column minScreenWidth="Tablet" demandPopin="true"><Text text="Training needs"/></Column>
+								</columns>
+								<ColumnListItem vAlign="Middle">
+									<VBox><Title text="{vm>name}" titleStyle="H6"/><Text text="{vm>title}" class="tsMeta"/></VBox>
+									<Link text="{vm>goals}" press=".onHref"><customData><core:CustomData key="href" value="{vm>goalsHref}"/></customData></Link>
+									<ProgressIndicator percentValue="{vm>pct}" displayValue="{vm>pctText}" displayOnly="true" state="Information"/>
+									<ObjectStatus text="{vm>att}" state="{= ${vm>att} === '–' ? 'None' : 'Warning' }" inverted="{= ${vm>att} !== '–' }"/>
+									<Link text="{vm>ap}" enabled="{= !!${vm>apHref} }" press=".onHref"><customData><core:CustomData key="href" value="{vm>apHref}"/></customData></Link>
+									<Link text="{vm>tn}" enabled="{= ${vm>tn} !== '–' }" press=".onHref"><customData><core:CustomData key="href" value="#/training"/></customData></Link>
+								</ColumnListItem>
+							</Table>
+						</f:content>
+					</f:Card>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

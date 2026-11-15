@@ -1,0 +1,149 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog id="gdDlg" title="Goal" contentWidth="52rem" contentHeight="88%" draggable="true" resizable="true" afterClose=".onGdClose">
+		<content>
+			<VBox class="tsPad tsGap" renderType="Bare">
+				<MessageStrip visible="{= !!${vm>/gd/missing} }" type="Warning" showIcon="true" text="{vm>/gd/msg}"/>
+				<VBox visible="{= !${vm>/gd/missing} }" class="tsGap" renderType="Bare">
+					<HBox class="tsWrap" renderType="Bare">
+						<ObjectStatus text="{vm>/gd/status}" state="{vm>/gd/statusState}" inverted="true"/>
+						<ObjectStatus visible="{= !!${vm>/gd/hasHealth} }" text="{vm>/gd/health}" state="{vm>/gd/healthState}" inverted="true"/>
+						<ObjectStatus visible="{= !!${vm>/gd/archived} }" text="Archived" state="None" inverted="true"/>
+					</HBox>
+					<Title text="{vm>/gd/title}" wrapping="true" level="H2"/>
+					<Text text="{vm>/gd/owner}"/>
+					<Text text="{vm>/gd/meta}" class="tsMeta"/>
+					<MessageStrip visible="{= !!${vm>/gd/archived} }" type="Information" text="{vm>/gd/archNote}">
+						<link><Link text="Unarchive" visible="{= !!${vm>/gd/canUnarchive} }" press=".onUnarchive"/></link>
+					</MessageStrip>
+					<Text visible="{= !!${vm>/gd/hasPath} }" text="Path to strategy: {vm>/gd/pathText}" wrapping="true" class="tsMeta"/>
+					<MessageStrip visible="{= !!${vm>/gd/pathWarn} }" type="Warning" showIcon="true" text="{vm>/gd/pathWarn}"/>
+					<HBox class="tsWrap" renderType="Bare">
+						<Link text="Show in Strategy &amp; Alignment" press=".onHref"><customData><core:CustomData key="href" value="{vm>/gd/mapHref}"/></customData></Link>
+						<Link text="{vm>/gd/apText}" visible="{= !!${vm>/gd/hasAp} }" press=".onHref"><customData><core:CustomData key="href" value="{vm>/gd/apHref}"/></customData></Link>
+						<Link text="{vm>/gd/actsText}" press=".onHref"><customData><core:CustomData key="href" value="{vm>/gd/actsHref}"/></customData></Link>
+					</HBox>
+					<ProgressIndicator percentValue="{vm>/gd/pct}" displayValue="{vm>/gd/pctText}" state="{vm>/gd/barState}" displayOnly="true"/>
+					<Text visible="{= !!${vm>/gd/lastText} }" text="{vm>/gd/lastText}" class="tsMeta"/>
+					<Text visible="{= !!${vm>/gd/rollNote} }" text="{vm>/gd/rollNote}" class="tsMeta"/>
+
+					<Title text="Key results" level="H3"/>
+					<List items="{vm>/gd/krs}" noDataText="None.">
+						<CustomListItem>
+							<VBox class="sapUiSmallMargin">
+								<HBox justifyContent="SpaceBetween" alignItems="Center" renderType="Bare">
+									<Text text="{vm>t} {vm>weight}"/>
+									<ObjectStatus text="{vm>label}" state="{vm>state}"/>
+								</HBox>
+								<Text text="{vm>measure}" class="tsMeta"/>
+								<VBox visible="{vm>isMs}" items="{path: 'vm>steps', templateShareable: false}"><Text text="{vm>text}"/></VBox>
+							</VBox>
+						</CustomListItem>
+					</List>
+					<Text visible="{= !!${vm>/gd/desc} }" text="{vm>/gd/desc}"/>
+
+					<VBox class="tsNext" visible="{= !!${vm>/gd/next/kind} }" renderType="Bare">
+						<Title text="{vm>/gd/next/title}" level="H3"/>
+						<Text visible="{= !!${vm>/gd/next/back} }" text="“{vm>/gd/next/back}”"/>
+						<Text text="{vm>/gd/next/text}"/>
+						<HBox visible="{= ${vm>/gd/next/kind} === 'draft' }" class="tsGapS" renderType="Bare">
+							<Button text="Edit and submit" type="Emphasized" press=".onEditGoal"/>
+							<Button text="Delete draft" press=".onDeleteDraft"/>
+						</HBox>
+						<VBox visible="{= ${vm>/gd/next/kind} === 'approve' }" class="tsGapS" renderType="Bare">
+							<TextArea value="{vm>/gd/backMsg}" rows="2" width="100%" maxLength="400" placeholder="If you send it back, say what to change"/>
+							<HBox class="tsGapS" renderType="Bare">
+								<Button text="Approve" type="Emphasized" press=".onApprove"/>
+								<Button text="Send back" press=".onSendBack"/>
+							</HBox>
+						</VBox>
+						<HBox visible="{= ${vm>/gd/next/kind} === 'review' }" class="tsGapS" renderType="Bare">
+							<Button text="Still right, mark as reviewed" type="Emphasized" press=".onReviewed"/>
+							<Button text="Edit it" visible="{= !!${vm>/gd/next/canEdit} }" press=".onEditGoal"/>
+						</HBox>
+					</VBox>
+					<HBox><Button text="Check in" visible="{= !!${vm>/gd/canCheckin} }" type="{= ${vm>/gd/next/kind} ? 'Default' : 'Emphasized' }" press=".onCkOpen"/></HBox>
+					<VBox visible="{= !!${vm>/gd/ck/open} }" class="tsNext" renderType="Bare">
+						<Title text="Check in" level="H3"/>
+						<VBox items="{vm>/gd/ck/items}">
+							<VBox class="sapUiTinyMarginBottom" renderType="Bare">
+								<HBox visible="{= ${vm>kind} === 'number' }" class="tsWrap" alignItems="Center" renderType="Bare">
+									<Label text="{vm>label} {vm>hint}" wrapping="true"/>
+									<Input value="{vm>value}" type="Number" width="9rem"/>
+								</HBox>
+								<CheckBox visible="{= ${vm>kind} === 'binary' }" text="{vm>label}" selected="{vm>checked}"/>
+								<VBox visible="{= ${vm>kind} === 'milestone' }" renderType="Bare">
+									<Label text="{vm>label}" design="Bold"/>
+									<VBox items="{path: 'vm>steps', templateShareable: false}"><CheckBox text="{vm>text}" selected="{vm>done}"/></VBox>
+								</VBox>
+							</VBox>
+						</VBox>
+						<Label text="How is it going?" labelFor="ckStatus"/>
+						<Select id="ckStatus" selectedKey="{vm>/gd/ck/status}" items="{vm>/gd/statuses}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+						<Label text="Note or evidence (optional)" labelFor="ckNote"/>
+						<TextArea id="ckNote" value="{vm>/gd/ck/note}" rows="3" width="100%" maxLength="500" placeholder="What changed, and where the numbers come from"/>
+						<HBox class="tsGapS" renderType="Bare">
+							<Button text="Save check-in" type="Emphasized" press=".onCkSave"/>
+							<Button text="Cancel" press=".onCkCancel"/>
+						</HBox>
+					</VBox>
+
+					<Title text="{vm>/gd/outCount}" level="H3"/>
+					<List items="{vm>/gd/out}" noDataText="None yet.">
+						<CustomListItem>
+							<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+								<VBox class="tsRowMain">
+									<Text visible="{vm>isPillar}" text="{vm>title}"/>
+									<Link visible="{= !${vm>isPillar} }" text="{vm>title}" wrapping="true" press=".onGoalLink"/>
+									<Text text="{vm>sub}{= ${vm>primary} ? ' · Main alignment' : '' }" class="tsMeta"/>
+									<Text visible="{= !!${vm>reason} }" text="{vm>reason}" class="tsMeta"/>
+								</VBox>
+								<ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true"/>
+								<Button text="Make main" type="Transparent" visible="{vm>canMain}" press=".onMakeMain"/>
+								<Button text="{vm>wText}" type="Transparent" visible="{vm>canWithdraw}" press=".onWithdraw"/>
+							</HBox>
+						</CustomListItem>
+					</List>
+					<Button text="+ Align to another goal" type="Transparent" visible="{= !!${vm>/gd/canAlign} &amp;&amp; !${vm>/gd/addOpen} }" press=".onAddOpen" class="sapUiTinyMarginBottom"/>
+					<VBox visible="{= !!${vm>/gd/addOpen} }" class="tsNext" renderType="Bare">
+						<Label text="Align to" labelFor="addTo"/>
+						<Select id="addTo" width="100%" selectedKey="{vm>/gd/addTo}" items="{vm>/gd/addOpts}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+						<Text text="{vm>/gd/addHint}" class="tsMeta"/>
+						<HBox class="tsGapS" renderType="Bare">
+							<Button text="Send link" type="Emphasized" press=".onPropose"/>
+							<Button text="Cancel" press=".onAddCancel"/>
+						</HBox>
+					</VBox>
+
+					<Title text="{vm>/gd/inCount}" level="H3"/>
+					<List items="{vm>/gd/in}" noDataText="None yet.">
+						<CustomListItem>
+							<VBox class="sapUiSmallMargin" renderType="Bare">
+								<HBox alignItems="Center" wrap="Wrap" renderType="Bare">
+									<VBox class="tsRowMain">
+										<Link text="{vm>title}" wrapping="true" press=".onGoalLink"/>
+										<Text text="{vm>sub}" class="tsMeta"/>
+										<Text visible="{= !!${vm>reason} }" text="{vm>reason}" class="tsMeta"/>
+									</VBox>
+									<ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true"/>
+								</HBox>
+								<HBox visible="{vm>canDecide}" class="tsWrap sapUiTinyMarginTop" alignItems="Center" renderType="Bare">
+									<Button text="Accept" type="Emphasized" visible="{vm>pending}" press=".onAccept"/>
+									<Input value="{vm>why}" placeholder="{vm>whyHint}" maxLength="200" width="16rem"/>
+									<Button text="{vm>rejectText}" press=".onReject"/>
+								</HBox>
+							</VBox>
+						</CustomListItem>
+					</List>
+
+					<Panel headerText="{vm>/gd/ckCount}" expandable="true" expanded="false"><List items="{vm>/gd/checkins}" noDataText="No check-ins yet."><StandardListItem title="{vm>text}" wrapping="true"/></List></Panel>
+					<Panel headerText="History" expandable="true" expanded="false"><List items="{vm>/gd/hist}"><StandardListItem title="{vm>text}" wrapping="true"/></List></Panel>
+					<HBox class="tsGapS" renderType="Bare">
+						<Button text="Edit (needs approval again)" visible="{= !!${vm>/gd/canEdit} }" press=".onEditGoal"/>
+						<Button text="Archive" visible="{= !!${vm>/gd/canArchive} }" press=".onArchive"/>
+					</HBox>
+				</VBox>
+			</VBox>
+		</content>
+		<endButton><Button text="Close" press=".onGdDismiss"/></endButton>
+	</Dialog>
+</core:FragmentDefinition>

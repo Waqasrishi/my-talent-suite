@@ -1,0 +1,21 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/notFound/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/notFound/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/notFound/sub}"/></f:snappedContent>
+			<f:actions></f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/notFound/denied} }"><MessagePage showHeader="false" text="{vm>/notFound/title}" description="{vm>/notFound/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/notFound/denied} }" renderType="Bare" class="tsGap">
+
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

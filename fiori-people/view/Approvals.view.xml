@@ -1,0 +1,38 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/approvals/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/approvals/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/approvals/sub}"/></f:snappedContent>
+			<f:actions></f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/approvals/denied} }"><MessagePage showHeader="false" text="{vm>/approvals/title}" description="{vm>/approvals/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/approvals/denied} }" renderType="Bare" class="tsGap">
+
+					<Text visible="{= ${vm>/approvals/count} === 0 }" text="Nothing is waiting on you."/>
+					<VBox items="{vm>/approvals/groups}" class="tsGap">
+						<f:Card>
+							<f:header><card:Header title="{vm>type}" iconSrc="sap-icon://workflow-tasks"/></f:header>
+							<f:content>
+								<List items="{path: 'vm>items', templateShareable: false}">
+									<CustomListItem type="Navigation" press=".onHref">
+										<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+											<VBox class="tsRowMain"><Title text="{vm>obj}" titleStyle="H6" wrapping="true"/><Text text="{vm>sub}" class="tsMeta"/></VBox>
+											<Text text="{vm>state}" class="tsMeta sapUiSmallMarginEnd"/>
+											<Button text="{vm>act}" type="Emphasized" press=".onHref"/>
+										</HBox>
+									</CustomListItem>
+								</List>
+							</f:content>
+						</f:Card>
+					</VBox>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

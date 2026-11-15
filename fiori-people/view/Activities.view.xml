@@ -1,0 +1,102 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/activities/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/activities/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/activities/sub}"/></f:snappedContent>
+			<f:actions>
+				<Button text="{vm>/activities/newBtn}" type="Emphasized" press=".onActNew"/>
+</f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/activities/denied} }"><MessagePage showHeader="false" text="{vm>/activities/title}" description="{vm>/activities/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/activities/denied} }" renderType="Bare" class="tsGap">
+
+					<IconTabBar selectedKey="{vm>/activities/tab}" select=".onActTab" expandable="false" applyContentPadding="false">
+						<items>
+							<IconTabFilter key="activities" text="Activities" icon="sap-icon://activity-items">
+								<VBox renderType="Bare" class="tsGap sapUiSmallMarginTop">
+									<MessageStrip visible="{= !!${vm>/activities/focusBanner} }" text="{vm>/activities/focusBanner}" showIcon="true">
+										<link><Link text="Show all" press=".onHref"><customData><core:CustomData key="href" value="#/activities"/></customData></Link></link>
+									</MessageStrip>
+									<f:Card visible="{= !!${vm>/activities/showNew} &amp;&amp; ${vm>/activities/tab} === 'activities' }">
+										<f:header><card:Header title="New activity" iconSrc="sap-icon://add"/></f:header>
+										<f:content>
+											<VBox class="tsPad tsGapS" width="100%" renderType="Bare">
+												<Label text="What did you do or plan?" labelFor="actt" required="true"/><Input id="actt" value="{form>/act/title}" maxLength="200"/>
+												<Label text="Supports which goal?" labelFor="actg"/><Select id="actg" width="100%" selectedKey="{form>/act/goalId}" items="{vm>/activities/goals}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+												<Label text="Status" labelFor="acts"/><Select id="acts" selectedKey="{form>/act/status}" items="{vm>/activities/statuses}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+												<Label text="Notes" labelFor="actn"/><TextArea id="actn" value="{form>/act/notes}" rows="3" width="100%" maxLength="500"/>
+												<HBox class="tsGapS" renderType="Bare"><Button text="Save activity" type="Emphasized" press=".onActSave"/><Button text="Cancel" press=".onActCancel"/></HBox>
+											</VBox>
+										</f:content>
+									</f:Card>
+									<List items="{vm>/activities/acts}" noDataText="No activities yet.">
+										<CustomListItem>
+											<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+												<VBox class="tsRowMain"><Title text="{vm>title}" titleStyle="H6"/><Text text="{vm>sub}" class="tsMeta"/></VBox>
+												<Link text="{vm>goal}" enabled="{= !!${vm>goalHref} }" press=".onHref" class="sapUiSmallMarginEnd"/>
+												<ObjectStatus text="{vm>status}" state="{= ${vm>status} === 'Done' ? 'Success' : 'None' }" inverted="true"/>
+											</HBox>
+										</CustomListItem>
+									</List>
+								</VBox>
+							</IconTabFilter>
+							<IconTabFilter key="feedback" text="Feedback" icon="sap-icon://feedback">
+								<VBox renderType="Bare" class="tsGap sapUiSmallMarginTop">
+									<f:Card visible="{= !!${vm>/activities/showNew} &amp;&amp; ${vm>/activities/tab} === 'feedback' }">
+										<f:header><card:Header title="Request feedback" iconSrc="sap-icon://add"/></f:header>
+										<f:content>
+											<VBox class="tsPad tsGapS" width="100%" renderType="Bare">
+												<Label text="From" labelFor="fbto"/><Select id="fbto" width="100%" selectedKey="{form>/fbn/to}" items="{vm>/activities/others}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+												<Label text="About which goal? (optional)" labelFor="fbg"/><Select id="fbg" width="100%" selectedKey="{form>/fbn/goalId}" items="{vm>/activities/goalsOpt}"><core:Item key="{vm>key}" text="{vm>text}"/></Select>
+												<Label text="Your question" labelFor="fbq" required="true"/><TextArea id="fbq" value="{form>/fbn/q}" rows="3" width="100%" maxLength="500"/>
+												<HBox class="tsGapS" renderType="Bare"><Button text="Send request" type="Emphasized" press=".onFbSend"/><Button text="Cancel" press=".onActCancel"/></HBox>
+											</VBox>
+										</f:content>
+									</f:Card>
+									<f:Card>
+										<f:header><card:Header title="Requests to you" iconSrc="sap-icon://inbox"/></f:header>
+										<f:content>
+											<List items="{vm>/activities/inq}" noDataText="No requests.">
+												<CustomListItem>
+													<VBox class="sapUiSmallMargin tsGapS" renderType="Bare">
+														<Text text="{vm>from} asks: “{vm>q}”"/>
+														<Text visible="{= !!${vm>goal} }" text="About: {vm>goal}" class="tsMeta"/>
+														<VBox visible="{vm>open}" class="tsGapS" renderType="Bare">
+															<TextArea value="{vm>ans}" rows="2" width="100%" maxLength="1000" placeholder="Your feedback"/>
+															<HBox class="tsGapS" renderType="Bare"><Button text="Send feedback" type="Emphasized" press=".onFbGive"/><Button text="Decline" press=".onFbDecline"/></HBox>
+														</VBox>
+														<Text visible="{= !${vm>open} }" text="{vm>done}" class="tsMeta"/>
+													</VBox>
+												</CustomListItem>
+											</List>
+										</f:content>
+									</f:Card>
+									<f:Card>
+										<f:header><card:Header title="Requests you sent" iconSrc="sap-icon://outbox"/></f:header>
+										<f:content>
+											<List items="{vm>/activities/outq}" noDataText="None yet.">
+												<CustomListItem>
+													<VBox class="sapUiSmallMargin" renderType="Bare">
+														<HBox alignItems="Center" wrap="Wrap" renderType="Bare"><Text text="To {vm>to}: “{vm>q}”" class="sapUiSmallMarginEnd"/><ObjectStatus text="{vm>status}" state="{vm>state}" inverted="true"/></HBox>
+														<Text visible="{= !!${vm>a} }" text="“{vm>a}”" class="tsMeta"/>
+													</VBox>
+												</CustomListItem>
+											</List>
+										</f:content>
+									</f:Card>
+								</VBox>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

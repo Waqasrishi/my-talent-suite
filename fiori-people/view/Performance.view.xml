@@ -1,0 +1,74 @@
+<mvc:View controllerName="ajmn.people.controller.Main" height="100%"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:f="sap.f" xmlns:card="sap.f.cards"
+	xmlns:grid="sap.ui.layout.cssgrid">
+	<f:DynamicPage toggleHeaderOnTitleClick="false">
+		<f:title><f:DynamicPageTitle>
+			<f:breadcrumbs><Breadcrumbs visible="{= ${vm>/sh/crumbs/links}.length > 0 }" currentLocationText="{vm>/sh/crumbs/current}" links="{vm>/sh/crumbs/links}"><Link text="{vm>text}" press=".onCrumb"/></Breadcrumbs></f:breadcrumbs>
+			<f:heading><Title text="{vm>/performance/title}" wrapping="true"/></f:heading>
+			<f:expandedContent><Label text="{vm>/performance/sub}" wrapping="true"/></f:expandedContent>
+			<f:snappedContent><Label text="{vm>/performance/sub}"/></f:snappedContent>
+			<f:actions></f:actions>
+		</f:DynamicPageTitle></f:title>
+		<f:content>
+			<VBox renderType="Bare">
+				<VBox height="26rem" visible="{= !!${vm>/performance/denied} }"><MessagePage showHeader="false" text="{vm>/performance/title}" description="{vm>/performance/msg}" icon="sap-icon://locked"><buttons><Button text="Back to Home" type="Emphasized" press=".onHome"/></buttons></MessagePage></VBox>
+				<VBox visible="{= !${vm>/performance/denied} }" renderType="Bare" class="tsGap">
+
+					<f:Card visible="{= !!${vm>/performance/isPart} }">
+						<f:header><card:Header title="My appraisal" iconSrc="sap-icon://survey"/></f:header>
+						<f:content><List items="{vm>/performance/cur}" noDataText="No appraisal has been launched for you in this cycle.">
+						<CustomListItem type="Navigation" press=".onHref">
+							<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+								<VBox class="tsRowMain"><Title text="{vm>name}" titleStyle="H6"/><Text text="{vm>title} · {vm>cycle}" class="tsMeta"/></VBox>
+								<ObjectStatus text="{vm>step}" state="{vm>stepState}" inverted="true"/>
+								<Text text="{= ${vm>with} ? 'with ' + ${vm>with} : '' }" class="tsMeta sapUiSmallMarginBegin"/>
+								<Text text="{vm>due}" class="tsMeta sapUiSmallMarginBegin"/>
+							</HBox>
+						</CustomListItem>
+						</List></f:content>
+					</f:Card>
+					<f:Card visible="{= ${vm>/performance/others}.length > 0 }">
+						<f:header><card:Header title="Other cycles" iconSrc="sap-icon://survey"/></f:header>
+						<f:content><List items="{vm>/performance/others}" noDataText="No appraisal has been launched for you in this cycle.">
+						<CustomListItem type="Navigation" press=".onHref">
+							<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+								<VBox class="tsRowMain"><Title text="{vm>name}" titleStyle="H6"/><Text text="{vm>title} · {vm>cycle}" class="tsMeta"/></VBox>
+								<ObjectStatus text="{vm>step}" state="{vm>stepState}" inverted="true"/>
+								<Text text="{= ${vm>with} ? 'with ' + ${vm>with} : '' }" class="tsMeta sapUiSmallMarginBegin"/>
+								<Text text="{vm>due}" class="tsMeta sapUiSmallMarginBegin"/>
+							</HBox>
+						</CustomListItem>
+						</List></f:content>
+					</f:Card>
+					<f:Card visible="{= ${vm>/performance/team}.length > 0 }">
+						<f:header><card:Header title="My team’s appraisals" iconSrc="sap-icon://survey"/></f:header>
+						<f:content><List items="{vm>/performance/team}" noDataText="No appraisal has been launched for you in this cycle.">
+						<CustomListItem type="Navigation" press=".onHref">
+							<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+								<VBox class="tsRowMain"><Title text="{vm>name}" titleStyle="H6"/><Text text="{vm>title} · {vm>cycle}" class="tsMeta"/></VBox>
+								<ObjectStatus text="{vm>step}" state="{vm>stepState}" inverted="true"/>
+								<Text text="{= ${vm>with} ? 'with ' + ${vm>with} : '' }" class="tsMeta sapUiSmallMarginBegin"/>
+								<Text text="{vm>due}" class="tsMeta sapUiSmallMarginBegin"/>
+							</HBox>
+						</CustomListItem>
+						</List></f:content>
+					</f:Card>
+					<f:Card visible="{= ${vm>/performance/all}.length > 0 }">
+						<f:header><card:Header title="All appraisals (HR)" iconSrc="sap-icon://survey"/></f:header>
+						<f:content><List items="{vm>/performance/all}" noDataText="No appraisal has been launched for you in this cycle.">
+						<CustomListItem type="Navigation" press=".onHref">
+							<HBox class="sapUiSmallMargin" alignItems="Center" wrap="Wrap" renderType="Bare">
+								<VBox class="tsRowMain"><Title text="{vm>name}" titleStyle="H6"/><Text text="{vm>title} · {vm>cycle}" class="tsMeta"/></VBox>
+								<ObjectStatus text="{vm>step}" state="{vm>stepState}" inverted="true"/>
+								<Text text="{= ${vm>with} ? 'with ' + ${vm>with} : '' }" class="tsMeta sapUiSmallMarginBegin"/>
+								<Text text="{vm>due}" class="tsMeta sapUiSmallMarginBegin"/>
+							</HBox>
+						</CustomListItem>
+						</List></f:content>
+					</f:Card>
+					<Text visible="{= !!${vm>/performance/none} }" text="Appraisals are for employees, their managers and HR."/>
+				</VBox>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

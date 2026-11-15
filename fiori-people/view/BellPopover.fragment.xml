@@ -1,0 +1,10 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ResponsivePopover title="Waiting on you" placement="Bottom" contentWidth="24rem" class="sapUiNoContentPadding">
+		<List items="{vm>/sh/bell/items}" noDataText="Nothing is waiting on you.">
+			<StandardListItem title="{vm>title}" description="{vm>type} · {vm>desc}" type="Active" wrapping="true" press=".onHref"/>
+		</List>
+		<beginButton>
+			<Button text="Open Workflows &amp; Approvals" type="Emphasized" press=".onHref"><customData><core:CustomData key="href" value="#/approvals"/></customData></Button>
+		</beginButton>
+	</ResponsivePopover>
+</core:FragmentDefinition>
