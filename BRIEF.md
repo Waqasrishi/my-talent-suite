@@ -53,7 +53,7 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Suggest and review goals**: Scripted suggestions and a draft review in the goal form.
 
 ## Pages
-- **AJMN People in UI5**: /fiori-people/ — this page as a UI5 app. Also /fiori/.
+- **UI5 versions**: /fiori-people/, /fiori/, /zajmn.hr.sucfac1.hk/ (home), /zajmn.hr.goals.hk/ (goals).
 - **Talent Suite**: /index.html — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
 - **AJMN People**: / (also /goals-hub.html) — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.

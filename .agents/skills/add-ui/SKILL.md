@@ -22,4 +22,4 @@ skill; this one is only for adding it or changing the look.
    "the default style"): the block in step 2 changes only what the kit draws, so the app's own cards, grids and spacing
    stay as they were, now beside the kit's, and fall out of line. Page by page, swap them for the kit's components
    (`ajnkit-ui`'s `porting.md`, *Map the controls*) and delete the CSS they leave unused. Then run `ajnkit-ui`'s
-   `audit.md` on every page you changed, and open each screenshot: a page is not done until you have.
+   `audit.md` (`canvas shoot`) on every page whose layout changed, and open each screenshot: a page is not done until you have.

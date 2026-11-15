@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AJMN People</title>
+	<style>html, body { margin: 0; height: 100%; background: #F4F7FB; }</style>
+	<!-- For running anywhere with internet access: SAPUI5 comes from ui5.sap.com -->
+	<script id="sap-ui-bootstrap"
+		src="https://ui5.sap.com/1.144.1/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_horizon"
+		data-sap-ui-resource-roots='{"zajmn.hr.sucfac1.hk": "./"}'
+		data-sap-ui-async="true"></script>
+	<script>
+		sap.ui.getCore().attachInit(function () {
+			sap.ui.require(["sap/ui/core/ComponentContainer"], function (ComponentContainer) {
+				new ComponentContainer({ name: "zajmn.hr.sucfac1.hk", async: true }).placeAt("content");
+			});
+		});
+	</script>
+</head>
+<body class="sapUiBody">
+	<div id="content"></div>
+</body>
+</html>
