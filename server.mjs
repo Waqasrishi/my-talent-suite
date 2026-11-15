@@ -25,11 +25,13 @@ const PROJECTS = [
   // the same two projects in the Al Jazeera theme, beside the plain ones; their links to each other stay inside /aj/
   { url: "aj/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
   { url: "aj/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v2" },
-  // the latest goals prototype (version 3, its own navy and gold look), with the Al Jazeera themed home page
+  // the latest goals prototype (version 4, its own navy and gold look), with the Al Jazeera themed home page
   { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v4" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v4", home: "/" },
+  // the previous goals prototype (version 3), still reachable
+  { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
 const PTYPES = { ...TYPES, properties: "text/plain" };
 const PROJECT_FILES = new Set(PROJECTS.flatMap(({ url, folder }) => {
