@@ -46,6 +46,8 @@ resources:
   # data:                         # a disk of its own, kept across restarts — request-volume
   #   type: volume                # mounted at /data (above); deleted with the app, no backup
   #   params: {size: 1Gi}         # 1Gi-10Gi; more, to 100Gi, a team owner approves on the app's page
-  # ai:                           # the app's own AI key: OPENAI_BASE_URL, OPENAI_API_KEY
-  #   type: llm                   # and PLATFORM_LLM_MODELS — the request-llm skill
-  #   params: {models: [gemini-flash-lite]}   # optional: which models; default every one
+  # the app's own AI key: OPENAI_BASE_URL, OPENAI_API_KEY and PLATFORM_LLM_MODELS — read by server.mjs to translate goals
+  # between Arabic and English. qwen-flash is the company's own model: goal text does not leave the company.
+  ai:
+    type: llm
+    params: {models: [qwen-flash]}
