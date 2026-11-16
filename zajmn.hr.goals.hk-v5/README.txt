@@ -2,7 +2,7 @@ zajmn.hr.goals.hk  (version 5, third prototype with deep links)  -  Goals module
 ==========================================================================
 Project / component ID:   zajmn.hr.goals.hk
 Launchpad intent:         ZAJMNGOALS-display   (webapp/manifest.json, sap.app > crossNavigation)
-Opens the home page by:   ZAJMNHR-display      (the AJMN People home project, zajmn.hr.sucfac1.hk, version 2)
+Opens the home page by:   ZAJMNHR-display      (the AJMN People home project, zajmn.hr.sucfac1.hk, version 4)
 Needs from SAPUI5:        sap.ui.core only. Minimum version 1.44.
 Data:                     sample data only (as in the prototype); nothing is saved. No backend, no OData service.
 
@@ -47,7 +47,7 @@ STRUCTURE (standard Web IDE layout)
 
 1. IMPORT INTO SAP WEB IDE
    File > Import > From File System > zajmn.hr.goals.hk-v5.zip, keep "Extract Archive" ticked.
-   Import zajmn.hr.sucfac1.hk-v3.zip into the same workspace too, so the links between them work.
+   Import zajmn.hr.sucfac1.hk-v4.zip into the same workspace too, so the links between them work.
 
 2. RUN IT
    Right-click webapp/index.html > Run > Run as Web Application.

@@ -58,6 +58,7 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
 - **AJMN People home (Fiori)**: / opens the UI5 home /latest/zajmn.hr.sucfac1.hk/ — its Goals links open the UI5 Goals module /latest/zajmn.hr.goals.hk/ (also /goals-module/).
 - **AJMN People home (plain HTML)**: /home.html — The Goals-theme home page (navy and gold): quick actions, items needing attention, and links into Goals and the other areas (not-yet-built ones say so). Sample data.
+- **Test scenario people**: the Goals module (Fiori v6) has 30 people to view as — a DG, 3 EDs, 6 Directors, 8 Managers and 12 Employees — edited in one table, model/Scenario.js. Directors own and push down goals, EDs approve, Managers update progress, Employees add goals under their Manager.
 - **Goals prototype**: /goals.html — The 15 Nov clickable goals prototype: editable goals, contributors, push down, per-goal alignment, goal library ideas.
 - **AJMN People (earlier)**: /goals-hub-v2.html and /goals-hub.html — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
