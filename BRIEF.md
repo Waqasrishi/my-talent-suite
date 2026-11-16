@@ -56,7 +56,8 @@ For the people deciding whether to build the Talent Suite. Every screen can be c
 - **Goals module**: My Goals on the home page opens /goals-module/. More UI5 projects: /aj/, /latest/.
 - **Talent Suite**: /index.html — Goals, performance, talent, growth, configuration and audit, by role.
 - **Strategy Room**: /strategy.html — Decisions, commitments, delivery plans and the strategy tree.
-- **AJMN People home**: / — The Goals-theme home page (navy and gold): quick actions, items needing attention, and links into Goals and the other areas (not-yet-built ones say so). Sample data.
+- **AJMN People home (Fiori)**: / opens the UI5 home /latest/zajmn.hr.sucfac1.hk/ — its Goals links open the UI5 Goals module /latest/zajmn.hr.goals.hk/ (also /goals-module/).
+- **AJMN People home (plain HTML)**: /home.html — The Goals-theme home page (navy and gold): quick actions, items needing attention, and links into Goals and the other areas (not-yet-built ones say so). Sample data.
 - **Goals prototype**: /goals.html — The 15 Nov clickable goals prototype: editable goals, contributors, push down, per-goal alignment, goal library ideas.
 - **AJMN People (earlier)**: /goals-hub-v2.html and /goals-hub.html — The connected platform: homepage, goals and strategy, performance appraisals, development, continuous performance, team, approvals, reports and admin.
 - **SuccessFactors replica**: /successfactors.html — Goals, performance forms and calibration as they are set up today.
