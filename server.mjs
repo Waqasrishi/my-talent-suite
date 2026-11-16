@@ -2,7 +2,7 @@
 // (score.yaml's access, as PLATFORM_ACCESS), /healthz, and the security headers. No dependencies.
 // It serves index.html, strategy.html, successfactors.html and goals-hub.html, and the Fiori (UI5) version of the
 // Talent Suite under /fiori/ — the files found in fiori/ at start, and nothing else: no other file in this folder is reachable.
-// The front page "/" is the Fiori AJMN People home (zajmn.hr.sucfac1.hk-v4) opening the Fiori Goals module (zajmn.hr.goals.hk-v6, with the people table in model/Scenario.js); the plain HTML versions are /home.html and /goals.html (the 15 Nov prototype); goals-hub-v2.html stays at its own address; the original
+// The front page "/" is the Fiori AJMN People home (zajmn.hr.sucfac1.hk-v4) opening the Fiori Goals module (zajmn.hr.goals.hk-v7: goals at every level, people table in model/Scenario.js); the plain HTML versions are /home.html and /goals.html (the 15 Nov prototype); goals-hub-v2.html stays at its own address; the original
 // goals-hub.html stays at /goals-hub.html and the original Talent Suite page at /index.html, both unchanged.
 // The two component projects (the AJMN People home and the Goals module, Web IDE layout) are served under /<id>/webapp/.
 import { readdirSync } from "node:fs";
@@ -28,9 +28,10 @@ const PROJECTS = [
   // the latest goals prototype (version 4, its own navy and gold look), with the Al Jazeera themed home page
   { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v4" },
   { url: "goals-module-v5", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v5", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v6" },
+  { url: "goals-module-v6", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v6", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v7" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v6", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v7", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
