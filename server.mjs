@@ -2,7 +2,7 @@
 // (score.yaml's access, as PLATFORM_ACCESS), /healthz, and the security headers. No dependencies.
 // It serves index.html, strategy.html, successfactors.html and goals-hub.html, and the Fiori (UI5) version of the
 // Talent Suite under /fiori/ — the files found in fiori/ at start, and nothing else: no other file in this folder is reachable.
-// The front page "/" is AJMN People (goals-hub-v2.html: goals-hub.html plus links to the Goals module); the original
+// The front page "/" is the AJMN People home (home.html), its goals app is /goals.html (the 15 Nov prototype); goals-hub-v2.html stays at its own address; the original
 // goals-hub.html stays at /goals-hub.html and the original Talent Suite page at /index.html, both unchanged.
 // The two component projects (the AJMN People home and the Goals module, Web IDE layout) are served under /<id>/webapp/.
 import { readdirSync } from "node:fs";
@@ -10,7 +10,7 @@ import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
-const PAGES = { "/": "goals-hub-v2.html", "/goals-hub-v2.html": "goals-hub-v2.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
+const PAGES = { "/": "home.html", "/home.html": "home.html", "/goals.html": "goals.html", "/goals-hub-v2.html": "goals-hub-v2.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
   "/successfactors.html": "successfactors.html", "/goals-hub.html": "goals-hub.html" };
 // The Fiori app's own files, listed once at start: a request can only name one of these.
 const TYPES = { html: "text/html", js: "text/javascript", json: "application/json", xml: "application/xml", css: "text/css" };
