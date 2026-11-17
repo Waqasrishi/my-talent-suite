@@ -706,3 +706,5 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .abtn.del,.ajmng .abtn.del:hover{border-color:#C9CFDB;color:#7A2A2A}
 .ajmng .abtn.del.armed{background:#A33;border-color:#A33;color:#fff}
 .ajmng .abtn[data-aedit],.ajmng .abtn[data-adel]{padding-left:10px!important}
+.ajmng .actbtns,.ajmng .tl li .actbtns{opacity:1!important}
+.ajmng .abtn,.ajmng .abtn.del{opacity:1}
