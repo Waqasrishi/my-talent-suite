@@ -120,6 +120,16 @@ createServer(async (req, res) => {
     res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
     return res.end(req.method === "HEAD" ? undefined : bootPage(boot));
   }
+  // UI5 asks for an optional preload bundle and for translation files of the visitor's language (i18n_en_US, i18n_en, i18n_ar...).
+  // This demo has neither, so answer with an empty bundle and the base texts instead of a 404 that fills the console with errors.
+  const opt = !PROJECT_FILES.has(path) && path.match(/^(\/.+?\/webapp)\/(Component-preload\.js|i18n\/i18n_[A-Za-z_]+\.properties)$/);
+  const optProj = opt && PROJECTS.filter((x) => path.startsWith(`/${x.url}/webapp/`)).sort((x, y) => y.url.length - x.url.length)[0];
+  if (optProj) {
+    const isJs = opt[2].endsWith(".js");
+    const body = isJs ? "sap.ui.require.preload({});" : await readFile(join(import.meta.dirname, optProj.folder, "webapp/i18n/i18n.properties")).catch(() => "");
+    res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": isJs ? "text/javascript; charset=utf-8" : "text/plain; charset=utf-8", "Cache-Control": "no-cache" });
+    return res.end(req.method === "HEAD" ? undefined : body);
+  }
   if (PROJECT_FILES.has(path)) {
     const p = PROJECTS.find((x) => path.startsWith(`/${x.url}/webapp/`));
     const body = await readFile(join(import.meta.dirname, p.folder, path.slice(p.url.length + 2))).catch(() => null);
