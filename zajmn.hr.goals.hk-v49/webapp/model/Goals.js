@@ -198,14 +198,21 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		function summary(){const n=goals.length,sum=goals.reduce((t,g)=>t+(+g.weight||0),0),set=goals.some(g=>g.weight!=null&&g.weight!==''),avg=n?Math.round(goals.reduce((t,g)=>t+g.own,0)/n):0,wait=goals.filter(g=>/awaiting/i.test(g.statusText)||!!g.pending);
 		 const st=!set?'none':sum===100?'ok':sum<100?'low':'over',note=!set?'No weights set yet':sum===100?'Complete':sum<100?(100-sum)+'% still to give out':(sum-100)+'% over 100%';
 		 return `<h2 class="sect">Overview</h2><div class="kpis"><div class="kpi"><span>Goals</span><b>${n}</b>${BOSS?'<small>Target 3 to 5</small>':''}</div><div class="kpi"><span>Average progress</span><b>${avg}%</b><div class="kbar"><i style="width:${avg}%"></i></div><small>Across your goals</small></div><div class="kpi ${wait.length?'b-late':'b-ok'}"><span>Awaiting approval</span><b>${wait.length}</b><small>${!BOSS?'You set strategy, so no approval needed':wait.length===0?'Nothing waiting':wait.length===1?esc(wait[0].title):wait.length+' goals with '+esc((BOSS.label||'').split(',')[0])}</small></div><div class="kpi w-${st}"><span>Total weight</span><b>${sum}%</b><div class="kbar"><i style="width:${Math.min(100,sum)}%"></i></div><small>${note}</small></div></div>`}
-		// separate bars under the goal: the DG sees one bar for each ED the goal was pushed down to; everyone else sees one bar for the contributors and one for the team
-		function subbars(g){const rows=[],n=g.pushed?g.pushed.length:0;
-		 if(!BOSS){(g.pushed||[]).forEach(x=>rows.push([esc(x.who),x.p,'t']))}
-		 else{const cs=(g.contribs||[]).filter(c=>c.status==='Linked');
-		  if(cs.length)rows.push(['Contributors ('+cs.length+')',Math.round(cs.reduce((t,c)=>t+c.p,0)/cs.length),'c']);
-		  if(n)rows.push(['Team ('+n+' manager'+(n>1?'s':'')+')',teamAvg(g),'t'])}
-		 return rows.length?`<div class="gc3sub" role="list">${rows.map(r=>{const raw=String(r[0]).replace(/&amp;/g,'&'),nm=raw.split(',')[0].trim(),role=raw.split(',').slice(1).join(',').trim(),person=r[2]==='t'&&role,ini=nm.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-   return `<div class="sr ${r[2]}${r[1]>=100?' done':''}" role="listitem"><i class="sav ${person?'':'grp'}" aria-hidden="true">${person?esc(ini):(r[2]==='c'?'&#9733;':'&#9873;')}</i><span class="sl" title="${esc(raw)}"><b>${person?esc(nm):r[0]}</b>${person?`<em>${esc(role)}</em>`:''}</span><div class="bar-track" role="img" aria-label="${esc(raw)} ${r[1]} percent"><div class="bar-fill ${r[2]}" style="width:${r[1]}%"></div></div><span class="sv">${r[1]}%</span></div>`}).join('')}</div>`:''}
+		// people under a goal, as ten-block batteries: the DG sees the Executive Directors it was pushed to; everyone else sees contributors and team.
+		// Up to three rows show; with more people a summary (average, status bar) leads and "Show all" opens the rest.
+		const subOpen=new Set();
+		const band=p=>p>=100?4:p>=67?3:p>=34?2:p>0?1:0;
+		const blocks=p=>{let h='';for(let i=0;i<10;i++){const f=Math.max(0,Math.min(1,(p-i*10)/10));h+=`<i class="bk${f>0?' on b'+band(p):''}"${f>0&&f<1?` style="opacity:${(0.25+f*0.75).toFixed(2)}"`:''}></i>`}return `<span class="blocks" role="img" aria-label="${p} percent">${h}</span>`};
+		function ppanel(g,key,title,list){
+		 const s=list.slice().sort((a,b)=>b[1]-a[1]),n=s.length,open=subOpen.has(g.id+'|'+key),show=open||n<=3?s:s.slice(0,3);
+		 const avg=Math.round(s.reduce((t,x)=>t+x[1],0)/n),done=s.filter(x=>x[1]>=100).length,none=s.filter(x=>x[1]===0).length,mid=n-done-none;
+		 const head=n>3?`<div class="pph"><div><span class="ppt">${title}</span><b>${avg}%</b><span class="ppn">average of ${n}</span></div><span class="pps">${done} done &middot; ${mid} in progress &middot; ${none} not started</span></div><div class="ppseg" role="img" aria-label="${done} done, ${mid} in progress, ${none} not started"><i style="flex:${done};background:#2E6B3F"></i><i style="flex:${mid};background:#C99A2E"></i><i style="flex:${none};background:#E3E8F2"></i></div>`:`<div class="pph"><div><span class="ppt">${title}</span></div></div>`;
+		 return `<div class="gc3sub pp ${key}" role="list">${head}${show.map(x=>{const raw=String(x[0]).replace(/&amp;/g,'&'),nm=raw.split(',')[0].trim(),role=raw.split(',').slice(1).join(',').trim(),ini=nm.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+		  return `<div class="pr${x[1]>=100?' done':''}" role="listitem"><i class="sav" aria-hidden="true">${esc(ini)}</i><span class="sl" title="${esc(raw)}"><b>${esc(nm)}</b>${role?`<em>${esc(role)}</em>`:''}</span>${blocks(x[1])}<span class="sv">${x[1]}%</span></div>`}).join('')}${n>3?`<button type="button" class="ppmore" data-subtoggle="${g.id}|${key}">${open?'Show fewer':'Show all '+n}</button>`:''}</div>`}
+		function subbars(g){const out=[];
+		 if(!BOSS){if((g.pushed||[]).length)out.push(ppanel(g,'t','Team progress',g.pushed.map(x=>[x.who,x.p])))}
+		 else{const cs=(g.contribs||[]).filter(c=>c.status==='Linked');if(cs.length)out.push(ppanel(g,'c','Contributors',cs.map(c=>[c.who,c.p])));if((g.pushed||[]).length)out.push(ppanel(g,'t','Team',g.pushed.map(x=>[x.who,x.p])))}
+		 return out.join('')}
 		function chip(g){if(g.delReq)return '<span class="chip att"><span aria-hidden="true">&#9201;</span>Deletion awaiting approval</span>';if(g.pending)return '<span class="chip att"><span aria-hidden="true">&#9201;</span>Change awaiting approval</span>';if(!BOSS&&g.status==='ok')return '';const i={ok:'&#10003;',att:'&#9201;',neu:'&#8226;'}[g.status];return `<span class="chip ${g.status}"><span aria-hidden="true">${i}</span>${esc(g.statusText)}</span>`}
 		function tabs(){const tg=$('#tabLog');if(tg){tg.classList.toggle('on',view==='log');tg.setAttribute('aria-current',view==='log'?'page':'false')}const ta=$('#tabAppr');if(ta){ta.classList.toggle('on',view==='appr');ta.setAttribute('aria-current',view==='appr'?'page':'false')}
 		 $('#tabDash').classList.toggle('on',view==='dash');$('#tabDash').setAttribute('aria-current',view==='dash'?'page':'false');$('#tabList').classList.toggle('on',view==='list'||view==='goal');$('#tabAlign').classList.toggle('on',view==='align');$('#tabList').setAttribute('aria-current',view==='list'?'page':'false');$('#tabAlign').setAttribute('aria-current',view==='align'?'page':'false')}
@@ -458,6 +465,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
    <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}${g.from?' &middot; Pushed down by '+esc(g.from.who.split(',')[0]):''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button>${g.from?'':g.delReq?`<button class="btn small danger" data-delwd="${g.id}">Withdraw deletion</button>`:`<button class="btn small danger" data-del="${g.id}">${needsOk(g)?'Request deletion':'Delete'}</button>`}</span></div></div>`});
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
+		 ROOT.querySelectorAll('[data-subtoggle]').forEach(b=>b.onclick=()=>{const k=b.dataset.subtoggle;subOpen.has(k)?subOpen.delete(k):subOpen.add(k);renderList()});
 		 ROOT.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const x=findG(+b.dataset.del);if(x)deleteDlg(x)});
 		 ROOT.querySelectorAll('[data-delwd]').forEach(b=>b.onclick=()=>{const x=findG(+b.dataset.delwd);if(x)withdrawDel(x)});
 		 ROOT.querySelectorAll('[data-inew]').forEach(b=>b.onclick=()=>startWiz('new'));
