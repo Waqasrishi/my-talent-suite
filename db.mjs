@@ -27,11 +27,14 @@ async function open() {
   await mkdir(join(import.meta.dirname, ".data"), { recursive: true });
   const lite = new PGlite(join(import.meta.dirname, ".data", "pg"));
   await lite.waitReady;
-  const have = await lite.query("SELECT to_regclass('public.goals') AS t");
-  if (!have.rows[0].t) {
-    for (const f of (await readdir(MIGRATIONS)).filter((n) => n.endsWith(".sql")).sort()) {
-      await lite.exec(await readFile(join(MIGRATIONS, f), "utf8"));
-    }
+  // locally the platform is not there to apply migrations, so keep a record of which ones ran
+  await lite.exec("CREATE TABLE IF NOT EXISTS _migrations (name text PRIMARY KEY)");
+  const done = new Set((await lite.query("SELECT name FROM _migrations")).rows.map((r) => r.name));
+  const existing = (await lite.query("SELECT to_regclass('public.goals') AS t")).rows[0].t;
+  for (const f of (await readdir(MIGRATIONS)).filter((n) => n.endsWith(".sql")).sort()) {
+    if (done.has(f)) continue;
+    if (!existing || !f.startsWith("001_")) await lite.exec(await readFile(join(MIGRATIONS, f), "utf8"));
+    await lite.query("INSERT INTO _migrations (name) VALUES ($1)", [f]);
   }
   return {
     query: async (sql, params) => (await lite.query(sql, params)).rows,

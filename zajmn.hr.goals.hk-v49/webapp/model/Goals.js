@@ -109,6 +109,22 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		  box.innerHTML='<div class="tah">Suggestions as you type. Tap one to use it.</div>'+sc.map((x,i)=>'<button type="button" role="option" class="tao" data-s="'+esc(x.c)+'"><span>'+esc(x.c)+'</span>'+(i===0?'<span class="rec">Best fit</span>':'')+'</button>').join('');box.hidden=false;
 		  box.querySelectorAll('.tao').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=e=>{e.preventDefault();e.stopPropagation();inp.value=b.dataset.s;inp.dispatchEvent(new Event('input'));box.hidden=true;inp.focus({preventScroll:true})}})};
 		 inp.__fresh=1;inp.addEventListener('input',show);inp.addEventListener('blur',()=>setTimeout(()=>{box.hidden=true},150));inp.addEventListener('keydown',e=>{if(e.key==='Escape')box.hidden=true})}
+		// ---- delete a goal: hidden in the database, history kept. Copies pushed from it go too. ----
+		const copiesOf=g=>ALLG().filter(x=>x.from&&x.from.gid===g.id);
+		function doDelete(g){const all=[g].concat(copiesOf(g));
+		 all.forEach(x=>{
+		  ALLG().forEach(o=>{if(all.includes(o))return;const i=(o.contribs||[]).findIndex(c=>c.myId===x.id);if(i>=0){const c=o.contribs.splice(i,1)[0];ev(o,'contributor_removed','Contributor link removed: the goal of '+c.who+' was deleted \u00b7 '+YOU,{contributor:pid(c.who)})}});
+		  (x.contribs||[]).forEach(c=>{const mg=c.myId&&findG(c.myId);if(mg)mg.cto=null});
+		  PEOPLE.forEach(p=>{const i=STORE[p.id].indexOf(x);if(i>=0)STORE[p.id].splice(i,1)});
+		  Store.remove(x.id,{actor:ME.id,d:TODAY,text:(x===g?'Goal deleted':'Copy deleted because "'+g.title+'" was deleted')+' \u00b7 '+YOU,detail:{title:x.title,copies:x===g?all.length-1:0}}).catch(()=>toast('Deleted here, but the server did not confirm. Reload to check.'))});
+		 if(view==='goal'&&gid===g.id){view='list';gEdit=false}
+		 toast('Goal deleted'+(all.length>1?' with '+(all.length-1)+' pushed '+(all.length>2?'copies':'copy'):'')+'.');renderList()}
+		function deleteDlg(g){const old=ROOT.querySelector('.actdlg');if(old)old.remove();const cps=copiesOf(g),nAct=cps.reduce((t,x)=>t+(x.updates||[]).length,0),links=ALLG().reduce((t,o)=>t+(o.contribs||[]).filter(c=>c.myId===g.id||cps.some(x=>x.id===c.myId)).length,0);
+		 const el=document.createElement('div');el.className='actdlg';
+		 el.innerHTML=`<div class="actbox" role="alertdialog" aria-modal="true" aria-labelledby="delT"><h2 id="delT">Delete this goal?</h2><p><b>${esc(g.title)}</b></p><ul class="delul"><li>The goal disappears from every list and from Alignment.</li>${cps.length?`<li>It was pushed down, so the ${cps.length} cop${cps.length>1?'ies':'y'} on other people\u2019s plans ${cps.length>1?'are':'is'} deleted too${nAct?', with '+nAct+' activit'+(nAct>1?'ies':'y'):''}.</li>`:''}${links?`<li>${links} contributor link${links>1?'s':''} to it ${links>1?'are':'is'} removed.</li>`:''}<li>Its history stays in the workflow log.</li></ul><div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px"><button class="btn" id="delNo">Cancel</button><button class="btn danger" id="delYes">Delete goal</button></div></div>`;
+		 ROOT.appendChild(el);const no=el.querySelector('#delNo');no.focus();const close=()=>el.remove();
+		 no.onclick=close;el.onclick=e=>{if(e.target===el)close()};el.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close()}};
+		 el.querySelector('#delYes').onclick=()=>{close();doDelete(g)}}
 		// the activity popup: opens when progress changes, from Add activity, or from Edit; a note and files join the goal's activity list
 		const fsize=n=>n<1024?n+' B':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB';
 		const fext=n=>(n.split('.').length>1?n.split('.').pop():'file').slice(0,4).toUpperCase();
@@ -340,7 +356,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 ${BOSS?contribCard(g):''}
 		 <div class="card" style="margin-top:16px;background:var(--warm)">${aihead('Quick check of this goal.')}<ul class="checks">${C.map(c=>`<li><span class="mark ${c[0]?'ok':'warn'}" aria-hidden="true">${c[0]?'&#10003;':'!'}</span><span>${c[0]?c[1]:c[2]}</span></li>`).join('')}</ul></div>
 		 <div class="card" style="margin-top:16px"><h3 style="font-size:17px;margin-bottom:8px">Activity</h3><ul class="tl">${g.audit.map(a=>`<li>${esc(a.t)}<small>${esc(a.d)}</small></li>`).join('')}</ul></div>`;
-		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">${esc(g.title)}</h1><span class="row" style="gap:8px">${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn" id="gWithdraw">Withdraw change request</button>':'<button class="btn primary" id="gEdit">Request a change</button>')}</span></div>
+		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">${esc(g.title)}</h1><span class="row" style="gap:8px">${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn" id="gWithdraw">Withdraw change request</button>':'<button class="btn primary" id="gEdit">Request a change</button>')}${g.from||!goals.some(x=>x.id===g.id)?'':'<button class="btn danger" id="gDelete">Delete</button>'}</span></div>
 		 <div class="sub gsub"><button class="gback" id="gBack" aria-label="Back to ${MYL()}"><span class="garrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${MYL()}</button><span class="gdiv" aria-hidden="true"></span>${chip(g)}${g.from?`<span class="gstat">Pushed down by ${esc(g.from.who.split(',')[0])}. Set your own weight.</span>`:''}${g.pending||locked||pend?`<span class="gstat">${g.pending?'Change waiting for approval':(locked?'Locked since 5 Nov 2026':'Waiting for approval')}</span>`:''}${BOSS?`<span class="gwho"><i class="gav alt" aria-hidden="true">${esc(BOSS.label.split(',')[0].split(' ').map(w=>w[0]).join('').slice(0,2))}</i><span class="gwt"><small>Approver</small><b>${esc(BOSS.label.split(',')[0])}</b><em>${esc(BOSS.label.split(',').slice(1).join(',').trim())}</em></span></span>`:''}</div>
 		 <h2 class="sect">Overview</h2><div class="kpis"><div class="kpi kring" data-pvr="own:${g.id}"><span>Total progress</span>${ring(g.own)}</div><div class="kpi"><span>Activities</span><b>${g.updates.length}</b></div>${wtile(g)}<div class="kpi"><span>Due date</span><b>${esc(g.due)}</b><small>${dleft(g)}</small></div></div>
 		 
@@ -351,6 +367,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 document.querySelectorAll('#acts [data-aedit]').forEach(b=>b.onclick=()=>actDialog(g,'edit',+b.dataset.aedit));
 		 document.querySelectorAll('#acts [data-adel]').forEach(b=>b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed=1;b.textContent='Sure? Delete';b.classList.add('armed');setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='Delete';b.classList.remove('armed')}},3500);return}
 		  const u=g.updates[+b.dataset.adel];(u.files||[]).forEach(f=>{try{URL.revokeObjectURL(f.url)}catch(e){}});g.updates.splice(+b.dataset.adel,1);g.audit.unshift({d:TODAY,t:'Activity deleted \u00b7 '+YOU});renderList()});
+		 const gdl=$('#gDelete');if(gdl)gdl.onclick=()=>deleteDlg(g);
 		 const bk=$('#gBack');bk.onclick=()=>{view='list';gEdit=false;cAddOpen=false;cErr='';renderList()};
 		 const ed=$('#gEdit');if(ed)ed.onclick=()=>{gEdit=true;renderGoal()};
 		 const fr=$('#f_role');if(fr)fr.onchange=()=>{$('#f_cto_wrap').style.display=fr.value==='con'?'block':'none';$('#f_team_wrap').style.display=fr.value==='team'?'block':'none'};
@@ -408,9 +425,10 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
     <div class="gc3mid"><div class="geyebrow">Goal ${chip(g)}</div><h3 class="gtitle">${esc(g.title)}</h3><div class="gc3measure"><span>Measure</span> ${esc(g.measure||'Not set')}</div>${Slider.markup('own:'+g.id,g.own,BOSS?'Owner progress':'Your progress')}</div>
     ${wcirc(g,unset)}</div>
    ${subbars(g)}${g.note?`<div class="card" style="background:var(--attbg);border-color:#D9A93B;margin-top:10px;padding:10px 14px;font-size:14px"><strong>Returned by ${esc(nameOf(bossOfGoal(g)))}:</strong> ${esc(g.note)}</div>`:''}${g.cto?'<div style="font-size:14px;margin-top:8px"><b>Contributing to:</b> '+esc(g.cto)+' <span style="color:var(--muted)">(you are a contributor, not the owner)</span></div>':''}
-   <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}${g.from?' &middot; Pushed down by '+esc(g.from.who.split(',')[0]):''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button></span></div></div>`});
+   <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}${g.from?' &middot; Pushed down by '+esc(g.from.who.split(',')[0]):''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button>${g.from?'':`<button class="btn small danger" data-del="${g.id}">Delete</button>`}</span></div></div>`});
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
+		 ROOT.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const x=findG(+b.dataset.del);if(x)deleteDlg(x)});
 		 ROOT.querySelectorAll('[data-inew]').forEach(b=>b.onclick=()=>startWiz('new'));
 		 ROOT.querySelectorAll('[data-ilink]').forEach(b=>b.onclick=()=>{const [gid,i]=b.dataset.ilink.split('|').map(Number),og=findG(gid),c=og&&og.contribs[i],mg=goals.find(x=>x.id===+$('#inv_'+gid+'_'+i).value);if(!c||!mg)return;ensure(og);ensure(mg);
 		  c.status='Awaiting approval';c.goal=mg.title;c.p=mg.own;c.myId=mg.id;c.reason=null;c.requestedOn=TODAY;mg.cto=og.title;ev(og,'contributor_link_requested',ME.label+' linked a goal to this one, for approval \u00b7 '+ME.label,{contributor:pid(ME.label),goal:mg.id});ev(mg,'goal_linked','Linked to "'+og.title+'", waiting for '+nameOf(pByLabel(og.owner))+' to approve \u00b7 '+YOU,{owner_goal:og.id});toast('Sent to '+nameOf(pByLabel(og.owner))+' for approval.');renderList()});

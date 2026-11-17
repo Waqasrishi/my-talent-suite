@@ -80,6 +80,8 @@ sap.ui.define([], function () {
 		},
 		ai: function (task, context, employeeId) { return api("POST", "/ai", { task: task, context: context, employeeId: employeeId }, 35000); },
 		aiAccept: function (id, text) { return api("POST", "/ai/" + id + "/accept", { text: text }).catch(function () {}); },
+		// hide a goal (the server keeps it and its history) and stop tracking it
+		remove: function (id, body) { saved.delete(id); return api("DELETE", "/goals/" + id, body || {}); },
 		log: function () { return api("GET", "/log?limit=400"); },
 		// wipe the scenario. Saving stops first, so a save that was already waiting cannot put the data back.
 		reset: function () {

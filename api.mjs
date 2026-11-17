@@ -34,7 +34,7 @@ const list = (v, max, name) => { if (v == null) return []; if (!Array.isArray(v)
 async function state(res, H) {
   const q = (await db()).query;
   const [goals, acts, pushes, contribs, audit, ids] = await Promise.all([
-    q("SELECT * FROM goals ORDER BY id"),
+    q("SELECT * FROM goals WHERE deleted_at IS NULL ORDER BY id"),
     q("SELECT * FROM activities ORDER BY goal_id, position"),
     q("SELECT * FROM pushes ORDER BY goal_id, position"),
     q("SELECT * FROM contributors ORDER BY goal_id, position"),
@@ -68,6 +68,8 @@ async function saveGoal(res, H, who, id, b) {
     JSON.stringify(b.extra && typeof b.extra === "object" ? b.extra : {}), who.email];
   const updates = list(b.updates, 500, "updates"), pushed = list(b.pushed, 200, "pushed"), contribs = list(b.contribs, 200, "contribs"), audit = list(b.audit, 1000, "audit");
   await (await db()).tx(async (q) => {
+    const gone = await q("SELECT 1 FROM goals WHERE id = $1 AND deleted_at IS NOT NULL", [goalId]);
+    if (gone.length) return;
     await q(`INSERT INTO goals (id, employee_id, title, description, measure, due, weight, progress, status, status_text, parent_title,
                pushed_from_goal_id, pushed_from_employee_id, extra, updated_by)
              VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,$15)
@@ -99,6 +101,22 @@ async function saveGoal(res, H, who, id, b) {
     }
   });
   json(res, H, 200, { ok: true, id: goalId });
+}
+
+// DELETE /api/goals/:id: hide the goal and write who did it into its history. Nothing is erased.
+async function deleteGoal(res, H, who, id, b) {
+  const actor = b.actor ? text(b.actor, 80, "actor") : null;
+  const entry = text(b.text, 1000, "text") || "Goal deleted";
+  const did = await (await db()).tx(async (q) => {
+    const g = (await q("SELECT id FROM goals WHERE id = $1 AND deleted_at IS NULL FOR UPDATE", [id]))[0];
+    if (!g) return false;
+    await q("UPDATE goals SET deleted_at = now(), deleted_by = $2, updated_at = now(), updated_by = $2 WHERE id = $1", [id, who.email]);
+    const pos = Number((await q("SELECT COALESCE(MAX(position), -1) + 1 AS p FROM audit_log WHERE goal_id = $1", [id]))[0].p);
+    await q("INSERT INTO audit_log (goal_id, position, on_date, entry, actor_employee_id, action, detail) VALUES ($1,$2,$3,$4,$5,'goal_deleted',$6::jsonb)",
+      [id, pos, text(b.d, 60, "date"), entry, actor, JSON.stringify(b.detail && typeof b.detail === "object" ? b.detail : {})]);
+    return true;
+  });
+  json(res, H, 200, { ok: true, deleted: did });
 }
 
 async function employees(res, H, b) {
@@ -179,7 +197,7 @@ async function sendFile(req, res, H, id) {
 async function workflowLog(res, H, url) {
   const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit")) || 200));
   const rows = await (await db()).query(
-    `SELECT a.id, a.occurred_at, a.action, a.entry, a.detail, g.code AS goal_code, g.title AS goal_title, g.employee_id AS goal_owner,
+    `SELECT a.id, a.occurred_at, a.action, a.entry, a.detail, g.code AS goal_code, g.title AS goal_title, g.deleted_at IS NOT NULL AS goal_deleted, g.employee_id AS goal_owner,
             a.actor_employee_id, e.label AS actor_label
        FROM audit_log a JOIN goals g ON g.id = a.goal_id LEFT JOIN employees e ON e.employee_id = a.actor_employee_id
       ORDER BY a.occurred_at DESC, a.id DESC LIMIT $1`, [limit]);
@@ -188,7 +206,7 @@ async function workflowLog(res, H, url) {
     const csv = ["when,actor,action,goal,goal_title,entry", ...rows.map((r) => [r.occurred_at.toISOString?.() ?? r.occurred_at, r.actor_employee_id, r.action, r.goal_code, r.goal_title, r.entry].map(q).join(","))].join("\n");
     return void res.writeHead(200, { ...H, "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="workflow-log.csv"', "Cache-Control": "no-store" }).end(csv);
   }
-  json(res, H, 200, { log: rows.map((r) => ({ id: Number(r.id), at: r.occurred_at, action: r.action, entry: r.entry, detail: r.detail, goalCode: r.goal_code, goalTitle: r.goal_title,
+  json(res, H, 200, { log: rows.map((r) => ({ id: Number(r.id), at: r.occurred_at, action: r.action, entry: r.entry, detail: r.detail, goalCode: r.goal_code, goalTitle: r.goal_title + (r.goal_deleted ? " (deleted)" : ""),
     actorId: r.actor_employee_id, actor: r.actor_label })) });
 }
 
@@ -229,6 +247,7 @@ export async function api(req, res, path, who, H) {
     if (fm && (req.method === "GET" || req.method === "HEAD")) { await sendFile(req, res, H, Number(fm[1])); return true; }
     const m = path.match(/^\/api\/goals\/(\d+)$/);
     if (m && req.method === "PUT") { await saveGoal(res, H, who, m[1], await readJson(req)); return true; }
+    if (m && req.method === "DELETE") { await deleteGoal(res, H, who, Number(m[1]), await readJson(req).catch(() => ({}))); return true; }
     if (path === "/api/reset" && req.method === "POST") {
       // everything the scenario created: goals (and, by cascade, activities, pushes, contributors, log) and the attached files
       const gone = await (await db()).tx(async (q) => {

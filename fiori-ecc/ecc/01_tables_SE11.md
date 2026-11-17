@@ -26,6 +26,7 @@ Employees are **not copied**. `PERNR` (data element `PERNR_D`, NUMC 8) points at
 | PUSHED_FROM_PERNR | | PERNR_D | who pushed it |
 | EXTRA | | STRING | JSON: the pending change request and the approval history |
 | CREATED_BY / CREATED_AT | | UNAME / TIMESTAMPL | |
+| DELETED_BY / DELETED_AT | | UNAME / TIMESTAMPL | **soft delete**: a deleted goal is hidden, never removed, so its history in `ZAJMN_LOG` survives. The service returns only rows with `DELETED_AT` initial; a delete writes a log row `goal_deleted` |
 | CHANGED_BY / CHANGED_AT | | UNAME / TIMESTAMPL | `CHANGED_AT` is also the ETag, so two people cannot overwrite each other |
 
 Secondary index on `PERNR`; on `PUSHED_FROM_GOAL`.

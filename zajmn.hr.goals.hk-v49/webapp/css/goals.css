@@ -832,3 +832,13 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .lgact{display:inline-block;background:#14264B;color:#E3BC5E;font-size:11px;font-weight:800;border-radius:999px;padding:2px 10px;white-space:nowrap}
 
 .ajmng .rec.ai{background:#14264B;color:#E3BC5E;margin-inline-end:6px}
+
+/* delete */
+.ajmng .btn.danger,.actdlg .btn.danger{color:#8A1F14;border-color:#E3B1AB}
+.ajmng .btn.danger:hover,.actdlg .btn.danger:hover{background:#FDECEC;box-shadow:0 4px 12px rgba(163,51,51,.25)}
+.actdlg #delYes{background:#A33;border-color:#A33;color:#fff}
+.actdlg #delYes:hover{background:#8A1F14}
+.actdlg .delul{margin:0;padding-inline-start:20px;font-size:14px;color:#55607A;line-height:1.5}
+.ajmng [data-del]::before,.ajmng #gDelete::before{content:"";width:22px;height:22px;flex:0 0 22px;border-radius:50%;background-color:#F3C9C4;background-repeat:no-repeat;background-position:center;background-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 4.5h10M6.5 4.5V3h3v1.5M5 4.5l.5 8.5h5l.5-8.5' fill='none' stroke='%238A1F14' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ajmng [data-del],.ajmng #gDelete{padding-left:4px!important}
+.ajmng .gc3 .gc3links .btn.danger{color:#8A1F14;border-color:#E3B1AB}
