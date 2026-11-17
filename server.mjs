@@ -38,13 +38,14 @@ const PROJECTS = [
   { url: "goals-module-v16", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v16", home: "/" },
   { url: "goals-module-v17", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v17", home: "/" },
   { url: "goals-module-v18", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v18", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v19" },
+  { url: "goals-module-v19", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v19", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v20" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v19", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v20", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
-const PTYPES = { ...TYPES, properties: "text/plain", ttf: "font/ttf" };
+const PTYPES = { ...TYPES, properties: "text/plain", ttf: "font/ttf", woff2: "font/woff2" };
 const PROJECT_FILES = new Set(PROJECTS.flatMap(({ url, folder }) => {
   const base = join(import.meta.dirname, folder, "webapp");
   return readdirSync(base, { recursive: true, withFileTypes: true })
@@ -120,7 +121,7 @@ createServer(async (req, res) => {
       m["sap.ui5"].config.nav.home.url = p.home;
       out = JSON.stringify(m);
     }
-    res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": path.endsWith(".ttf") ? PTYPES.ttf : `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": "no-cache" });
+    res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": /\.(ttf|woff2)$/.test(path) ? PTYPES[path.split(".").pop()] : `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": "no-cache" });
     return res.end(req.method === "HEAD" ? undefined : out);
   }
   const dir = ["/fiori", "/fiori-people"].find((d) => path === d);
