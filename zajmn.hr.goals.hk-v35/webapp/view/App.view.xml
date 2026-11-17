@@ -1,0 +1,4 @@
+<mvc:View controllerName="zajmn.hr.goals.hk.controller.App" displayBlock="true"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core">
+	<core:HTML id="host" preferDOM="true"/>
+</mvc:View>
