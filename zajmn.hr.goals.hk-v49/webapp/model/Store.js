@@ -2,7 +2,7 @@
 // load() fetches everything; queue() saves whatever changed, a moment after each change. If the API is down the app keeps
 // working in memory and says so.
 sap.ui.define([], function () {
-	var BASE = "/api", pool = [], fallback = 900000000, saved = new Map(), timer = null, busy = false, offline = false, pill = null, hideT = null;
+	var BASE = "/api", frozen = false, pool = [], fallback = 900000000, saved = new Map(), timer = null, busy = false, offline = false, pill = null, hideT = null;
 	var OWN = ["id", "owner", "title", "desc", "measure", "due", "weight", "own", "status", "statusText", "parent", "from", "updates", "pushed", "contribs", "audit"];
 
 	function api(method, path, body, ms) {
@@ -37,6 +37,7 @@ sap.ui.define([], function () {
 		remember: function (id, json) { saved.set(id, json); },
 		// goals: [[goal, employeeId], ...] already turned into API bodies by the caller: [[id, body, json], ...]
 		queue: function (collect) {
+			if (frozen) { return; }
 			clearTimeout(timer);
 			timer = setTimeout(function run() {
 				if (busy) { timer = setTimeout(run, 300); return; }
@@ -59,7 +60,11 @@ sap.ui.define([], function () {
 		ai: function (task, context, employeeId) { return api("POST", "/ai", { task: task, context: context, employeeId: employeeId }, 35000); },
 		aiAccept: function (id, text) { return api("POST", "/ai/" + id + "/accept", { text: text }).catch(function () {}); },
 		log: function () { return api("GET", "/log?limit=400"); },
-		reset: function () { return api("POST", "/reset", {}).then(function () { saved.clear(); }); },
+		// wipe the scenario. Saving stops first, so a save that was already waiting cannot put the data back.
+		reset: function () {
+			frozen = true; clearTimeout(timer);
+			return api("POST", "/reset", {}, 20000).then(function (r) { saved.clear(); return r; }).catch(function (e) { frozen = false; throw e; });
+		},
 		OWN: OWN
 	};
 });

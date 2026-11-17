@@ -581,7 +581,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		{const LVN={dg:'Director General',ed:'Executive Directors',dir:'Directors',mgr:'Managers',emp:'Employees'};
 		 $('#role').innerHTML=Object.keys(LVN).map(k=>'<optgroup label="'+LVN[k]+'">'+PEOPLE.filter(x=>x.lv===k).map(x=>'<option value="'+x.id+'"'+(x.id==='dg'?' selected':'')+'>'+esc(x.label)+(x.id==='dg'?' (you)':'')+'</option>').join('')+'</optgroup>').join('');setMe('dg')}
 		$('#homeLink').onclick=()=>NAV.to('home');
-		const rd=$('#resetData');if(rd)rd.onclick=()=>{if(!confirm('Delete every goal and activity in the test database and start again from empty?'))return;Store.reset().then(()=>location.reload()).catch(()=>toast('Could not reset. Try again.'))};
+		const rd=$('#resetData');if(rd)rd.onclick=()=>{if(!confirm('Delete every goal and activity in the test database and start again from empty?'))return;Store.reset().then(r=>{const d=(r&&r.deleted)||{};toast('Deleted '+(d.goals||0)+' goals, '+(d.activities||0)+' activities and '+(d.log||0)+' log rows. Starting again.');setTimeout(()=>location.reload(),1200)}).catch(()=>toast('Could not reset. Check you are signed in and try again.'))};
 		$('#app').innerHTML='<p class="sub" role="status">Loading your goals&hellip;</p>';
 		Store.load(PEOPLE).then(d=>{
 		 if(d)hydrate(d);ready=true;AION=!!(d&&d.ai);

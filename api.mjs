@@ -186,8 +186,16 @@ export async function api(req, res, path, who, H) {
     const m = path.match(/^\/api\/goals\/(\d+)$/);
     if (m && req.method === "PUT") { await saveGoal(res, H, who, m[1], await readJson(req)); return true; }
     if (path === "/api/reset" && req.method === "POST") {
-      await (await db()).query("DELETE FROM goals");
-      json(res, H, 200, { ok: true }); return true;
+      // everything the scenario created: goals (and, by cascade, activities, pushes, contributors, log) and the attached files
+      const gone = await (await db()).tx(async (q) => {
+        const n = async (t) => Number((await q(`SELECT count(*)::int AS c FROM ${t}`))[0].c);
+        const counts = { goals: await n("goals"), activities: await n("activities"), log: await n("audit_log"), files: await n("files") };
+        await q("DELETE FROM goals");
+        await q("DELETE FROM files");
+        return counts;
+      });
+      await rm(DIR, { recursive: true, force: true });
+      json(res, H, 200, { ok: true, deleted: gone }); return true;
     }
     json(res, H, 404, { error: "Not found" }); return true;
   } catch (e) {

@@ -85,7 +85,7 @@ sap.ui.define([], function () {
 				.then(function (x) {
 					var ids = results(x[1].GetIds || x[1]).map(function (v) { return +(v.Id || v); });
 					pool = ids.slice(); offline = false;
-					return { goals: results(x[0]).map(fromGateway), ids: ids };
+					return { goals: results(x[0]).map(fromGateway), ids: ids, ai: !!CFG.aiUrl };
 				}).catch(function () { offline = true; return null; });
 		},
 		remember: function (id, json) { saved.set(id, json); },
@@ -109,6 +109,13 @@ sap.ui.define([], function () {
 			}).then(function (r) { if (!r.ok) { throw new Error("HTTP " + r.status); } return r.json(); })
 				.then(function (j) { var d = j.d || j; return { id: +d.AttId, name: d.FileName, size: +d.FileSize }; });
 		},
+		// the AI is not on ECC. It stays the company model behind the Canvas app (ai.mjs); point aiUrl at it, for example through a BTP destination.
+		ai: function (task, context, employeeId) {
+			if (!CFG.aiUrl) { return Promise.reject(new Error("AI is not connected")); }
+			return fetch(CFG.aiUrl.replace(/\/$/, "") + "/ai", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: task, context: context, employeeId: employeeId }) })
+				.then(function (r) { if (!r.ok) { throw new Error("HTTP " + r.status); } return r.json(); });
+		},
+		aiAccept: function () { return Promise.resolve(); },
 		fileUrl: function (id) { return SERVICE + "/Attachments('" + id + "')/$value"; },
 		log: function () {
 			return call("GET", "/WorkflowLog?$orderby=OccurredAt desc&$top=400&$format=json").then(function (d) {
