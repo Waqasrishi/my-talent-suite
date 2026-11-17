@@ -764,3 +764,13 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .copts summary{cursor:pointer;font-weight:800;color:#14264B}
 .ajmng .copts summary small{font-weight:400;color:#55607A;margin-inline-start:8px}
 .ajmng .copts .opt{margin-bottom:8px}
+
+/* push down: quick options in one row */
+.ajmng .cquick{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;background:#fff;border:1px solid var(--line,#E1E6F0);border-radius:12px;padding:12px 16px}
+.ajmng .cq{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ajmng .cql{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#85600F}
+.ajmng .seg{display:inline-flex;background:#EEF1F7;border-radius:999px;padding:3px}
+.ajmng .seg button{border:0;background:none;font:inherit;font-size:12px;font-weight:800;color:#55607A;padding:6px 14px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+.ajmng .seg button.on{background:#14264B;color:#E3BC5E;box-shadow:0 1px 3px rgba(20,38,75,.3)}
+.ajmng .seg button:focus-visible{outline:2px solid #2F5FB3;outline-offset:1px}
+.ajmng .cnote{flex-basis:100%;margin:0;font-size:12px;color:#55607A}
