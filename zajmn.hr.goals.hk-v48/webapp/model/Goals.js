@@ -350,7 +350,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
 		 const al=$('#alignAll');if(al)al.onclick=()=>{view='align';alGoal=null;renderList()};
-		 const pa=$('#pushAll');if(pa)pa.onclick=()=>{cas={sel:new Set(),word:'same',due:'same'};view='cascade';renderList()};
+		 const pa=$('#pushAll');if(pa)pa.onclick=()=>{cascInit();view='cascade';renderList()};
 		 ROOT.querySelectorAll('[data-align]').forEach(b=>b.onclick=()=>{alGoal=+b.dataset.align;alFrom='list';view='align';renderList()});
 		 ROOT.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{gid=+b.dataset.open;gEdit=false;cAddOpen=false;view='goal';renderList()});
 		 ROOT.querySelectorAll('[data-rup]').forEach(b=>b.onclick=()=>{const g=findG(+b.dataset.rup),rec=g.pushed.find(x=>x.who===mname),p=parseInt($('#rp_'+g.id).value,10),n=$('#rn_'+g.id).value.trim();if(isNaN(p)||p<0||p>100){toast('Progress must be a number from 0 to 100.');return}rec.p=p;rec.d=TODAY;if(n)rec.n=n;ensure(g);g.audit.unshift({d:TODAY,t:mname+' updated progress to '+p+'%'+(n?': '+n:'')});toast('Saved. '+nameOf(pByLabel(g.owner))+' sees '+p+'% on their goal.');renderList()});
@@ -364,30 +364,35 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		
 		const newSteps=a=>!BOSS?['Goal','Measure','Due date','Review']:rc(a)==='mem'?['Goal','Measure','Team goal','Due date','Review']:rc(a)==='team'?['Role','Goal','Measure','Parent','Due date','Team','Review']:rc(a)==='con'?['Role','Goal','Measure','Contributes to','Due date','Review']:['Role','Goal','Measure','Parent','Due date','Review'];
 		const PUSH_STEPS=['Goal','Who','Wording','Date','Review'];
-		// push down: one screen for all goals and all teams, pushed in one go (like the cascade in SuccessFactors)
-		let cas={sel:new Set(),word:'same',due:'same'};
-		function renderCascade(){crumb('Push down goals');tabs();
-		 const T=TEAMS.map(t=>t[0]),key=(gid,i)=>gid+'|'+i,done=(g,i)=>teamNames(g).includes(T[i]);
-		 const W=[['same','Same wording, each manager adds their own measure','Keeps the goal consistent across teams.'],['reword','Each manager may reword it','Use when teams work very differently.']],D=[['same','Same as each goal','Their date is your goal\u2019s date.'],['early','31 March 2027','Earlier, to leave time to review.']];
-		 const opts=(name,items,cur)=>items.map(x=>`<label class="opt ${cur===x[0]?'sel':''}"><input type="radio" name="${name}" value="${x[0]}" ${cur===x[0]?'checked':''}><span style="flex:1;min-width:0"><span class="t">${esc(x[1])}</span><span class="r" style="display:block">${esc(x[2])}</span></span></label>`).join('');
-		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">Push down goals</h1></div><p class="sub">Choose which goals go to which teams, then push them all at once. Each manager gets one set of goals to accept, not one request per goal.</p>
-		 <div class="card casc"><div class="cwrap"><table class="ctab"><thead><tr><th scope="col">Goal</th>${T.map((t,i)=>`<th scope="col"><label class="cck"><input type="checkbox" data-ccol="${i}" aria-label="All goals to ${esc(t)}"><span class="cbox" aria-hidden="true"></span><span class="cname">${esc(t)}</span></label></th>`).join('')}</tr></thead><tbody>
-		 ${goals.map(g=>`<tr><th scope="row"><span class="gtt">${esc(g.title)}</span><small>Due ${esc(g.due)}</small><button type="button" class="rowall" data-crow="${g.id}">All teams</button></th>${T.map((t,i)=>done(g,i)?`<td><span class="cpushed">Pushed</span></td>`:`<td><label class="cck cell"><input type="checkbox" data-cg="${g.id}" data-ct="${i}" ${cas.sel.has(key(g.id,i))?'checked':''} aria-label="${esc(g.title)} to ${esc(t)}"><span class="cbox" aria-hidden="true"></span></label></td>`).join('')}</tr>`).join('')}
-		 </tbody></table></div></div>
-		 <div class="g2 dates" style="margin-top:16px;gap:16px"><div class="card"><h2 style="font-size:18px;margin-bottom:10px">Wording</h2>${opts('cword',W,cas.word)}</div><div class="card"><h2 style="font-size:18px;margin-bottom:10px">Due date for the teams</h2>${opts('cdue',D,cas.due)}</div></div>
-		 <div class="cbar" role="region" aria-label="Summary"><span id="cSum"></span><span class="row" style="gap:10px"><button class="btn" id="cCancel">Cancel</button><button class="btn primary" id="cGo">Push down all</button></span></div>`;
-		 const sum=()=>{const n=cas.sel.size,gs=new Set([...cas.sel].map(k=>k.split('|')[0])).size,ts=new Set([...cas.sel].map(k=>k.split('|')[1])).size;$('#cSum').innerHTML=n?`<b>${gs}</b> goal${gs>1?'s':''} to <b>${ts}</b> team${ts>1?'s':''} <span>(${n} in all)</span>`:'Nothing selected yet';$('#cGo').disabled=!n;
-		  document.querySelectorAll('[data-ccol]').forEach(c=>{const cells=[...document.querySelectorAll('[data-ct="'+c.dataset.ccol+'"]')];c.checked=!!cells.length&&cells.every(x=>x.checked);c.disabled=!cells.length})};
-		 const set=(el,on)=>{el.checked=on;const k=key(el.dataset.cg,el.dataset.ct);on?cas.sel.add(k):cas.sel.delete(k)};
-		 ROOT.querySelectorAll('[data-cg]').forEach(c=>c.onchange=()=>{set(c,c.checked);sum()});
-		 ROOT.querySelectorAll('[data-ccol]').forEach(c=>c.onchange=()=>{document.querySelectorAll('[data-ct="'+c.dataset.ccol+'"]').forEach(x=>set(x,c.checked));sum()});
-		 ROOT.querySelectorAll('[data-crow]').forEach(b=>b.onclick=()=>{const cells=[...document.querySelectorAll('[data-cg="'+b.dataset.crow+'"]')],on=!cells.every(x=>x.checked);cells.forEach(x=>set(x,on));sum()});
+		// push down as a three-step wizard, every step already filled with the suggestion: Goals, Teams, Review
+		let cas=null;
+		function cascInit(){const T=TEAMS.map(t=>t[0]);cas={step:1,goals:new Set(goals.filter(g=>T.some(t=>!teamNames(g).includes(t))).map(g=>g.id)),teams:new Set(T.map((t,i)=>i)),word:'same',due:'same'}}
+		function renderCascade(){crumb('Push down goals');tabs();if(!cas)cascInit();
+		 const T=TEAMS.map(t=>t[0]),S=cas.step,sg=goals.filter(g=>cas.goals.has(g.id)),pairs=[];
+		 sg.forEach(g=>[...cas.teams].forEach(i=>{if(!teamNames(g).includes(T[i]))pairs.push([g,i])}));
+		 const W=[['same','Same wording, each manager adds their own measure','Keeps the goal consistent across teams.'],['reword','Each manager may reword it','Use when teams work very differently.']],D=[['same','Same as each goal','Their date is your goal’s date.'],['early','31 March 2027','Earlier, to leave time to review.']];
+		 const opts=(name,items,cur)=>items.map((x,i)=>`<label class="opt ${cur===x[0]?'sel':''}"><input type="radio" name="${name}" value="${x[0]}" ${cur===x[0]?'checked':''}><span style="flex:1;min-width:0"><span class="t">${esc(x[1])}${i===0?'<span class="rec">Recommended</span>':''}</span><span class="r" style="display:block">${esc(x[2])}</span></span></label>`).join('');
+		 let q,sub,body='',valid=true,primary='Continue';
+		 if(S===1){q='Which goals do you want to push down?';sub='All your goals are ticked. Untick any you want to keep back.';
+		  body=aihead('Goals that have not reached every team yet.')+goals.map(g=>{const have=teamNames(g),full=T.every(t=>have.includes(t));return `<label class="opt ${cas.goals.has(g.id)?'sel':''}"><input type="checkbox" data-cgoal="${g.id}" ${cas.goals.has(g.id)?'checked':''} ${full?'disabled':''}><span style="flex:1;min-width:0"><span class="t">${esc(g.title)}</span><span class="r" style="display:block">Due ${esc(g.due)} &middot; ${full?'Already with every team':have.length?'Already with '+have.length+' of '+T.length+' teams':'Not pushed down yet'}</span></span></label>`}).join('');valid=cas.goals.size>0}
+		 if(S===2){q='Who should receive them?';sub='All your teams are ticked. Untick any team that should not get these goals.';
+		  body=aihead('Managers who report to you.')+TEAMS.map((t,i)=>`<label class="opt ${cas.teams.has(i)?'sel':''}"><input type="checkbox" data-cteam="${i}" ${cas.teams.has(i)?'checked':''}><span style="flex:1;min-width:0"><span class="t">${esc(t[0])}</span><span class="r" style="display:block">${esc(t[1])}</span></span></label>`).join('');valid=cas.teams.size>0}
+		 if(S===3){q='Check before you push these down';sub=sg.length+' goal'+(sg.length>1?'s':'')+' to '+cas.teams.size+' team'+(cas.teams.size>1?'s':'')+', '+pairs.length+' in all. Wording and date are already suggested.';primary='Push down';valid=pairs.length>0;
+		  body=`<div class="card" style="padding:6px 20px;margin-bottom:18px"><div class="sumrow"><span class="k">Goals</span><span class="v">${sg.map(g=>esc(g.title)).join('<br>')}</span><button class="link" data-cgo="1" aria-label="Change goals">Change</button></div><div class="sumrow"><span class="k">Going to</span><span class="v">${[...cas.teams].map(i=>esc(T[i])).join(', ')}</span><button class="link" data-cgo="2" aria-label="Change teams">Change</button></div></div>
+		  <h2 style="font-size:18px;margin:0 0 10px">Wording</h2>${opts('cword',W,cas.word)}<h2 style="font-size:18px;margin:18px 0 10px">Due date for the teams</h2>${opts('cdue',D,cas.due)}<div class="note" style="margin-top:16px">Each manager gets these goals on their own goal plan. Their progress shows on your goals.</div>`}
+		 $('#app').innerHTML=`<div style="max-width:720px;margin:0 auto"><div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="btn small" id="cExit">Cancel</button></div>${stepper(['Goals','Teams','Review'],1,S)}<div style="font-size:13px;font-weight:600;color:var(--muted)">Step ${S} of 3</div><h1 style="font-size:34px;line-height:1.25;margin:4px 0 6px" id="q" tabindex="-1">${q}</h1><p class="sub">${sub}</p>${body}<div class="foot"><button class="btn" id="cBack">${S===1?'Cancel':'Back'}</button><button class="btn primary" id="cNext" ${valid?'':'disabled'}>${primary}</button></div><p class="note">Nothing is sent until you choose Push down.</p></div>`;
+		 ROOT.querySelectorAll('[data-cgoal]').forEach(c=>c.onchange=()=>{const id=+c.dataset.cgoal;c.checked?cas.goals.add(id):cas.goals.delete(id);renderCascade();const e=ROOT.querySelector('[data-cgoal="'+id+'"]');if(e)e.focus()});
+		 ROOT.querySelectorAll('[data-cteam]').forEach(c=>c.onchange=()=>{const i=+c.dataset.cteam;c.checked?cas.teams.add(i):cas.teams.delete(i);renderCascade();const e=ROOT.querySelector('[data-cteam="'+i+'"]');if(e)e.focus()});
 		 ROOT.querySelectorAll('input[name=cword],input[name=cdue]').forEach(r=>r.onchange=()=>{cas[r.name==='cword'?'word':'due']=r.value;document.querySelectorAll('input[name='+r.name+']').forEach(x=>x.closest('.opt').classList.toggle('sel',x.checked))});
-		 $('#cCancel').onclick=()=>{view='list';renderList()};
-		 $('#cGo').onclick=()=>{if($('#cGo').disabled)return;const by={};cas.sel.forEach(k=>{const [gid,ti]=k.split('|');(by[gid]=by[gid]||[]).push(T[+ti])});let np=0;
-		  Object.keys(by).forEach(gid=>{const g=ensure(findG(+gid));by[gid].forEach(w=>{if(!g.pushed.some(x=>x.who===w)){g.pushed.push({who:w,p:0,d:TODAY,n:'Received. Not started.',due:cas.due==='early'?'31 March 2027':g.due});np++}});g.audit.unshift({d:TODAY,t:'Pushed down to '+by[gid].join(', ')+' \u00b7 '+YOU})});
-		  const gc=Object.keys(by).length;view='list';renderList();toast('Pushed down '+gc+' goal'+(gc>1?'s':'')+' ('+np+' in all). They are now on the teams\u2019 goal plans.')};
-		 sum()}
+		 ROOT.querySelectorAll('[data-cgo]').forEach(b=>b.onclick=()=>{cas.step=+b.dataset.cgo;renderCascade()});
+		 const out=()=>{view='list';cas=null;renderList()};
+		 $('#cExit').onclick=out;
+		 $('#cBack').onclick=()=>{if(S===1)out();else{cas.step--;renderCascade()}};
+		 $('#cNext').onclick=()=>{if($('#cNext').disabled)return;if(S<3){cas.step++;renderCascade();return}
+		  const by={};pairs.forEach(([g,i])=>{(by[g.id]=by[g.id]||[]).push(T[i])});let np=0;
+		  Object.keys(by).forEach(gid=>{const g=ensure(findG(+gid));by[gid].forEach(w=>{if(!g.pushed.some(x=>x.who===w)){g.pushed.push({who:w,p:0,d:TODAY,n:'Received. Not started.',due:cas.due==='early'?'31 March 2027':g.due});np++}});g.audit.unshift({d:TODAY,t:'Pushed down to '+by[gid].join(', ')+' · '+YOU})});
+		  const gc=Object.keys(by).length;out();toast('Pushed down '+gc+' goal'+(gc>1?'s':'')+' ('+np+' in all). They are now on the teams’ goal plans.')};
+		 $('#q').focus({preventScroll:true})}
 		function startWiz(kind,gid){wiz={kind,a:{also:[],teams:[]},gid,ed:{},ownOn:{}};step=(kind==='push'||isEmp()||!BOSS)?1:0;if(isEmp())wiz.a.role=ROLE_LABELS.mem;view='wiz';if(kind==='push'){const g=goals.find(x=>x.id===gid);wiz.a.goal=g.title;wiz.a.due=g.due;step=2;wiz.a.who=[];}renderWiz()}
 		function stepper(names,off=1,cs){if(cs===undefined)cs=step;return `<nav aria-label="Progress"><ol class="stepper">${names.map((n,i)=>{const k=i+1,sk=i+off,c=sk<cs?'done':sk===cs?'cur':'';const dot=sk<cs?'&#10003;':k;const lab=`Step ${k}: ${n}${sk<cs?' (done)':sk===cs?' (current)':''}`;return `<li class="${c}" aria-label="${lab}"><span class="dot">${dot}</span><span>${n}</span></li>${k<names.length?'<li class="line" aria-hidden="true"></li>':''}`}).join('')}</ol></nav>`}
 		const edIt=(name,items)=>items.map(it=>[(wiz.ed&&wiz.ed[name+'|'+it[0]])||it[0],it[1],it[0]]);
