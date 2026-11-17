@@ -117,6 +117,11 @@ sap.ui.define([], function () {
 		},
 		aiAccept: function () { return Promise.resolve(); },
 		fileUrl: function (id) { return SERVICE + "/Attachments('" + id + "')/$value"; },
+		// hide a goal: function import DeleteGoal sets DELETED_AT and writes the log row goal_deleted. Nothing is erased.
+		remove: function (id, body) {
+			saved.delete(id);
+			return call("POST", "/DeleteGoal?GoalId='" + String(id) + "'&Reason='" + encodeURIComponent((body && body.text) || "") + "'", undefined);
+		},
 		log: function () {
 			return call("GET", "/WorkflowLog?$orderby=OccurredAt desc&$top=400&$format=json").then(function (d) {
 				return { log: results(d).map(function (r) { return { id: +r.LogId, at: r.OccurredAt, action: r.Action, entry: r.Text, goalCode: "G-" + String(r.GoalId).padStart(6, "0"), goalTitle: r.GoalTitle || "", actorId: pi(r.ActorPernr), actor: r.ActorName || pi(r.ActorPernr) }; }) };

@@ -17,7 +17,7 @@ It was built from the Canvas prototype, where the same data lives in Postgres. *
 
 | Folder | What |
 |---|---|
-| `app/` | the Fiori project (UI5, `zajmn.hr.goals.hk`, v49). `webapp/model/Store.js` is the **OData** data layer; everything else is the same app as on Canvas |
+| `app/` | the Fiori project (UI5, `zajmn.hr.goals.hk`, v49, with the six levels: Director General, Executive Director, Director, Manager, Section head, Employee). `webapp/model/Store.js` is the **OData** data layer; everything else is the same app as on Canvas |
 | `ecc/01_tables_SE11.md` | the tables, number ranges and lock object |
 | `ecc/02_gateway_service_SEGW.md` | the entity model of the service and how to activate it |
 | `ecc/ZCL_ZAJMN_GOALS_DPC_EXT.abap` | the service implementation (a starting point for the ABAP developer) |
@@ -32,6 +32,13 @@ It was built from the Canvas prototype, where the same data lives in Postgres. *
 3. **First test:** open the page with `window.AJMN_CONFIG = { serviceUrl: "/sap/opu/odata/sap/ZAJMN_GOALS_SRV" }` set before UI5 loads (a line in `index.html`), create a goal, reload: it must still be there. Then check `ZAJMN_LOG` has the rows.
 4. **Move the data:** `node migration/export-from-canvas.mjs <canvas url> <cookie>`, load with `ZAJMN_IMPORT` (test run first), then raise the number ranges above the highest id.
 5. **Launchpad:** deploy the UI5 app (BSP / ABAP repository, `/UI5/UI5_REPOSITORY_LOAD`), add the target mapping for `ZAJMNGOALS-display`, assign it to a catalog and the roles.
+
+## What changed since the first version of this pack
+
+* Goals can be deleted (soft delete, history kept; an approved goal needs its approver's approval) through the function import `DeleteGoal`.
+* Contributor links need the owner's approval, every step is in `ZAJMN_LOG`, and the page has a Workflow log tab reading `WorkflowLog`.
+* Pushing a goal down again updates each person's copy; the copy starts with no weight.
+* The people list has 38 entries; `migration/pernr-map.json` has a placeholder personnel number for each.
 
 ## What still differs from the Canvas version, on purpose or not yet done
 

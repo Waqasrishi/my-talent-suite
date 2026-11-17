@@ -53,7 +53,7 @@ CLASS zcl_zajmn_goals_dpc_ext IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD goals_get_entityset.
-    SELECT * FROM zajmn_goal INTO TABLE @DATA(lt_goal) ORDER BY goal_id.
+    SELECT * FROM zajmn_goal WHERE deleted_at = 0 INTO TABLE @DATA(lt_goal) ORDER BY goal_id.
     LOOP AT lt_goal INTO DATA(ls_goal).
       CHECK may_see( ls_goal-pernr ) = abap_true.
       APPEND CORRESPONDING #( ls_goal MAPPING goal_id = goal_id ) TO et_entityset.
@@ -82,6 +82,10 @@ CLASS zcl_zajmn_goals_dpc_ext IMPLEMENTATION.
     DATA ls_in TYPE ty_deep.
     io_data_provider->read_entry_data( IMPORTING es_data = ls_in ).
     DATA(lv_id) = CONV numc10( ls_in-goalid ).
+    SELECT SINGLE goal_id FROM zajmn_goal WHERE goal_id = @lv_id AND deleted_at <> 0 INTO @DATA(lv_gone).
+    IF sy-subrc = 0.   " deleted: a stale page must not bring it back
+      copy_data_to_ref( EXPORTING is_data = ls_in CHANGING cr_data = er_deep_entity ). RETURN.
+    ENDIF.
 
     CALL FUNCTION 'ENQUEUE_EZAJMN_GOAL' EXPORTING goal_id = lv_id EXCEPTIONS foreign_lock = 1 OTHERS = 2.
     IF sy-subrc <> 0.
@@ -153,6 +157,22 @@ CLASS zcl_zajmn_goals_dpc_ext IMPLEMENTATION.
 
   " function import GetIds
   METHOD /iwbep/if_mgw_appl_srv_runtime~execute_action.
+    IF iv_action_name = 'DeleteGoal'.
+      DATA(lv_gid) = CONV numc10( it_parameter[ name = 'GoalId' ]-value ).
+      DATA(lv_why) = CONV string( it_parameter[ name = 'Reason' ]-value ).
+      SELECT SINGLE * FROM zajmn_goal WHERE goal_id = @lv_gid AND deleted_at = 0 INTO @DATA(ls_del).
+      IF sy-subrc = 0.
+        IF may_change( ls_del-pernr ) = abap_false.
+          RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception EXPORTING textid = /iwbep/cx_mgw_busi_exception=>business_error message_unlimited = 'You may not delete this goal'.
+        ENDIF.
+        GET TIME STAMP FIELD DATA(lv_ts).
+        UPDATE zajmn_goal SET deleted_at = @lv_ts, deleted_by = @sy-uname WHERE goal_id = @lv_gid.
+        INSERT zajmn_log FROM @( VALUE #( log_id = next_id( 'ZAJMN_LOG' ) goal_id = lv_gid actor_pernr = zcl_zajmn_util=>pernr_of_user( sy-uname )
+          action = 'goal_deleted' text = COND #( WHEN lv_why IS INITIAL THEN `Goal deleted` ELSE lv_why ) occurred_at = lv_ts ) ).
+        COMMIT WORK.
+      ENDIF.
+      RETURN.
+    ENDIF.
     IF iv_action_name = 'GetIds'.
       DATA(lv_count) = CONV i( it_parameter[ name = 'count' ]-value ).
       lv_count = nmin( val1 = lv_count val2 = 200 ).

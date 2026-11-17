@@ -15,7 +15,10 @@ Import the DDIC structures from the tables in `01_tables_SE11.md`, then set thes
 
 Navigation properties on `Goal`: `Activities`, `Pushes`, `Contributors`, `Log` (1:n).
 
-Function import: **`GetIds`** (GET, parameter `count` Int16, returns a collection of `Id` Edm.String). The client asks for blocks of 100 ids and uses them for new goals and activities.
+Function imports:
+
+* **`DeleteGoal`** (POST, parameters `GoalId` Edm.String and `Reason` Edm.String). A **soft delete**: sets `DELETED_AT` and `DELETED_BY`, writes the log row `goal_deleted`, never removes a row. `GET /Goals` returns only goals whose `DELETED_AT` is initial. A stale page that saves a deleted goal is ignored (the deep save checks `DELETED_AT` first). The page deletes the goal and its pushed copies by calling it once per goal.
+* **`GetIds`** (GET, parameter `count` Int16, returns a collection of `Id` Edm.String). The client asks for blocks of 100 ids and uses them for new goals and activities.
 
 ## Why POST = save
 
