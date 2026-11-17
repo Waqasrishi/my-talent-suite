@@ -508,7 +508,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 {const A='<span class="arrow">&rarr;</span>',nd=t=>`<span class="node">${t}</span>`;
 		  // the DG is the top of the cascade, so the strip starts with the Director General; everyone else starts with Strategy
 		  const parts=[...(BOSS?[nd('Strategy'),...chain.map(x=>nd(esc(short(x))))]:[]),`<span class="node you">${esc(short(ME))} (you)</span>`,...(TEAMS.length?[nd(`Your team (${TEAMS.length})`)]:[])];
-		  h+=`<div class="striprow"><div class="strip" aria-label="Your place in the cascade">${parts.join(A)}</div>${portlet()}</div>`}
+		  h+=`<div class="striprow">${portlet()}</div>`}
 		 if(goals.length)h+=summary();
   if(!goals.length&&!got.length)h+=`<div class="empty">You have no goals yet.<br>Choose New goal to create one${BOSS?', or wait for '+esc(BOSS.label)+' to push one down to you':''}.</div>`;
 		 if(got.length){h+=`<h2 style="font-size:20px;margin:18px 0 10px">Pushed down to you</h2>`;

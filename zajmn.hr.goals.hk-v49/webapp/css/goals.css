@@ -948,3 +948,5 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .fulltip{position:fixed;z-index:1300;max-width:min(380px,90vw);padding:8px 12px;border-radius:10px;background:#14264B;color:#fff;font-size:12px;font-weight:600;line-height:1.4;box-shadow:0 8px 24px rgba(20,38,75,.35);pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s,transform .14s}
 .fulltip.show{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.fulltip{transition:none}}
+
+.ajmng .striprow .portlet{flex:1 1 100%;max-width:760px;margin-inline-start:0}
