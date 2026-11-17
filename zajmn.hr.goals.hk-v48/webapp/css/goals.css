@@ -698,3 +698,11 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .gc3 .gc3links .btn:hover,.ajmng .gc3 .gc3links .btn[data-push]:hover{background:#fff;box-shadow:0 4px 12px rgba(201,154,46,.35)}
 .ajmng .gc3 .gc3links .btn.primary{background:#14264B;color:#fff;border-color:#14264B}
 .ajmng .gc3 .gc3links .btn[data-align],.ajmng .gc3 .gc3links .btn[data-open],.ajmng .gc3 .gc3links .btn[data-push]{padding-left:4px}
+
+/* Edit and Delete on activities: back to the small outlined buttons */
+.ajmng .abtn,.ajmng .abtn:hover{display:inline-block;font:inherit;font-size:12px;font-weight:800;border:1px solid #C99A2E;background:#fff;color:#14264B;border-radius:4px;padding:3px 10px;box-shadow:none;transform:none;gap:0}
+.ajmng .abtn:hover{background:#FBF7EC}
+.ajmng .abtn::before{display:none!important;content:none!important}
+.ajmng .abtn.del,.ajmng .abtn.del:hover{border-color:#C9CFDB;color:#7A2A2A}
+.ajmng .abtn.del.armed{background:#A33;border-color:#A33;color:#fff}
+.ajmng .abtn[data-aedit],.ajmng .abtn[data-adel]{padding-left:10px!important}
