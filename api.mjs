@@ -160,6 +160,11 @@ async function workflowLog(res, H, url) {
 // Returns true when it answered.
 export async function api(req, res, path, who, H) {
   if (!path.startsWith("/api/")) return false;
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    // one line per write, so a failure on the live site can be found in `canvas logs`
+    const t0 = Date.now();
+    res.on("finish", () => console.log(`api ${req.method} ${path} ${res.statusCode} len=${req.headers["content-length"] ?? "?"} ${Date.now() - t0}ms by=${who.email ?? "-"}`));
+  }
   try {
     const url = new URL(req.url, "http://app");
     if (path === "/api/state" && req.method === "GET") { await state(res, H); return true; }
