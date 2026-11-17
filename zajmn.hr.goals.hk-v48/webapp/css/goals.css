@@ -588,3 +588,13 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng button.wcircle{animation:cglow 2.4s ease-in-out infinite}
 @keyframes cglow{0%,100%{box-shadow:0 0 0 0 rgba(201,154,46,0),0 0 6px 1px rgba(201,154,46,.45)}50%{box-shadow:0 0 0 3px rgba(201,154,46,.25),0 0 18px 4px rgba(201,154,46,.75)}}
 @media (prefers-reduced-motion:reduce){.ajmng button.wcircle{animation:none;box-shadow:0 0 0 3px rgba(201,154,46,.55)}}
+
+/* activity popup */
+.actdlg{position:fixed;inset:0;z-index:1000;background:rgba(20,38,75,.45);display:flex;align-items:center;justify-content:center;padding:16px;animation:actin .18s ease-out}
+.actdlg .actbox{background:#fff;border-radius:10px;border-top:4px solid #C99A2E;width:min(480px,100%);padding:22px 24px;box-shadow:0 18px 50px rgba(20,38,75,.35)}
+.actdlg h2{font-size:22px;margin:0 0 6px}
+.actdlg p{margin:0 0 12px;font-size:14px;color:#55607A}
+.actdlg textarea{width:100%;box-sizing:border-box}
+.actdlg .actmsg{color:#A33;font-size:13px;min-height:18px;margin-top:4px}
+@keyframes actin{from{opacity:0}to{opacity:1}}
+.ajmng .actcount{display:inline-block;margin-inline-start:6px;min-width:24px;padding:0 8px;border-radius:999px;background:#F4EBD2;color:#7A4B00;font-size:14px;text-align:center}
