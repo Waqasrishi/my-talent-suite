@@ -575,3 +575,11 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng button.kpi.kedit{font:inherit;text-align:start;cursor:pointer;border-top:3px solid var(--gold);border-inline:0}
 .ajmng button.kpi.kedit:hover{background:#FBF7EC}
 .ajmng button.kpi.kedit small{color:#2F5FB3;font-weight:800}
+
+.ajmng .kpi.kring{flex-direction:row;align-items:center;gap:12px}
+.ajmng .kpi.kring .pring{width:64px;height:64px;flex:0 0 64px}
+.ajmng .kpi.kring span{display:block;margin-bottom:4px}
+.ajmng button.kpi.kedit{animation:wglow 2.4s ease-in-out infinite;border-top-color:#C99A2E}
+@keyframes wglow{0%,100%{box-shadow:0 0 0 0 rgba(201,154,46,.0),0 0 6px 1px rgba(201,154,46,.45)}50%{box-shadow:0 0 0 3px rgba(201,154,46,.25),0 0 18px 4px rgba(201,154,46,.75)}}
+@media (prefers-reduced-motion:reduce){.ajmng button.kpi.kedit{animation:none;box-shadow:0 0 0 3px rgba(201,154,46,.55)}}
+.ajmng .kpi b{overflow-wrap:anywhere}

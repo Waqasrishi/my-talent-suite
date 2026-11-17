@@ -16,6 +16,7 @@ sap.ui.define([], function () {
 			var th = bar.querySelector(".pthumb"); th.style.insetInlineStart = v + "%"; th.querySelector(".pbub").textContent = v + "%";
 			var val = bar.parentElement.querySelector(".pval"); if (val) { val.textContent = v + "%"; }
 			var live = bar.ownerDocument.querySelectorAll('[data-pv="' + bar.getAttribute("data-ps") + '"]'); for (var q = 0; q < live.length; q++) { live[q].textContent = v + "%"; }
+			var rg = bar.ownerDocument.querySelectorAll('[data-pvr="' + bar.getAttribute("data-ps") + '"]'); for (var z = 0; z < rg.length; z++) { var rf = rg[z].querySelector(".rfill"), rt = rg[z].querySelector(".rtxt"); if (rf) { rf.setAttribute("stroke-dasharray", (v / 100 * 226.2).toFixed(1) + " 226.2"); } if (rt) { rt.textContent = v + "%"; } }
 			var card = bar.closest("[data-ring-scope]");
 			if (card) {
 				var f = card.querySelector(".rfill"), t = card.querySelector(".rtxt"), r = card.querySelector(".pring");
