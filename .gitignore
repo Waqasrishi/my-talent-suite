@@ -28,3 +28,6 @@ __pycache__/
 
 # The volume, on your computer (src/envs.py DATA_DIR) — the app's files, never committed.
 /data/
+
+.data/
+node_modules/

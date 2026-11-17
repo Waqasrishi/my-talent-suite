@@ -40,9 +40,11 @@ resources:
       #   write: ["someone@aljazeera.net"]    # may also change things; absent: the same as read
       #   deny: []                            # never, whatever read and write say
 
-  # db:                           # DATABASE_URL, from your own Postgres — ajnkit.db
-  #   type: postgres              # schema: src/models.py, then `canvas db revision "<what>"`
-  #   params: {size: 1Gi}         # 1Gi-10Gi; more, to 100Gi, a team owner approves on the app's page
+  # the goals database: DATABASE_URL. The schema is db/migrations/*.sql (written by hand: this app is Node, not the platform's Python stack),
+  # applied by the platform before each new version starts. server.mjs reads it through db.mjs and serves /api/* from api.mjs.
+  db:
+    type: postgres
+    params: {size: 1Gi}
   # data:                         # a disk of its own, kept across restarts — request-volume
   #   type: volume                # mounted at /data (above); deleted with the app, no backup
   #   params: {size: 1Gi}         # 1Gi-10Gi; more, to 100Gi, a team owner approves on the app's page

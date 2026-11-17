@@ -9,6 +9,7 @@ import { readdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
+import { api } from "./api.mjs";
 import { join } from "node:path";
 
 const PAGES = { "/": "home.html", "/home.html": "home.html", "/goals.html": "goals.html", "/goals-hub-v2.html": "goals-hub-v2.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
@@ -73,9 +74,10 @@ const PROJECTS = [
   { url: "goals-module-v45", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v45", home: "/" },
   { url: "goals-module-v46", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v46", home: "/" },
   { url: "goals-module-v47", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v47", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v48" },
+  { url: "goals-module-v48", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v48", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v49" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v48", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v49", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
@@ -154,12 +156,13 @@ function mayRead(who) {
 createServer(async (req, res) => {
   const path = new URL(req.url, "http://app").pathname;
   if (path === "/healthz") return res.writeHead(200, HEADERS).end("ok");
-  if (req.method !== "GET" && req.method !== "HEAD") return res.writeHead(405, { ...HEADERS, Allow: "GET, HEAD" }).end();
   const who = caller(req.headers);
   if (!mayRead(who)) {
     return res.writeHead(403, { ...HEADERS, "Content-Type": "text/plain; charset=utf-8" })
       .end("You do not have access to this app. Ask its owners to add you.\n");
   }
+  if (await api(req, res, path, who, HEADERS)) return;
+  if (req.method !== "GET" && req.method !== "HEAD") return res.writeHead(405, { ...HEADERS, Allow: "GET, HEAD" }).end();
   // the front page is the Fiori (UI5) AJMN People home; the plain HTML home stays at /home.html
   if (path === "/") return res.writeHead(308, { ...HEADERS, Location: "/latest/zajmn.hr.sucfac1.hk/webapp/index.html" }).end();
   const proj = PROJECTS.find((p) => path === "/" + p.url || path === "/" + p.url + "/");
