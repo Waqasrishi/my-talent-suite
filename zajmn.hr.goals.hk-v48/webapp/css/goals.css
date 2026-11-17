@@ -571,3 +571,7 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .gh .btn.small.primary{background:var(--navy,#14264B);color:#fff;border-color:var(--navy,#14264B)}
 .ajmng .wcircle.static{cursor:default}
 .ajmng .wcircle.static:hover{background:#fff;transform:none}
+
+.ajmng button.kpi.kedit{font:inherit;text-align:start;cursor:pointer;border-top:3px solid var(--gold);border-inline:0}
+.ajmng button.kpi.kedit:hover{background:#FBF7EC}
+.ajmng button.kpi.kedit small{color:#2F5FB3;font-weight:800}

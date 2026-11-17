@@ -15,6 +15,7 @@ sap.ui.define([], function () {
 			bar.querySelector(".pfill").style.width = v + "%";
 			var th = bar.querySelector(".pthumb"); th.style.insetInlineStart = v + "%"; th.querySelector(".pbub").textContent = v + "%";
 			var val = bar.parentElement.querySelector(".pval"); if (val) { val.textContent = v + "%"; }
+			var live = bar.ownerDocument.querySelectorAll('[data-pv="' + bar.getAttribute("data-ps") + '"]'); for (var q = 0; q < live.length; q++) { live[q].textContent = v + "%"; }
 			var card = bar.closest("[data-ring-scope]");
 			if (card) {
 				var f = card.querySelector(".rfill"), t = card.querySelector(".rtxt"), r = card.querySelector(".pring");
