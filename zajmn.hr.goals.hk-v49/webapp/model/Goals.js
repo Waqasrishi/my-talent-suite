@@ -1,6 +1,6 @@
 // Goals module (third prototype, 15 Nov 2026): its screens, goal library and sample data, unchanged, as a module of this component.
 // opts.nav opens the home page; opts.start is "new" when the home page asked for the new-goal wizard.
-sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", "./Slider", "./Weights", "./Store"], function (Scenario, I18n, Motion, Morph, Datepicker, Slider, Weights, Store) {
+sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", "./Slider", "./Weights", "./Store", "./Tip"], function (Scenario, I18n, Motion, Morph, Datepicker, Slider, Weights, Store, Tip) {
 	var started = false;
 	function start(opts) {
 		if (started) { return; }
@@ -11,6 +11,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		Datepicker.install(ROOT);
 		Slider.install(ROOT);
 		Store.install(ROOT);
+		Tip.install(ROOT);
 		Weights.install(ROOT,{list:()=>goals.map(g=>({id:g.id,title:g.title,weight:g.weight}))});
 		// weights were saved in the weight editor
 		ROOT.addEventListener('ajmng:weights',e=>{const ch=e.detail.changes;Object.keys(ch).forEach(id=>{const g=findG(+id);if(!g)return;ensure(g);if(g.weight!==ch[id]){g.weight=ch[id];g.audit.unshift({d:TODAY,t:'Weight set to '+(ch[id]==null?'not set':ch[id]+'%')+' · '+YOU})}});toast('Weights saved.');renderList()});

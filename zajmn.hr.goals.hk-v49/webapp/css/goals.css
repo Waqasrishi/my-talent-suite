@@ -943,3 +943,8 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .actdlg .dchg span{color:#55607A}
 .actdlg .dck{margin:8px 0 0;padding:8px 10px;background:#FBF7EC;border-radius:8px}
 .ajmng button.kpi.kedit.needs small{color:#7A4B00;font-weight:700}
+
+/* full text on hover */
+.fulltip{position:fixed;z-index:1300;max-width:min(380px,90vw);padding:8px 12px;border-radius:10px;background:#14264B;color:#fff;font-size:12px;font-weight:600;line-height:1.4;box-shadow:0 8px 24px rgba(20,38,75,.35);pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s,transform .14s}
+.fulltip.show{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.fulltip{transition:none}}
