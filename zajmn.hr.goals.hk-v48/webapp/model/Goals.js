@@ -320,7 +320,6 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		}
 		function renderList(){
 		 if(view==='goal'){renderGoal();return}
-		 if(view==='cascade'){renderCascade();return}
 		 if(view==='dash'){renderDash();return}
 		 if(view==='appr'){renderApprovals();return}
 		 if(view==='align'){renderAlign();return}
@@ -350,7 +349,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
 		 const al=$('#alignAll');if(al)al.onclick=()=>{view='align';alGoal=null;renderList()};
-		 const pa=$('#pushAll');if(pa)pa.onclick=()=>{cascInit();view='cascade';renderList()};
+		 const pa=$('#pushAll');if(pa)pa.onclick=()=>{cascInit();openCascade()};
 		 ROOT.querySelectorAll('[data-align]').forEach(b=>b.onclick=()=>{alGoal=+b.dataset.align;alFrom='list';view='align';renderList()});
 		 ROOT.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{gid=+b.dataset.open;gEdit=false;cAddOpen=false;view='goal';renderList()});
 		 ROOT.querySelectorAll('[data-rup]').forEach(b=>b.onclick=()=>{const g=findG(+b.dataset.rup),rec=g.pushed.find(x=>x.who===mname),p=parseInt($('#rp_'+g.id).value,10),n=$('#rn_'+g.id).value.trim();if(isNaN(p)||p<0||p>100){toast('Progress must be a number from 0 to 100.');return}rec.p=p;rec.d=TODAY;if(n)rec.n=n;ensure(g);g.audit.unshift({d:TODAY,t:mname+' updated progress to '+p+'%'+(n?': '+n:'')});toast('Saved. '+nameOf(pByLabel(g.owner))+' sees '+p+'% on their goal.');renderList()});
@@ -364,34 +363,55 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		
 		const newSteps=a=>!BOSS?['Goal','Measure','Due date','Review']:rc(a)==='mem'?['Goal','Measure','Team goal','Due date','Review']:rc(a)==='team'?['Role','Goal','Measure','Parent','Due date','Team','Review']:rc(a)==='con'?['Role','Goal','Measure','Contributes to','Due date','Review']:['Role','Goal','Measure','Parent','Due date','Review'];
 		const PUSH_STEPS=['Goal','Who','Wording','Date','Review'];
-		// push down on one screen: a card for each person, tick the goals they get. Everything starts ticked (the suggestion).
+		// push down as a pop-up wizard, like the Cascade Goal flow in SuccessFactors: Goals, Recipients, Edit (optional), Review.
+		// Every step opens already filled in. Each person gets their own copy of the goal, with no weight.
 		let cas=null;
-		function cascInit(){const T=TEAMS.map(t=>t[0]),sel=new Set();goals.forEach(g=>T.forEach((t,i)=>{if(!teamNames(g).includes(t))sel.add(g.id+'|'+i)}));cas={sel,word:'same',due:'same'}}
-		function renderCascade(){crumb('Push down goals');tabs();if(!cas)cascInit();
-		 const T=TEAMS.map(t=>t[0]),ini=n=>n.split(',')[0].split(' ').map(w=>w[0]).join('').slice(0,2);
-		 const W=[['same','Same wording, each manager adds their own measure'],['reword','Each manager may reword it']],D=[['same','Same as each goal'],['early','31 March 2027']];
-		 const opts=(name,items,cur)=>items.map(x=>`<label class="opt ${cur===x[0]?'sel':''}"><input type="radio" name="${name}" value="${x[0]}" ${cur===x[0]?'checked':''}><span class="t">${esc(x[1])}</span></label>`).join('');
-		 const cards=TEAMS.map((t,i)=>`<section class="pcard" aria-label="${esc(t[0])}"><header><i class="gav" aria-hidden="true">${esc(ini(t[0]))}</i><div class="pwho"><b>${esc(t[0].split(',')[0])}</b><small>${esc(t[0].split(',').slice(1).join(',').trim())}</small></div><span class="pcnt" data-pc="${i}"></span></header><div class="pall"><button type="button" class="rowall" data-pall="${i}">Select all</button><button type="button" class="rowall" data-pnone="${i}">None</button></div>
-		  ${goals.map(g=>teamNames(g).includes(T[i])?`<div class="pg done"><span class="pgt">${esc(g.title)}</span><span class="cpushed">Already pushed</span></div>`:`<label class="pg"><input type="checkbox" data-cg="${g.id}" data-ct="${i}" ${cas.sel.has(g.id+'|'+i)?'checked':''}><span class="cbox" aria-hidden="true"></span><span class="pgt">${esc(g.title)}${isStrat(g)?STAB:''}</span></label>`).join('')}</section>`).join('');
-		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">Push down goals</h1></div><p class="sub">Each person has a card. Tick the goals they should get. Everything is ticked as a suggestion, so untick what you do not want to send.</p>
-		 <div class="aihead" style="margin-bottom:14px"><span class="aitag">${SP}Suggested for you</span><span>Every goal to every team.</span></div>
-		 <div class="pcards">${cards}</div>
-		 <div class="cquick" role="group" aria-label="How the goals are sent"><div class="cq"><span class="cql">Wording</span><div class="seg" role="radiogroup" aria-label="Wording"><button type="button" role="radio" data-cw="same" class="${cas.word==='same'?'on':''}" aria-checked="${cas.word==='same'}">Same, they add the measure</button><button type="button" role="radio" data-cw="reword" class="${cas.word==='reword'?'on':''}" aria-checked="${cas.word==='reword'}">Full goal, they may reword</button></div></div><div class="cq"><span class="cql">Due date</span><div class="seg" role="radiogroup" aria-label="Due date"><button type="button" role="radio" data-cd="same" class="${cas.due==='same'?'on':''}" aria-checked="${cas.due==='same'}">Goal\u2019s date</button><button type="button" role="radio" data-cd="early" class="${cas.due==='early'?'on':''}" aria-checked="${cas.due==='early'}">31 Mar 2027</button></div></div><p class="cnote">Each person gets their own copy to edit. Weights are not copied: they set their own.</p></div>
-		 <div class="cbar" role="region" aria-label="Summary"><span id="cSum"></span><span class="row" style="gap:10px"><button class="btn" id="cCancel">Cancel</button><button class="btn primary" id="cGo">Push down</button></span></div>`;
-		 const sum=()=>{const n=cas.sel.size,ps=new Set([...cas.sel].map(k=>k.split('|')[1])).size,gs=new Set([...cas.sel].map(k=>k.split('|')[0])).size;
-		  $('#cSum').innerHTML=n?`<b>${gs}</b> goal${gs>1?'s':''} to <b>${ps}</b> ${ps>1?'people':'person'} <span>(${n} in all)</span>`:'Nothing ticked yet';$('#cGo').disabled=!n;
-		  TEAMS.forEach((t,i)=>{const cells=[...document.querySelectorAll('[data-ct="'+i+'"]')],on=cells.filter(c=>c.checked).length,el=document.querySelector('[data-pc="'+i+'"]');if(el){el.textContent=cells.length?on+' of '+cells.length:'All sent';el.classList.toggle('none',!on)}})};
-		 const set=(el,on)=>{el.checked=on;const k=el.dataset.cg+'|'+el.dataset.ct;on?cas.sel.add(k):cas.sel.delete(k)};
-		 ROOT.querySelectorAll('[data-cg]').forEach(c=>c.onchange=()=>{set(c,c.checked);sum()});
-		 ROOT.querySelectorAll('[data-pall]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-ct="'+b.dataset.pall+'"]').forEach(x=>set(x,true));sum()});
-		 ROOT.querySelectorAll('[data-pnone]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-ct="'+b.dataset.pnone+'"]').forEach(x=>set(x,false));sum()});
-		 ROOT.querySelectorAll('[data-cw],[data-cd]').forEach(b=>b.onclick=()=>{const k=b.dataset.cw?'word':'due',v=b.dataset.cw||b.dataset.cd;cas[k]=v;b.parentElement.querySelectorAll('button').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-checked',on)})});
-		 const out=()=>{view='list';cas=null;renderList()};
-		 $('#cCancel').onclick=out;
-		 $('#cGo').onclick=()=>{if($('#cGo').disabled)return;const by={};cas.sel.forEach(k=>{const [gid,ti]=k.split('|');(by[gid]=by[gid]||[]).push(T[+ti])});let np=0;
-		  Object.keys(by).forEach(gid=>{const g=ensure(findG(+gid));by[gid].forEach(w=>{if(!g.pushed.some(x=>x.who===w)){const due=cas.due==='early'?'31 March 2027':g.due,rp=pByLabel(w);g.pushed.push({who:w,p:0,d:TODAY,n:'Received. Not started.',due});np++;if(rp)STORE[rp.id].unshift({id:++idc,owner:w,title:g.title,desc:g.desc||'',measure:cas.word==='same'?'':g.measure,due,parent:g.title,also:[],status:'ok',statusText:'Approved',own:0,weight:null,contribs:[],pushed:[],from:{gid:g.id,who:ME.label}})}});g.audit.unshift({d:TODAY,t:'Pushed down to '+by[gid].join(', ')+' · '+YOU})});
+		function cascInit(){const T=TEAMS.map(t=>t[0]);cas={step:1,goals:new Set(goals.filter(g=>T.some(t=>!teamNames(g).includes(t))).map(g=>g.id)),people:new Set(T.map((t,i)=>i)),per:{},edit:null,edits:{},q:'',open:null}}
+		function openCascade(){const old=ROOT.querySelector('.casdlg');if(old)old.remove();const el=document.createElement('div');el.className='casdlg';ROOT.appendChild(el);drawCascade(el)}
+		function drawCascade(el){
+		 const T=TEAMS.map(t=>t[0]),S=cas.step,sg=goals.filter(g=>cas.goals.has(g.id)),ini=n=>n.split(',')[0].split(' ').map(w=>w[0]).join('').slice(0,2);
+		 const gl=i=>{const have=teamNames,ok=sg.filter(g=>!have(g).includes(T[i]));const sel=cas.per[i];return sel?ok.filter(g=>sel.has(g.id)):ok};
+		 const pairs=[...cas.people].flatMap(i=>gl(i).map(g=>[g,i]));
+		 const eg=g=>Object.assign({title:g.title,measure:g.measure||'',due:g.due},cas.edits[g.id]||{});
+		 let sub,body='',valid=true,primary='Next';
+		 if(S===1){sub='Select one or more goals. Goals already with every team are greyed out.';
+		  const sel=goals.filter(g=>!T.every(t=>teamNames(g).includes(t)));
+		  body=`<label class="cr all"><input type="checkbox" id="cAllG" ${sel.length&&sel.every(g=>cas.goals.has(g.id))?'checked':''}><span class="cbox" aria-hidden="true"></span><b>Select all goals</b></label>`+goals.map(g=>{const have=teamNames(g),full=T.every(t=>have.includes(t));return `<label class="cr ${full?'off':''}"><input type="checkbox" data-cgoal="${g.id}" ${cas.goals.has(g.id)?'checked':''} ${full?'disabled':''}><span class="cbox" aria-hidden="true"></span><span class="crt">${esc(g.title)}${isStrat(g)?STAB:''}<small>Due ${esc(g.due)} &middot; ${full?'Already with every team':have.length?'Already with '+have.length+' of '+T.length+' teams':'Not pushed down yet'}</small></span></label>`}).join('');valid=cas.goals.size>0}
+		 if(S===2){sub='Select one or more people from your team. Everyone starts with all the goals you chose; open a person to change that.';
+		  const q=cas.q.toLowerCase(),vis=TEAMS.map((t,i)=>i).filter(i=>!q||T[i].toLowerCase().includes(q));
+		  body=`<input type="search" id="cQ" class="cq2" placeholder="Search your team" value="${esc(cas.q)}" aria-label="Search your team"><div class="crh">My team (${cas.people.size} selected)</div><label class="cr all"><input type="checkbox" id="cAllP" ${vis.length&&vis.every(i=>cas.people.has(i))?'checked':''}><span class="cbox" aria-hidden="true"></span><b>Direct reports</b></label>`+vis.map(i=>{const mine=sg.filter(g=>!teamNames(g).includes(T[i])),n=gl(i).length,op=cas.open===i;
+		   return `<div class="cp"><label class="cr"><input type="checkbox" data-cpers="${i}" ${cas.people.has(i)?'checked':''}><span class="cbox" aria-hidden="true"></span><i class="gav" aria-hidden="true">${esc(ini(T[i]))}</i><span class="crt"><b>${esc(T[i].split(',')[0])}</b><small>${esc(T[i].split(',').slice(1).join(',').trim())}</small></span></label>${cas.people.has(i)?`<button type="button" class="cgoals ${n<mine.length?'part':''}" data-copen="${i}" aria-expanded="${op}">${!mine.length?'Already has all':n===mine.length?'All '+n+' goal'+(n===1?'':'s'):n+' of '+mine.length+' goals'} &#9662;</button>`:''}</div>${op&&cas.people.has(i)?`<div class="cpg">${mine.map(g=>`<label class="cr sm"><input type="checkbox" data-cpg="${i}|${g.id}" ${gl(i).some(x=>x.id===g.id)?'checked':''}><span class="cbox" aria-hidden="true"></span><span class="crt">${esc(g.title)}${isStrat(g)?STAB:''}</span></label>`).join('')}</div>`:''}`}).join('');valid=cas.people.size>0&&pairs.length>0}
+		 if(S===3){sub='Skip this step if you do not want to change the goals. Each person gets their own copy, with no weight.';
+		  body=sg.map(g=>{const e=eg(g),ch=!!cas.edits[g.id],op=cas.edit===g.id;
+		   return `<div class="ce"><div class="cr"><span class="crt">${esc(e.title)}${isStrat(g)?STAB:''}${ch?'<span class="cedt">Edited</span>':''}<small>${e.measure?esc(e.measure)+' &middot; ':''}Due ${esc(e.due)}</small></span><button type="button" class="cpen" data-cedit="${g.id}" aria-label="Edit ${esc(g.title)}" aria-expanded="${op}"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 13l1-3.5L11 2.5l2.5 2.5L6.5 12zM9.5 4l2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+		   ${op?`<div class="cef"><label class="fl" for="ce_t">Goal</label><input id="ce_t" value="${esc(e.title)}"><label class="fl" for="ce_m">Measure</label><input id="ce_m" value="${esc(e.measure)}" placeholder="Not set"><label class="fl" for="ce_d">Due date</label><input id="ce_d" value="${esc(e.due)}"><div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn small" data-cereset="${g.id}">Reset</button><button class="btn small primary" data-cesave="${g.id}">Done</button></div></div>`:''}</div>`}).join('')}
+		 if(S===4){sub='Preview and push down.';primary='Push down';valid=pairs.length>0;
+		  body=`<div class="crh">Goals (${sg.length} selected)</div>${sg.map(g=>`<div class="cr sm"><span class="crt">${esc(eg(g).title)}${isStrat(g)?STAB:''}</span></div>`).join('')}<div class="crh" style="margin-top:14px">Recipients (${cas.people.size} selected)</div>${[...cas.people].map(i=>`<div class="cr"><i class="gav" aria-hidden="true">${esc(ini(T[i]))}</i><span class="crt"><b>${esc(T[i].split(',')[0])}</b><small>${gl(i).length} goal${gl(i).length===1?'':'s'}: ${gl(i).map(g=>esc(g.title)).join('; ')}</small></span></div>`).join('')}<p class="cnote2">${pairs.length} in all. Each person gets their own copy to edit. Weights are not copied: they set their own.</p>`}
+		 el.innerHTML=`<div class="casbox" role="dialog" aria-modal="true" aria-labelledby="casT"><header><h2 id="casT">Push down goals</h2><button type="button" class="casx" id="cX" aria-label="Close">&times;</button></header>${stepper(['Select goals','Select people','Edit goals (optional)','Push down'],1,S)}<div class="casbody"><h3>${S}. ${['Select goals','Select people','Edit goals','Push down'][S-1]}</h3><p class="cas-sub">${sub}</p>${body}</div><footer><button type="button" class="btn" id="cPrev" ${S===1?'hidden':''}>Previous</button><button type="button" class="btn primary" id="cNext" ${valid?'':'disabled'}>${primary}</button><button type="button" class="btn" id="cCancel">Cancel</button></footer></div>`;
+		 const again=()=>{const k=document.activeElement&&document.activeElement.id,d=document.activeElement&&document.activeElement.dataset;drawCascade(el);if(k){const e=el.querySelector('#'+k);if(e)e.focus()}};
+		 const q=s=>el.querySelectorAll(s);
+		 const allG=el.querySelector('#cAllG');if(allG)allG.onchange=()=>{goals.forEach(g=>{if(!T.every(t=>teamNames(g).includes(t)))allG.checked?cas.goals.add(g.id):cas.goals.delete(g.id)});drawCascade(el)};
+		 q('[data-cgoal]').forEach(c=>c.onchange=()=>{const id=+c.dataset.cgoal;c.checked?cas.goals.add(id):cas.goals.delete(id);drawCascade(el)});
+		 const allP=el.querySelector('#cAllP');if(allP)allP.onchange=()=>{TEAMS.forEach((t,i)=>{if(!cas.q||T[i].toLowerCase().includes(cas.q.toLowerCase()))allP.checked?cas.people.add(i):cas.people.delete(i)});drawCascade(el)};
+		 q('[data-cpers]').forEach(c=>c.onchange=()=>{const i=+c.dataset.cpers;c.checked?cas.people.add(i):cas.people.delete(i);drawCascade(el)});
+		 q('[data-copen]').forEach(b=>b.onclick=()=>{const i=+b.dataset.copen;cas.open=cas.open===i?null:i;drawCascade(el)});
+		 q('[data-cpg]').forEach(c=>c.onchange=()=>{const [i,gid]=c.dataset.cpg.split('|').map(Number);const mine=sg.filter(g=>!teamNames(g).includes(T[i])).map(g=>g.id);const set=cas.per[i]||new Set(gl(i).map(g=>g.id));c.checked?set.add(gid):set.delete(gid);cas.per[i]=new Set(mine.filter(x=>set.has(x)));drawCascade(el)});
+		 const sq=el.querySelector('#cQ');if(sq)sq.oninput=()=>{cas.q=sq.value;const p=sq.selectionStart;drawCascade(el);const n=el.querySelector('#cQ');n.focus();n.setSelectionRange(p,p)};
+		 q('[data-cedit]').forEach(b=>b.onclick=()=>{cas.edit=cas.edit===+b.dataset.cedit?null:+b.dataset.cedit;drawCascade(el)});
+		 q('[data-cesave]').forEach(b=>b.onclick=()=>{const g=findG(+b.dataset.cesave),t=el.querySelector('#ce_t').value.trim()||g.title,m=el.querySelector('#ce_m').value.trim(),d=el.querySelector('#ce_d').value.trim()||g.due;const same=t===g.title&&m===(g.measure||'')&&d===g.due;if(same)delete cas.edits[g.id];else cas.edits[g.id]={title:t,measure:m,due:d};cas.edit=null;drawCascade(el)});
+		 q('[data-cereset]').forEach(b=>b.onclick=()=>{delete cas.edits[+b.dataset.cereset];cas.edit=null;drawCascade(el)});
+		 const out=()=>{el.remove();cas=null;view='list';renderList()};
+		 el.querySelector('#cX').onclick=out;el.querySelector('#cCancel').onclick=out;
+		 el.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();out()}};
+		 el.onclick=e=>{if(e.target===el)out()};
+		 el.querySelector('#cPrev').onclick=()=>{cas.step--;cas.open=null;cas.edit=null;drawCascade(el)};
+		 el.querySelector('#cNext').onclick=()=>{if(el.querySelector('#cNext').disabled)return;if(S<4){cas.step++;cas.open=null;cas.edit=null;drawCascade(el);return}
+		  const by={};pairs.forEach(([g,i])=>{(by[g.id]=by[g.id]||[]).push(i)});let np=0;
+		  Object.keys(by).forEach(gid=>{const g=ensure(findG(+gid)),e=eg(g);by[gid].forEach(i=>{const w=T[i];if(g.pushed.some(x=>x.who===w))return;g.pushed.push({who:w,p:0,d:TODAY,n:'Received. Not started.',due:e.due});np++;const rp=pByLabel(w);
+		   if(rp)STORE[rp.id].unshift({id:++idc,owner:w,title:e.title,desc:g.desc||'',measure:e.measure,due:e.due,parent:g.title,also:[],status:'ok',statusText:'Approved',own:0,weight:null,contribs:[],pushed:[],from:{gid:g.id,who:ME.label}})});
+		   g.audit.unshift({d:TODAY,t:'Pushed down to '+by[gid].map(i=>T[i]).join(', ')+' · '+YOU})});
 		  const gc=Object.keys(by).length;out();toast('Pushed down '+gc+' goal'+(gc>1?'s':'')+' ('+np+' in all). They are now on the teams’ goal plans.')};
-		 sum()}
+		 const f=el.querySelector('#cNext');if(f&&!el.dataset.focused){el.dataset.focused=1;f.focus({preventScroll:true})}}
 		function startWiz(kind,gid){wiz={kind,a:{also:[],teams:[]},gid,ed:{},ownOn:{}};step=(kind==='push'||isEmp()||!BOSS)?1:0;if(isEmp())wiz.a.role=ROLE_LABELS.mem;view='wiz';if(kind==='push'){const g=goals.find(x=>x.id===gid);wiz.a.goal=g.title;wiz.a.due=g.due;step=2;wiz.a.who=[];}renderWiz()}
 		function stepper(names,off=1,cs){if(cs===undefined)cs=step;return `<nav aria-label="Progress"><ol class="stepper">${names.map((n,i)=>{const k=i+1,sk=i+off,c=sk<cs?'done':sk===cs?'cur':'';const dot=sk<cs?'&#10003;':k;const lab=`Step ${k}: ${n}${sk<cs?' (done)':sk===cs?' (current)':''}`;return `<li class="${c}" aria-label="${lab}"><span class="dot">${dot}</span><span>${n}</span></li>${k<names.length?'<li class="line" aria-hidden="true"></li>':''}`}).join('')}</ol></nav>`}
 		const edIt=(name,items)=>items.map(it=>[(wiz.ed&&wiz.ed[name+'|'+it[0]])||it[0],it[1],it[0]]);
