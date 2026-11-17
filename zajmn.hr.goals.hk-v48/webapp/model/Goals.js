@@ -285,7 +285,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 ${BOSS?contribCard(g):''}
 		 <div class="card" style="margin-top:16px;background:var(--warm)">${aihead('Quick check of this goal.')}<ul class="checks">${C.map(c=>`<li><span class="mark ${c[0]?'ok':'warn'}" aria-hidden="true">${c[0]?'&#10003;':'!'}</span><span>${c[0]?c[1]:c[2]}</span></li>`).join('')}</ul></div>
 		 <div class="card" style="margin-top:16px"><h3 style="font-size:17px;margin-bottom:8px">Activity</h3><ul class="tl">${g.audit.map(a=>`<li>${esc(a.t)}<small>${esc(a.d)}</small></li>`).join('')}</ul></div>`;
-		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">${esc(g.title)}</h1><span class="row" style="gap:8px"><button class="btn" id="gAlign">Alignment</button><button class="btn" id="gPush">Push down</button>${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn" id="gWithdraw">Withdraw change request</button>':'<button class="btn primary" id="gEdit">Request a change</button>')}</span></div>
+		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">${esc(g.title)}</h1><span class="row" style="gap:8px">${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn" id="gWithdraw">Withdraw change request</button>':'<button class="btn primary" id="gEdit">Request a change</button>')}</span></div>
 		 <div class="sub gsub"><button class="gback" id="gBack" aria-label="Back to ${MYL()}"><span class="garrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${MYL()}</button><span class="gdiv" aria-hidden="true"></span>${chip(g)}${g.pending||locked||pend?`<span class="gstat">${g.pending?'Change waiting for approval':(locked?'Locked since 5 Nov 2026':'Waiting for approval')}</span>`:''}${BOSS?`<span class="gwho"><i class="gav alt" aria-hidden="true">${esc(BOSS.label.split(',')[0].split(' ').map(w=>w[0]).join('').slice(0,2))}</i><span class="gwt"><small>Approver</small><b>${esc(BOSS.label.split(',')[0])}</b><em>${esc(BOSS.label.split(',').slice(1).join(',').trim())}</em></span></span>`:''}</div>
 		 <h2 class="sect">Overview</h2><div class="kpis"><div class="kpi kring" data-pvr="own:${g.id}"><span>Total progress</span>${ring(g.own)}</div><div class="kpi"><span>Activities</span><b>${g.updates.length}</b></div>${wtile(g)}<div class="kpi"><span>Due date</span><b>${esc(g.due)}</b><small>${dleft(g)}</small></div></div>
 		 
@@ -309,8 +309,6 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		  if(locked){g.pending={nw,al,cto,tm,d:TODAY};g.note=null;g.audit.unshift({d:TODAY,t:'Change requested ('+ch.join(', ')+') · '+YOU});toast('Change sent to '+nameOf(BOSS)+' for approval.')}
 		  else{const re=g.statusText==='Returned for changes';Object.assign(g,nw);g.also=al;applyX(g,{cto,tm});g.audit.unshift({d:TODAY,t:'Edited '+ch.map(k=>({desc:'description',due:'due date',measure:'measure',title:'title',parent:'main link'})[k]||k).join(', ')+(re?' and resubmitted for approval':'')+' · '+YOU});if(re){g.status='att';g.statusText='Awaiting approval';g.note=null;toast('Saved and resubmitted to '+nameOf(BOSS)+'.')}else toast('Saved.')}
 		  gEdit=false;renderGoal()};
-		 const ga=$('#gAlign');if(ga)ga.onclick=()=>{alGoal=g.id;alFrom='goal';view='align';renderList()};
-		 const gp=$('#gPush');if(gp)gp.onclick=()=>startWiz('push',g.id);
 		 const rr=()=>renderGoal();
 		 const ca=$('#cAdd');if(ca)ca.onclick=()=>{cAddOpen=!cAddOpen;cErr='';rr()};
 		 const co=$('#cOk');if(co)co.onclick=()=>{const w=$('#cSel').value;if($('#cRole').value==='Owner'){cErr='A goal can have only one owner, and '+YOU+' already own this one. Add '+w+' as a contributor instead.';toast('A goal can only have one owner.');rr();return}cErr='';g.contribs.push({who:w,goal:null,p:null,status:'Invited'});g.audit.unshift({d:TODAY,t:'Invited '+w+' to contribute · '+YOU});cAddOpen=false;toast('Invited '+w+'. They link one of their own goals to yours.');rr()};
@@ -322,12 +320,13 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		}
 		function renderList(){
 		 if(view==='goal'){renderGoal();return}
+		 if(view==='cascade'){renderCascade();return}
 		 if(view==='dash'){renderDash();return}
 		 if(view==='appr'){renderApprovals();return}
 		 if(view==='align'){renderAlign();return}
 		 crumb(MYL());tabs();
 		 const mname=ME.label,got=ALLG().flatMap(g=>(g.pushed||[]).filter(x=>x.who===mname).map(x=>({g,x})));
-		 let h=`<div class="row" style="justify-content:space-between;margin-bottom:4px"><h1 style="font-size:34px">${MYL()}</h1><button class="btn primary" id="newGoal">New goal</button></div>
+		 let h=`<div class="row" style="justify-content:space-between;margin-bottom:4px"><h1 style="font-size:34px">${MYL()}</h1><span class="row" style="gap:8px">${goals.length?'<button class="btn" id="alignAll">Alignment</button>':''}${TEAMS.length&&goals.length?'<button class="btn" id="pushAll">Push down</button>':''}<button class="btn primary" id="newGoal">New goal</button></span></div>
 		 <p class="sub">Goal year 2027. You have ${goals.length} goal${goals.length===1?'':'s'}${got.length?' and '+got.length+' pushed down to you':''}. ${BOSS?'The target is 3 to 5.':''}</p>`;
 		 const chain=[];{let c=BOSS;while(c){chain.unshift(c);c=pById(c.boss)}}
 		 const short=x=>(x.lv==='dg'||x.lv==='ed')?x.label.split(', ').pop():x.label;
@@ -347,11 +346,12 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
     <div class="gc3mid"><div class="geyebrow">Goal ${chip(g)}</div><h3 class="gtitle">${esc(g.title)}</h3><div class="gc3measure"><span>Measure</span> ${esc(g.measure||'Not set')}</div>${Slider.markup('own:'+g.id,g.own,BOSS?'Owner progress':'Your progress')}</div>
     ${wcirc(g,unset)}</div>
    ${subbars(g)}${g.note?`<div class="card" style="background:var(--attbg);border-color:#D9A93B;margin-top:10px;padding:10px 14px;font-size:14px"><strong>Returned by ${esc(nameOf(bossOfGoal(g)))}:</strong> ${esc(g.note)}</div>`:''}${g.cto?'<div style="font-size:14px;margin-top:8px"><b>Contributing to:</b> '+esc(g.cto)+' <span style="color:var(--muted)">(you are a contributor, not the owner)</span></div>':''}
-   <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button>${TEAMS.length?`<button class="btn small" data-push="${g.id}">Push down</button>`:''}</span></div></div>`});
+   <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button></span></div></div>`});
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
+		 const al=$('#alignAll');if(al)al.onclick=()=>{view='align';alGoal=null;renderList()};
+		 const pa=$('#pushAll');if(pa)pa.onclick=()=>{cas={sel:new Set(),word:'same',due:'same'};view='cascade';renderList()};
 		 ROOT.querySelectorAll('[data-align]').forEach(b=>b.onclick=()=>{alGoal=+b.dataset.align;alFrom='list';view='align';renderList()});
-		 ROOT.querySelectorAll('[data-push]').forEach(b=>b.onclick=()=>startWiz('push',+b.dataset.push));
 		 ROOT.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{gid=+b.dataset.open;gEdit=false;cAddOpen=false;view='goal';renderList()});
 		 ROOT.querySelectorAll('[data-rup]').forEach(b=>b.onclick=()=>{const g=findG(+b.dataset.rup),rec=g.pushed.find(x=>x.who===mname),p=parseInt($('#rp_'+g.id).value,10),n=$('#rn_'+g.id).value.trim();if(isNaN(p)||p<0||p>100){toast('Progress must be a number from 0 to 100.');return}rec.p=p;rec.d=TODAY;if(n)rec.n=n;ensure(g);g.audit.unshift({d:TODAY,t:mname+' updated progress to '+p+'%'+(n?': '+n:'')});toast('Saved. '+nameOf(pByLabel(g.owner))+' sees '+p+'% on their goal.');renderList()});
 		}
@@ -364,6 +364,30 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		
 		const newSteps=a=>!BOSS?['Goal','Measure','Due date','Review']:rc(a)==='mem'?['Goal','Measure','Team goal','Due date','Review']:rc(a)==='team'?['Role','Goal','Measure','Parent','Due date','Team','Review']:rc(a)==='con'?['Role','Goal','Measure','Contributes to','Due date','Review']:['Role','Goal','Measure','Parent','Due date','Review'];
 		const PUSH_STEPS=['Goal','Who','Wording','Date','Review'];
+		// push down: one screen for all goals and all teams, pushed in one go (like the cascade in SuccessFactors)
+		let cas={sel:new Set(),word:'same',due:'same'};
+		function renderCascade(){crumb('Push down goals');tabs();
+		 const T=TEAMS.map(t=>t[0]),key=(gid,i)=>gid+'|'+i,done=(g,i)=>teamNames(g).includes(T[i]);
+		 const W=[['same','Same wording, each manager adds their own measure','Keeps the goal consistent across teams.'],['reword','Each manager may reword it','Use when teams work very differently.']],D=[['same','Same as each goal','Their date is your goal\u2019s date.'],['early','31 March 2027','Earlier, to leave time to review.']];
+		 const opts=(name,items,cur)=>items.map(x=>`<label class="opt ${cur===x[0]?'sel':''}"><input type="radio" name="${name}" value="${x[0]}" ${cur===x[0]?'checked':''}><span style="flex:1;min-width:0"><span class="t">${esc(x[1])}</span><span class="r" style="display:block">${esc(x[2])}</span></span></label>`).join('');
+		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">Push down goals</h1></div><p class="sub">Choose which goals go to which teams, then push them all at once. Each manager gets one set of goals to accept, not one request per goal.</p>
+		 <div class="card casc"><div class="cwrap"><table class="ctab"><thead><tr><th scope="col">Goal</th>${T.map((t,i)=>`<th scope="col"><label class="cck"><input type="checkbox" data-ccol="${i}" aria-label="All goals to ${esc(t)}"><span class="cbox" aria-hidden="true"></span><span class="cname">${esc(t)}</span></label></th>`).join('')}</tr></thead><tbody>
+		 ${goals.map(g=>`<tr><th scope="row"><span class="gtt">${esc(g.title)}</span><small>Due ${esc(g.due)}</small><button type="button" class="rowall" data-crow="${g.id}">All teams</button></th>${T.map((t,i)=>done(g,i)?`<td><span class="cpushed">Pushed</span></td>`:`<td><label class="cck cell"><input type="checkbox" data-cg="${g.id}" data-ct="${i}" ${cas.sel.has(key(g.id,i))?'checked':''} aria-label="${esc(g.title)} to ${esc(t)}"><span class="cbox" aria-hidden="true"></span></label></td>`).join('')}</tr>`).join('')}
+		 </tbody></table></div></div>
+		 <div class="g2 dates" style="margin-top:16px;gap:16px"><div class="card"><h2 style="font-size:18px;margin-bottom:10px">Wording</h2>${opts('cword',W,cas.word)}</div><div class="card"><h2 style="font-size:18px;margin-bottom:10px">Due date for the teams</h2>${opts('cdue',D,cas.due)}</div></div>
+		 <div class="cbar" role="region" aria-label="Summary"><span id="cSum"></span><span class="row" style="gap:10px"><button class="btn" id="cCancel">Cancel</button><button class="btn primary" id="cGo">Push down all</button></span></div>`;
+		 const sum=()=>{const n=cas.sel.size,gs=new Set([...cas.sel].map(k=>k.split('|')[0])).size,ts=new Set([...cas.sel].map(k=>k.split('|')[1])).size;$('#cSum').innerHTML=n?`<b>${gs}</b> goal${gs>1?'s':''} to <b>${ts}</b> team${ts>1?'s':''} <span>(${n} in all)</span>`:'Nothing selected yet';$('#cGo').disabled=!n;
+		  document.querySelectorAll('[data-ccol]').forEach(c=>{const cells=[...document.querySelectorAll('[data-ct="'+c.dataset.ccol+'"]')];c.checked=!!cells.length&&cells.every(x=>x.checked);c.disabled=!cells.length})};
+		 const set=(el,on)=>{el.checked=on;const k=key(el.dataset.cg,el.dataset.ct);on?cas.sel.add(k):cas.sel.delete(k)};
+		 ROOT.querySelectorAll('[data-cg]').forEach(c=>c.onchange=()=>{set(c,c.checked);sum()});
+		 ROOT.querySelectorAll('[data-ccol]').forEach(c=>c.onchange=()=>{document.querySelectorAll('[data-ct="'+c.dataset.ccol+'"]').forEach(x=>set(x,c.checked));sum()});
+		 ROOT.querySelectorAll('[data-crow]').forEach(b=>b.onclick=()=>{const cells=[...document.querySelectorAll('[data-cg="'+b.dataset.crow+'"]')],on=!cells.every(x=>x.checked);cells.forEach(x=>set(x,on));sum()});
+		 ROOT.querySelectorAll('input[name=cword],input[name=cdue]').forEach(r=>r.onchange=()=>{cas[r.name==='cword'?'word':'due']=r.value;document.querySelectorAll('input[name='+r.name+']').forEach(x=>x.closest('.opt').classList.toggle('sel',x.checked))});
+		 $('#cCancel').onclick=()=>{view='list';renderList()};
+		 $('#cGo').onclick=()=>{if($('#cGo').disabled)return;const by={};cas.sel.forEach(k=>{const [gid,ti]=k.split('|');(by[gid]=by[gid]||[]).push(T[+ti])});let np=0;
+		  Object.keys(by).forEach(gid=>{const g=ensure(findG(+gid));by[gid].forEach(w=>{if(!g.pushed.some(x=>x.who===w)){g.pushed.push({who:w,p:0,d:TODAY,n:'Received. Not started.',due:cas.due==='early'?'31 March 2027':g.due});np++}});g.audit.unshift({d:TODAY,t:'Pushed down to '+by[gid].join(', ')+' \u00b7 '+YOU})});
+		  const gc=Object.keys(by).length;view='list';renderList();toast('Pushed down '+gc+' goal'+(gc>1?'s':'')+' ('+np+' in all). They are now on the teams\u2019 goal plans.')};
+		 sum()}
 		function startWiz(kind,gid){wiz={kind,a:{also:[],teams:[]},gid,ed:{},ownOn:{}};step=(kind==='push'||isEmp()||!BOSS)?1:0;if(isEmp())wiz.a.role=ROLE_LABELS.mem;view='wiz';if(kind==='push'){const g=goals.find(x=>x.id===gid);wiz.a.goal=g.title;wiz.a.due=g.due;step=2;wiz.a.who=[];}renderWiz()}
 		function stepper(names,off=1,cs){if(cs===undefined)cs=step;return `<nav aria-label="Progress"><ol class="stepper">${names.map((n,i)=>{const k=i+1,sk=i+off,c=sk<cs?'done':sk===cs?'cur':'';const dot=sk<cs?'&#10003;':k;const lab=`Step ${k}: ${n}${sk<cs?' (done)':sk===cs?' (current)':''}`;return `<li class="${c}" aria-label="${lab}"><span class="dot">${dot}</span><span>${n}</span></li>${k<names.length?'<li class="line" aria-hidden="true"></li>':''}`}).join('')}</ol></nav>`}
 		const edIt=(name,items)=>items.map(it=>[(wiz.ed&&wiz.ed[name+'|'+it[0]])||it[0],it[1],it[0]]);
