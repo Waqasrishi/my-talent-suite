@@ -51,6 +51,12 @@ sap.ui.define([], function () {
 					.catch(function () { busy = false; offline = true; say("Not saved. Retrying…", "bad", true); clearTimeout(timer); timer = setTimeout(run, 5000); });
 			}, 400);
 		},
+		// one file to the app's disk: resolves {id, name, size}
+		upload: function (file) {
+			return fetch(BASE + "/files?name=" + encodeURIComponent(file.name), { method: "POST", credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
+				.then(function (r) { if (!r.ok) { return r.json().catch(function () { return {}; }).then(function (e) { throw new Error(e.error || "HTTP " + r.status); }); } return r.json(); });
+		},
+		log: function () { return api("GET", "/log?limit=400"); },
 		reset: function () { return api("POST", "/reset", {}).then(function () { saved.clear(); }); },
 		OWN: OWN
 	};

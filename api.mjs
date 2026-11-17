@@ -1,8 +1,15 @@
 // The goals API: /api/state, /api/ids, /api/employees, /api/goals/:id, /api/reset. Every goal and activity has its
 // own id (one Postgres sequence) and the employee it belongs to. The page keeps working in memory if this is down.
+import { createReadStream, createWriteStream } from "node:fs";
+import { mkdir, rm, stat } from "node:fs/promises";
+import { join } from "node:path";
+import { pipeline } from "node:stream/promises";
 import { db } from "./db.mjs";
 
 const MAX_BODY = 1_000_000;
+const MAX_FILE = 10 * 1024 * 1024;
+const DIR = join(process.env.DATA_DIR || join(import.meta.dirname, ".data"), "files");
+const SAFE_TYPES = /^(image\/(png|jpeg|gif|webp)|application\/pdf|text\/plain|text\/csv|application\/(vnd\.openxmlformats-officedocument\.[a-z.]+|msword|vnd\.ms-excel|vnd\.ms-powerpoint|zip))$/;
 const json = (res, headers, code, body) =>
   res.writeHead(code, { ...headers, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }).end(JSON.stringify(body));
 
@@ -45,7 +52,7 @@ async function state(res, H) {
       updates: (A[g.id] ?? []).map((a) => ({ id: Number(a.id), code: a.code, d: a.done_on, n: a.note, p: a.progress, a: a.has_note ? 1 : 0, files: a.files })),
       pushed: (P[g.id] ?? []).map((p) => ({ employeeId: p.to_employee_id, p: p.progress, d: p.updated_on, n: p.note, due: p.due })),
       contribs: (C[g.id] ?? []).map((c) => c.data),
-      audit: (L[g.id] ?? []).map((a) => ({ d: a.on_date, t: a.entry })),
+      audit: (L[g.id] ?? []).map((a) => ({ d: a.on_date, t: a.entry, ts: a.occurred_at, actor: a.actor_employee_id, action: a.action, detail: a.detail })),
     })),
   });
 }
@@ -74,7 +81,7 @@ async function saveGoal(res, H, who, id, b) {
     for (const [i, u] of updates.entries()) {
       await q("INSERT INTO activities (id, goal_id, employee_id, progress, note, has_note, done_on, files, position) VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9)",
         [int(u.id, 1, 2 ** 53, "activity id"), goalId, emp, int(u.p, 0, 100, "activity progress"), text(u.n, 2000, "note"), !!u.a, text(u.d, 60, "date"),
-         JSON.stringify(list(u.files, 5, "files").map((f) => ({ name: text(f.name, 255, "file name"), size: int(f.size ?? 0, 0, 2 ** 40, "file size") }))), i]);
+         JSON.stringify(list(u.files, 5, "files").map((f) => ({ id: f.id ? int(f.id, 1, 2 ** 53, "file id") : null, name: text(f.name, 255, "file name"), size: int(f.size ?? 0, 0, 2 ** 40, "file size") }))), i]);
     }
     for (const [i, p] of pushed.entries()) {
       await q("INSERT INTO pushes (goal_id, to_employee_id, progress, note, due, updated_on, position) VALUES ($1,$2,$3,$4,$5,$6,$7)",
@@ -84,7 +91,10 @@ async function saveGoal(res, H, who, id, b) {
       await q("INSERT INTO contributors (goal_id, employee_id, position, data) VALUES ($1,$2,$3,$4::jsonb)", [goalId, c.employeeId ? text(c.employeeId, 80, "employeeId") : null, i, JSON.stringify(c)]);
     }
     for (const [i, a] of audit.entries()) {
-      await q("INSERT INTO audit_log (goal_id, position, on_date, entry) VALUES ($1,$2,$3,$4)", [goalId, i, text(a.d, 60, "date"), text(a.t, 1000, "entry")]);
+      const when = a.ts ? new Date(a.ts) : new Date();
+      await q("INSERT INTO audit_log (goal_id, position, on_date, entry, actor_employee_id, action, detail, occurred_at) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8)",
+        [goalId, i, text(a.d, 60, "date"), text(a.t, 1000, "entry"), a.actor ? text(a.actor, 80, "actor") : null, text(a.action, 60, "action") || "event",
+         JSON.stringify(a.detail && typeof a.detail === "object" ? a.detail : {}), Number.isNaN(+when) ? new Date() : when]);
     }
   });
   json(res, H, 200, { ok: true, id: goalId });
@@ -102,6 +112,50 @@ async function employees(res, H, b) {
   json(res, H, 200, { ok: true, count: rows.length });
 }
 
+async function uploadFile(req, res, H, who, url) {
+  const name = text(url.searchParams.get("name") || "file", 255, "name").replace(/[\\/\u0000-\u001f]/g, "_");
+  const declared = Number(req.headers["content-length"]);
+  if (declared > MAX_FILE) throw Object.assign(new Error("That file is over 10 MB."), { code: 413 });
+  const id = Number((await (await db()).query("SELECT nextval('ts_id')::bigint AS id"))[0].id);
+  await mkdir(DIR, { recursive: true });
+  const dest = join(DIR, String(id));
+  let size = 0;
+  try {
+    await pipeline(req, async function* (src) { for await (const c of src) { size += c.length; if (size > MAX_FILE) throw Object.assign(new Error("That file is over 10 MB."), { code: 413 }); yield c; } }, createWriteStream(dest));
+  } catch (e) { await rm(dest, { force: true }); throw e; }
+  const ct = String(req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
+  await (await db()).query("INSERT INTO files (id, name, size, type, uploaded_by) VALUES ($1,$2,$3,$4,$5)", [id, name, size, SAFE_TYPES.test(ct) ? ct : "application/octet-stream", who.email]);
+  json(res, H, 200, { id, name, size });
+}
+
+async function sendFile(req, res, H, id) {
+  const rows = await (await db()).query("SELECT name, size, type FROM files WHERE id = $1", [id]);
+  const f = rows[0];
+  const path = join(DIR, String(id));
+  if (!f || !(await stat(path).catch(() => null))) return json(res, H, 404, { error: "File not found" });
+  const inline = /^(image\/|application\/pdf$|text\/plain$)/.test(f.type);
+  res.writeHead(200, { ...H, "Content-Type": f.type, "Content-Length": f.size, "Cache-Control": "private, max-age=3600",
+    "Content-Disposition": `${inline ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(f.name)}`, "Content-Security-Policy": "sandbox; default-src 'none'" });
+  if (req.method === "HEAD") return res.end();
+  createReadStream(path).pipe(res);
+}
+
+async function workflowLog(res, H, url) {
+  const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit")) || 200));
+  const rows = await (await db()).query(
+    `SELECT a.id, a.occurred_at, a.action, a.entry, a.detail, g.code AS goal_code, g.title AS goal_title, g.employee_id AS goal_owner,
+            a.actor_employee_id, e.label AS actor_label
+       FROM audit_log a JOIN goals g ON g.id = a.goal_id LEFT JOIN employees e ON e.employee_id = a.actor_employee_id
+      ORDER BY a.occurred_at DESC, a.id DESC LIMIT $1`, [limit]);
+  if (url.searchParams.get("format") === "csv") {
+    const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = ["when,actor,action,goal,goal_title,entry", ...rows.map((r) => [r.occurred_at.toISOString?.() ?? r.occurred_at, r.actor_employee_id, r.action, r.goal_code, r.goal_title, r.entry].map(q).join(","))].join("\n");
+    return void res.writeHead(200, { ...H, "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="workflow-log.csv"', "Cache-Control": "no-store" }).end(csv);
+  }
+  json(res, H, 200, { log: rows.map((r) => ({ id: Number(r.id), at: r.occurred_at, action: r.action, entry: r.entry, detail: r.detail, goalCode: r.goal_code, goalTitle: r.goal_title,
+    actorId: r.actor_employee_id, actor: r.actor_label })) });
+}
+
 // Returns true when it answered.
 export async function api(req, res, path, who, H) {
   if (!path.startsWith("/api/")) return false;
@@ -114,6 +168,10 @@ export async function api(req, res, path, who, H) {
       json(res, H, 200, { ids: rows.map((r) => Number(r.id)) }); return true;
     }
     if (path === "/api/employees" && req.method === "PUT") { await employees(res, H, await readJson(req)); return true; }
+    if (path === "/api/log" && req.method === "GET") { await workflowLog(res, H, url); return true; }
+    if (path === "/api/files" && req.method === "POST") { await uploadFile(req, res, H, who, url); return true; }
+    const fm = path.match(/^\/api\/files\/(\d+)$/);
+    if (fm && (req.method === "GET" || req.method === "HEAD")) { await sendFile(req, res, H, Number(fm[1])); return true; }
     const m = path.match(/^\/api\/goals\/(\d+)$/);
     if (m && req.method === "PUT") { await saveGoal(res, H, who, m[1], await readJson(req)); return true; }
     if (path === "/api/reset" && req.method === "POST") {

@@ -824,3 +824,9 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .syncpill.show{opacity:1;transform:none}
 .syncpill.ok::before{content:"\2713";color:#E3BC5E;margin-inline-end:6px}
 .syncpill.bad{background:#A33}
+
+/* workflow log */
+.ajmng .logt{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+.ajmng .logt th{text-align:start;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#85600F;padding:10px 12px;border-bottom:2px solid #C99A2E;background:#FBF7EC}
+.ajmng .logt td{padding:9px 12px;border-top:1px solid var(--line,#E1E6F0);vertical-align:top;color:#14264B}
+.ajmng .lgact{display:inline-block;background:#14264B;color:#E3BC5E;font-size:11px;font-weight:800;border-radius:999px;padding:2px 10px;white-space:nowrap}
