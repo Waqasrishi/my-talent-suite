@@ -72,9 +72,10 @@ const PROJECTS = [
   { url: "goals-module-v44", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v44", home: "/" },
   { url: "goals-module-v45", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v45", home: "/" },
   { url: "goals-module-v46", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v46", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v47" },
+  { url: "goals-module-v47", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v47", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v48" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v47", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v48", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
