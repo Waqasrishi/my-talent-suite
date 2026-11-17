@@ -240,6 +240,29 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 if(c.state==='ok')return `<div class="aihead"><span class="aitag">AI</span><span>${c.data.ready?'This goal looks ready.':'This goal needs work.'}</span></div><ul class="checks">${st}${c.data.checks.map((x,k)=>li(x.ok,x.text,fixBox(g,k,x.fix,ro||!g,lk,c.data.id))).join('')}</ul>${c.data.better?`<div class="note" style="margin-top:10px"><b>A stronger wording</b><br>${esc(c.data.better)}${fixBox(g,'b',{field:'title',value:c.data.better},ro||!g,lk,c.data.id).replace('Suggested goal','Use this wording')}</div>`:''}`;
 		 return `<div class="aihead"><span class="aitag">Quick check</span><span>The AI could not review this goal just now.</span></div><ul class="checks">${st}</ul>`};
 		function aiReview(g,id,base,ro){if(!AION&&!base)return '';const c=AION?aiGet('review|'+[g.id,g.title,g.measure,g.due,g.parent].join('|'),'review',{role:roleOf(),top:!BOSS,above:MGMT.map(m=>m.t),title:g.title,measure:g.measure,due:g.due,parent:g.parent},()=>{const el=ROOT.querySelector('#'+id);if(el)el.innerHTML=reviewInner(c,base,g,ro)}):null;return `<div class="card" id="${id}" style="margin-bottom:16px">${reviewInner(c,base,g,ro)}</div>`}
+		// ---- the portlet beside the cascade strip: everything that needs the person's decision or action, one click away ----
+		let todoOpen=false,todoList=[];
+		function todoItems(){const it=[],first=l=>nameOf(pByLabel(l))||String(l).split(',')[0];
+		 const P=ALLG().filter(x=>((pByLabel(x.owner)||{}).boss===ME.id)&&(/awaiting/i.test(x.statusText)||!!x.pending));
+		 P.forEach(x=>it.push({tone:'gold',ic:'\u2713',title:first(x.owner)+(x.pending?' asks to change a goal':' submitted a goal'),sub:x.title,btn:'Review',primary:1,go:()=>{wiz={kind:'approve',gid:x.id,a:{}};step=1;view='wiz';renderApprove()}}));
+		 goals.forEach(og=>(og.contribs||[]).filter(c=>c.status==='Awaiting approval').forEach(c=>it.push({tone:'gold',ic:'\u2713',title:first(c.who)+' wants to contribute',sub:c.goal+' \u2192 '+og.title,btn:'Review',primary:1,go:()=>{view='appr';wiz=null;renderList()}})));
+		 ALLG().filter(x=>x.delReq&&((pByLabel(x.owner)||{}).boss===ME.id)).forEach(x=>it.push({tone:'red',ic:'\u2715',title:first(x.owner)+' asks to delete a goal',sub:x.title,btn:'Decide',primary:1,go:()=>{view='appr';wiz=null;renderList()}}));
+		 ALLG().forEach(o=>(o.contribs||[]).filter(c=>c.who===ME.label&&c.status==='Invited').forEach(()=>{}));
+		 const inv=ALLG().flatMap(o=>(o.contribs||[]).filter(c=>c.who===ME.label&&c.status==='Invited').map(()=>o));
+		 inv.forEach(o=>it.push({tone:'blue',ic:'\u2709',title:first(o.owner)+' invited you to contribute',sub:o.title,btn:'Link a goal',primary:1,go:()=>{const el=ROOT.querySelector('#app .inv');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}}));
+		 goals.filter(x=>x.statusText==='Returned for changes').forEach(x=>it.push({tone:'red',ic:'\u21A9',title:'Returned for changes',sub:x.title+(x.note?': '+x.note:''),btn:'Fix it',primary:1,go:()=>{gid=x.id;gEdit=true;cAddOpen=false;view='goal';renderList()}}));
+		 goals.filter(x=>x.note&&x.statusText==='Approved').forEach(x=>it.push({tone:'red',ic:'\u21A9',title:'Your request was returned',sub:x.note,btn:'Open',go:()=>{gid=x.id;gEdit=false;cAddOpen=false;view='goal';renderList()}}));
+		 if(goals.length){const un=goals.filter(x=>x.weight==null||x.weight===''),tot=goals.reduce((t,x)=>t+(+x.weight||0),0);
+		  if(un.length)it.push({tone:'gold',ic:'%',title:'Set your weights',sub:un.length+' goal'+(un.length>1?'s have':' has')+' no weight'+(tot<100?', '+(100-tot)+'% still to give out':''),btn:'Set weights',primary:1,w:1});
+		  else if(tot!==100)it.push({tone:'gold',ic:'%',title:'Weights add up to '+tot+'%',sub:tot<100?(100-tot)+'% still to give out':(tot-100)+'% over 100%',btn:'Adjust',primary:1,w:1})}
+		 if(BOSS){goals.filter(x=>x.pending).forEach(x=>it.push({tone:'gray',ic:'\u23F3',wait:1,title:'Waiting for '+first(BOSS.label),sub:'Change request: '+x.title}));
+		  goals.filter(x=>x.delReq).forEach(x=>it.push({tone:'gray',ic:'\u23F3',wait:1,title:'Waiting for '+first(BOSS.label),sub:'Deletion request: '+x.title}));
+		  goals.filter(x=>/awaiting/i.test(x.statusText)&&!x.pending).forEach(x=>it.push({tone:'gray',ic:'\u23F3',wait:1,title:'Waiting for '+first(BOSS.label),sub:'New goal: '+x.title}));
+		  ALLG().forEach(o=>(o.contribs||[]).filter(c=>c.who===ME.label&&c.status==='Awaiting approval').forEach(()=>it.push({tone:'gray',ic:'\u23F3',wait:1,title:'Waiting for '+first(o.owner),sub:'Your contributor link on '+o.title})))}
+		 return it.filter((x,i,a)=>a.findIndex(y=>y.title===x.title&&y.sub===x.sub)===i)}
+		function portlet(){const all=todoItems(),act=all.filter(x=>!x.wait),items=act.concat(all.filter(x=>x.wait)),show=todoOpen?items:items.slice(0,3);todoList=show;
+		 const row=(x,i)=>`<div class="pit ${x.tone}${x.wait?' wait':''}"><i class="pi" aria-hidden="true">${x.ic}</i><div class="pit-t"><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></div>${x.wait?'<span class="pwait">Waiting</span>':`<button type="button" class="btn small${x.primary?' primary':''}" ${x.w?'data-w="all"':'data-todo="'+i+'"'}>${esc(x.btn)}</button>`}</div>`;
+		 return `<aside class="portlet" aria-label="Needs your attention"><header><span class="pbell" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><b>Needs your attention</b><span class="pcount${act.length?'':' zero'}">${act.length}</span></header>${items.length?`<div class="plist">${show.map(row).join('')}</div>`:`<div class="pclear"><i aria-hidden="true">\u2713</i><div><b>You are all caught up</b><small>Nothing is waiting for you.</small></div></div>`}${items.length>3?`<button type="button" class="pmore" id="todoMore">${todoOpen?'Show fewer':'Show all '+items.length}</button>`:''}</aside>`}
 		let logRows=[];
 		function renderLog(){crumb('Workflow log');tabs();
 		 const head='<h1 style="font-size:34px">Workflow log</h1><p class="sub">Every step on every goal is saved in the database: who did it, when, and to which goal.</p>';
@@ -445,7 +468,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 {const A='<span class="arrow">&rarr;</span>',nd=t=>`<span class="node">${t}</span>`;
 		  // the DG is the top of the cascade, so the strip starts with the Director General; everyone else starts with Strategy
 		  const parts=[...(BOSS?[nd('Strategy'),...chain.map(x=>nd(esc(short(x))))]:[]),`<span class="node you">${esc(short(ME))} (you)</span>`,...(TEAMS.length?[nd(`Your team (${TEAMS.length})`)]:[])];
-		  h+=`<div class="strip" aria-label="Your place in the cascade">${parts.join(A)}</div>`}
+		  h+=`<div class="striprow"><div class="strip" aria-label="Your place in the cascade">${parts.join(A)}</div>${portlet()}</div>`}
 		 if(goals.length)h+=summary();
   if(!goals.length&&!got.length)h+=`<div class="empty">You have no goals yet.<br>Choose New goal to create one${BOSS?', or wait for '+esc(BOSS.label)+' to push one down to you':''}.</div>`;
 		 if(got.length){h+=`<h2 style="font-size:20px;margin:18px 0 10px">Pushed down to you</h2>`;
@@ -465,6 +488,8 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
    <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}${g.from?' &middot; Pushed down by '+esc(g.from.who.split(',')[0]):''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button>${g.from?'':g.delReq?`<button class="btn small danger" data-delwd="${g.id}">Withdraw deletion</button>`:`<button class="btn small danger" data-del="${g.id}">${needsOk(g)?'Request deletion':'Delete'}</button>`}</span></div></div>`});
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
+		 ROOT.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todoList[+b.dataset.todo];if(x&&x.go)x.go()});
+		 const tm=$('#todoMore');if(tm)tm.onclick=()=>{todoOpen=!todoOpen;renderList()};
 		 ROOT.querySelectorAll('[data-subtoggle]').forEach(b=>b.onclick=()=>{const k=b.dataset.subtoggle;subOpen.has(k)?subOpen.delete(k):subOpen.add(k);renderList()});
 		 ROOT.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const x=findG(+b.dataset.del);if(x)deleteDlg(x)});
 		 ROOT.querySelectorAll('[data-delwd]').forEach(b=>b.onclick=()=>{const x=findG(+b.dataset.delwd);if(x)withdrawDel(x)});

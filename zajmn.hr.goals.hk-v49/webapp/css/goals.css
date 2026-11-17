@@ -893,3 +893,33 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .pp .ppmore{display:block;margin:4px 8px 2px;background:none;border:0;padding:4px 0;font:inherit;font-size:13px;font-weight:800;color:#2F5FB3;cursor:pointer}
 .ajmng .pp .ppmore:hover{text-decoration:underline}
 @media(max-width:700px){.ajmng .pp .pr{grid-template-columns:34px 1fr 50px}.ajmng .pp .blocks{grid-column:2/-1}}
+
+/* the attention portlet */
+.ajmng .striprow{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px 22px;margin:6px 0 4px}
+.ajmng .striprow .strip{flex:0 1 auto;margin:0}
+.ajmng .portlet{flex:1 1 380px;max-width:600px;margin-inline-start:auto;background:#fff;border-radius:16px;border-top:3px solid #C99A2E;box-shadow:0 4px 18px rgba(20,38,75,.1);padding:10px 12px 8px}
+.ajmng .portlet header{display:flex;align-items:center;gap:10px;padding:2px 4px 8px}
+.ajmng .portlet header b{font-size:15px;color:#14264B;flex:1}
+.ajmng .pbell{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#E3BC5E,#C99A2E);color:#14264B;display:inline-flex;align-items:center;justify-content:center}
+.ajmng .pcount{min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:#14264B;color:#E3BC5E;font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 0 rgba(201,154,46,.6);animation:pnudge 2.4s ease-in-out infinite}
+.ajmng .pcount.zero{background:#E4F1E7;color:#2E6B3F;animation:none}
+@keyframes pnudge{0%,100%{box-shadow:0 0 0 0 rgba(201,154,46,0)}50%{box-shadow:0 0 0 5px rgba(201,154,46,.35)}}
+@media (prefers-reduced-motion:reduce){.ajmng .pcount{animation:none}}
+.ajmng .plist{display:flex;flex-direction:column;gap:2px}
+.ajmng .pit{display:flex;align-items:center;gap:12px;padding:8px 8px;border-radius:12px;transition:background .15s}
+.ajmng .pit:hover{background:#F6F7FB}
+.ajmng .pi{width:34px;height:34px;border-radius:50%;flex:0 0 34px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:15px;font-weight:800;background:#F4EBD2;color:#7A4B00}
+.ajmng .pit.red .pi{background:#FBE3E0;color:#8A1F14}
+.ajmng .pit.blue .pi{background:#E1EAF8;color:#2F5FB3}
+.ajmng .pit.gray .pi{background:#EEF1F7;color:#55607A}
+.ajmng .pit-t{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}
+.ajmng .pit-t b{font-size:13px;color:#14264B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ajmng .pit-t small{font-size:12px;color:#55607A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ajmng .pit.wait .pit-t b{color:#55607A;font-weight:700}
+.ajmng .pwait{font-size:11px;font-weight:800;color:#55607A;background:#EEF1F7;border-radius:999px;padding:3px 10px}
+.ajmng .pclear{display:flex;align-items:center;gap:12px;padding:10px 8px 12px}
+.ajmng .pclear i{width:38px;height:38px;border-radius:50%;background:#E4F1E7;color:#2E6B3F;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px;font-weight:800}
+.ajmng .pclear div{display:flex;flex-direction:column}
+.ajmng .pclear b{font-size:14px;color:#14264B}.ajmng .pclear small{font-size:12px;color:#55607A}
+.ajmng .pmore{display:block;margin:2px 8px 4px;background:none;border:0;padding:4px 0;font:inherit;font-size:13px;font-weight:800;color:#2F5FB3;cursor:pointer}
+.ajmng .pmore:hover{text-decoration:underline}
