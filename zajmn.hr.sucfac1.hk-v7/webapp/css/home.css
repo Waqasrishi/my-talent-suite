@@ -1,0 +1,79 @@
+/* The company fonts (Fonts.zip): Al Jazeera Latin and Al Jazeera Arabic, used for everything */
+@font-face{font-family:"AJ Latin";src:url("../fonts/AlJazeeraLight.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Latin";src:url("../fonts/AlJazeeraRegular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Latin";src:url("../fonts/AlJazeeraBold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Latin";src:url("../fonts/AlJazeeraHeavy.woff2") format("woff2");font-weight:900;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Arabic";src:url("../fonts/AlJazeeraArabicLight.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Arabic";src:url("../fonts/AlJazeeraArabicRegular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Arabic";src:url("../fonts/AlJazeeraArabicBold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"AJ Arabic";src:url("../fonts/AlJazeeraArabicHeavy.ttf") format("truetype");font-weight:900;font-style:normal;font-display:swap}
+.ajmnh{--serif:"AJ Latin","AJ Arabic",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;--sans:"AJ Latin","AJ Arabic",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;--ar-display:"AJ Arabic","Segoe UI",Tahoma,sans-serif;--ar:"AJ Arabic","Segoe UI",Tahoma,sans-serif}
+
+/* AJMN ERP Workspace home: dark navy top bar and side menu, pale blue page, a centred panel, white cards with a gold line under the title */
+.ajmnh{--navy:#14264B;--gold:#C99A2E;--page:#CBD9E8;--panel:#F6F7FB;--rule:#DCE3EE;margin:0;background:var(--page);font-family:var(--sans);color:var(--navy);min-height:100vh}
+.ajmnh *{box-sizing:border-box}
+.ajmnh .shell{min-height:100vh;display:flex;flex-direction:column}
+.ajmnh button,.ajmnh input,.ajmnh select{font:inherit}
+.ajmnh .topbar{height:44px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;position:sticky;top:0;z-index:40}
+.ajmnh .tb-left,.ajmnh .tb-right{display:flex;align-items:center;gap:14px}
+.ajmnh .tbtitle{font-weight:800;font-size:15px}
+.ajmnh .tbmenu{background:none;border:0;color:#fff;display:grid;place-items:center;width:32px;height:32px;border-radius:6px;cursor:pointer;padding:0}
+.ajmnh .tbmenu:hover,.ajmnh .tbmenu:focus-visible{background:#2B3F78;outline:none}
+.ajmnh .tbhome{color:#F3DC9A;display:grid;place-items:center;width:32px;height:32px}
+.ajmnh .tbdot{width:26px;height:26px;border-radius:50%;background:#2B3F78;box-shadow:inset 0 0 0 2px var(--gold)}
+.ajmnh .tbavatar{width:26px;height:26px;border-radius:50%;background:#F3DC9A}
+.ajmnh .wsbody{flex:1;display:flex;min-height:0}
+.ajmnh .side{width:210px;background:var(--navy);color:#fff;padding:18px 14px;display:flex;flex-direction:column;gap:4px;flex-shrink:0;position:sticky;top:44px;height:calc(100vh - 44px);align-self:flex-start}
+.ajmnh .sidelogo{font-size:20px;font-weight:900;color:#F3DC9A}
+.ajmnh .sidesub{font-size:11px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #2B3F78}
+.ajmnh .sideitem{display:flex;align-items:center;gap:10px;width:100%;text-align:start;background:none;border:0;border-radius:6px;color:#fff;font-size:13px;font-weight:600;padding:10px 8px;cursor:pointer;border-inline-start:3px solid transparent}
+.ajmnh .sideitem:hover{background:#1E3566}
+.ajmnh .sideitem.on{background:#1E3566;font-weight:800;border-inline-start-color:var(--gold)}
+.ajmnh .sideitem svg{flex-shrink:0}
+.ajmnh .sidefoot{margin-top:auto;font-size:10px;opacity:.8}
+.ajmnh .wsmain{flex:1;min-width:0;display:flex;justify-content:center}
+.ajmnh .panel{width:min(900px,100%);background:var(--panel);padding:16px 16px 40px;box-shadow:0 0 0 1px var(--rule);min-height:calc(100vh - 44px);display:flex;flex-direction:column;gap:18px}
+.ajmnh .demo{border:1px solid #8C98B0;font-size:11px;padding:8px 12px}
+.ajmnh .banner{height:132px;background:linear-gradient(90deg,#F3E5C3 0%,#F3E5C3 55%,#D6DEE8 100%);border-radius:4px;position:relative;overflow:hidden;flex-shrink:0}
+.ajmnh .banner .bt{position:absolute;left:20px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.ajmnh .banner h1{margin:0;font-size:clamp(22px,4vw,30px);font-weight:900;letter-spacing:-.01em}
+.ajmnh .banner p{margin:0;font-size:14px}
+.ajmnh .skyline{position:absolute;right:20px;bottom:0;width:220px;height:104px;background:linear-gradient(#8FA3BC,#8FA3BC) 0 100%/18px 54px no-repeat,linear-gradient(#6C84A5,#6C84A5) 28px 100%/26px 86px no-repeat,linear-gradient(#8FA3BC,#8FA3BC) 64px 100%/16px 64px no-repeat,linear-gradient(#587195,#587195) 90px 100%/30px 100px no-repeat,linear-gradient(#8FA3BC,#8FA3BC) 130px 100%/20px 60px no-repeat,linear-gradient(#6C84A5,#6C84A5) 160px 100%/24px 76px no-repeat}
+.ajmnh .tabs{display:flex;gap:24px;border-bottom:1px solid var(--rule);padding:0 16px}
+.ajmnh .ptab{background:none;border:0;border-bottom:2px solid transparent;padding:6px 0 10px;font-size:12px;color:var(--navy);cursor:pointer}
+.ajmnh .ptab.on{color:#2F5FB3;border-bottom-color:#2F5FB3;font-weight:700}
+.ajmnh h2{margin:0 0 10px;font-size:17px;font-weight:800}
+.ajmnh .qrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ajmnh .qa{display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--gold);border-radius:4px;padding:14px 8px;color:var(--navy);font-weight:800;font-size:12px;cursor:pointer}
+.ajmnh .qa:hover,.ajmnh .qa:focus-visible{background:#FBF0D2;outline:none}
+.ajmnh .qaic{color:var(--gold);display:grid}
+.ajmnh .ctxrow{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.ajmnh .fld{display:block;font-size:10px;color:#55566B}
+.ajmnh .fld.grow{flex:1;min-width:220px}
+.ajmnh .fld select,.ajmnh .fld input{display:block;width:100%;margin-top:2px;min-height:34px;border:1px solid #8C98B0;border-radius:2px;background:#fff;color:var(--navy);font-size:12px;padding:0 8px}
+.ajmnh .fld select{min-width:230px}
+.ajmnh .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.ajmnh .scard{background:#fff;border-radius:4px;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.ajmnh .scard.wide{grid-column:1/-1}
+.ajmnh .scard h3{margin:0;padding:11px 14px;font-size:14px;font-weight:800;border-bottom:2px solid var(--gold)}
+.ajmnh .scard .cd{margin:0;padding:10px 14px 4px;font-size:11px;color:#55566B}
+.ajmnh .newtag{display:inline-block;margin-inline-start:8px;font-size:10px;font-weight:800;background:#E3F0E5;color:#2E6B3F;padding:2px 8px;border-radius:999px;vertical-align:2px}
+.ajmnh .svc{display:flex;align-items:center;gap:10px;width:100%;text-align:start;background:none;border:0;border-top:1px solid var(--rule);padding:10px 14px;color:var(--navy);cursor:pointer}
+.ajmnh .svc:first-of-type{border-top:0}
+.ajmnh .svc:hover,.ajmnh .svc:focus-visible{background:#F6F7FB;outline:none}
+.ajmnh .svcic{color:#55566B;display:grid;flex-shrink:0}
+.ajmnh .svct{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ajmnh .svct b{font-size:12px;font-weight:800}
+.ajmnh .svct small{font-size:10px;color:#55566B}
+.ajmnh .svcgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.ajmnh .svcgrid .svc{border-top:1px solid var(--rule)}
+.ajmnh .foot{margin:0;font-size:10px;color:#55566B}
+.ajmnh .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:6px;font-size:13px;max-width:92vw;z-index:60}
+.ajmnh .toast[hidden]{display:none}
+@media(max-width:900px){
+ .ajmnh .side{position:fixed;left:0;top:44px;bottom:0;height:auto;z-index:30;transform:translateX(-100%);transition:transform .2s;box-shadow:8px 0 24px rgba(0,0,0,.25)}
+ .ajmnh.menu-open .side{transform:none}
+ .ajmnh .panel{min-height:0}
+}
+@media(max-width:720px){.ajmnh .qrow{grid-template-columns:repeat(2,minmax(0,1fr))}.ajmnh .cards{grid-template-columns:1fr}.ajmnh .svcgrid{grid-template-columns:1fr}.ajmnh .skyline{display:none}}
+.ajmnh .svc[hidden],.ajmnh .scard[hidden]{display:none}
