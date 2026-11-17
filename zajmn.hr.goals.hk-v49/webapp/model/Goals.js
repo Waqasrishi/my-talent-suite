@@ -244,9 +244,9 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		let todoOpen=false,todoList=[];
 		function todoItems(){const it=[],first=l=>nameOf(pByLabel(l))||String(l).split(',')[0];
 		 const P=ALLG().filter(x=>((pByLabel(x.owner)||{}).boss===ME.id)&&(/awaiting/i.test(x.statusText)||!!x.pending));
-		 P.forEach(x=>it.push({tone:'gold',ic:'\u2713',title:first(x.owner)+(x.pending?' asks to change a goal':' submitted a goal'),sub:x.title,btn:'Review',primary:1,go:()=>{wiz={kind:'approve',gid:x.id,a:{}};step=1;view='wiz';renderApprove()}}));
-		 goals.forEach(og=>(og.contribs||[]).filter(c=>c.status==='Awaiting approval').forEach(c=>it.push({tone:'gold',ic:'\u2713',title:first(c.who)+' wants to contribute',sub:c.goal+' \u2192 '+og.title,btn:'Review',primary:1,go:()=>{view='appr';wiz=null;renderList()}})));
-		 ALLG().filter(x=>x.delReq&&((pByLabel(x.owner)||{}).boss===ME.id)).forEach(x=>it.push({tone:'red',ic:'\u2715',title:first(x.owner)+' asks to delete a goal',sub:x.title,btn:'Decide',primary:1,go:()=>{view='appr';wiz=null;renderList()}}));
+		 P.forEach(x=>it.push({tone:'gold',ic:'\u2713',title:first(x.owner)+(x.pending?' asks to change a goal':' submitted a goal'),sub:x.title,btn:'Review',primary:1,go:()=>decDialog('g:'+x.id)}));
+		 goals.forEach(og=>(og.contribs||[]).forEach((c,ci)=>{if(c.status==='Awaiting approval')it.push({tone:'gold',ic:'\u2713',title:first(c.who)+' wants to contribute',sub:c.goal+' \u2192 '+og.title,btn:'Review',primary:1,go:()=>decDialog('l:'+og.id+':'+ci)})}));
+		 ALLG().filter(x=>x.delReq&&((pByLabel(x.owner)||{}).boss===ME.id)).forEach(x=>it.push({tone:'red',ic:'\u2715',title:first(x.owner)+' asks to delete a goal',sub:x.title,btn:'Decide',primary:1,go:()=>decDialog('d:'+x.id)}));
 		 ALLG().forEach(o=>(o.contribs||[]).filter(c=>c.who===ME.label&&c.status==='Invited').forEach(()=>{}));
 		 const inv=ALLG().flatMap(o=>(o.contribs||[]).filter(c=>c.who===ME.label&&c.status==='Invited').map(()=>o));
 		 inv.forEach(o=>it.push({tone:'blue',ic:'\u2709',title:first(o.owner)+' invited you to contribute',sub:o.title,btn:'Link a goal',primary:1,go:()=>{const el=ROOT.querySelector('#app .inv');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})}}));
@@ -280,7 +280,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 else{if(g.pending){g.pending=null}else{g.status='att';g.statusText='Returned for changes'}g.note=comment;g.approvals.unshift({who:ME.label,d:TODAY,dec:'Returned for changes',why:comment});g.audit.unshift({d:TODAY,t:'Returned for changes \u00b7 '+ME.label});toast('Returned to '+nameOf(pByLabel(g.owner))+' with your comment.')}
 		 renderList()}
 		const DL={title:'Goal',measure:'Measure',due:'Due date',parent:'Supports',desc:'Description'};
-		function decDialog(){const old=ROOT.querySelector('.actdlg');if(old)old.remove();const el=document.createElement('div');el.className='actdlg';ROOT.appendChild(el);let rej=null,err='';
+		function decDialog(focus){const old=ROOT.querySelector('.actdlg');if(old)old.remove();const el=document.createElement('div');el.className='actdlg';ROOT.appendChild(el);let rej=null,err='';
 		 const close=()=>{el.remove();renderList()};
 		 const kindLab={goal:'New goal',change:'Change request',link:'Contributor link',del:'Deletion request'};
 		 const info=(k,v)=>v?`<div class="dinf"><span>${k}</span><b>${esc(v)}</b></div>`:'';
@@ -293,8 +293,8 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		  if(d.kind==='del'){const cps=copiesOf(g);body=info('Reason',g.delReq.reason)+info('Asked',g.delReq.d)+(cps.length?info('Also deleted',cps.length+' pushed cop'+(cps.length>1?'ies':'y')):'')}
 		  const asking=rej===d.k,who2=d.kind==='link'?nameOf(pByLabel(d.c.who)):who;
 		  return `<div class="dcard"><div class="dtop"><span class="dkind ${d.kind}">${kindLab[d.kind]}</span><span class="dwho">${esc(d.kind==='link'?nameOf(pByLabel(d.c.who)):who)}${role&&d.kind!=='link'?' &middot; '+esc(role):''}</span></div><h3>${esc(title)}</h3><div class="dinfo">${body}</div>${asking?`<label class="fl" for="dWhy">Why are you rejecting it?</label><textarea id="dWhy" rows="2" maxlength="300" style="width:100%"></textarea>${err?`<div role="alert" class="actmsg">${esc(err)}</div>`:''}<div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn small" data-dx="1">Cancel</button><button class="btn small danger" data-dsend="${d.k}">Send back</button></div>`:`<div class="row" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn small danger" data-drej="${d.k}">Reject</button><button class="btn small primary" data-dapp="${d.k}">${d.kind==='del'?'Approve deletion':'Approve'}</button></div>`}</div>`};
-		 const draw=()=>{const L=decisions();el.innerHTML=`<div class="actbox decbox" role="dialog" aria-modal="true" aria-labelledby="decT"><header class="dhead"><h2 id="decT">Awaiting your approval</h2><span class="pcount${L.length?'':' zero'}">${L.length}</span></header>${L.length?`<div class="dlist">${L.map(card).join('')}</div>`:`<div class="pclear"><i aria-hidden="true">&#10003;</i><div><b>You are all caught up</b><small>Nothing is waiting for you.</small></div></div>`}<div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" id="dClose">Close</button></div></div>`;
-		  el.querySelector('#dClose').onclick=close;
+		 const draw=()=>{const all=decisions();let L=focus?all.filter(x=>x.k===focus):all;if(focus&&!L.length){focus=null;L=all}el.innerHTML=`<div class="actbox decbox" role="dialog" aria-modal="true" aria-labelledby="decT"><header class="dhead"><h2 id="decT">Awaiting your approval</h2><span class="pcount${L.length?'':' zero'}">${L.length}</span></header>${L.length?`<div class="dlist">${L.map(card).join('')}</div>`:`<div class="pclear"><i aria-hidden="true">&#10003;</i><div><b>You are all caught up</b><small>Nothing is waiting for you.</small></div></div>`}<div class="row" style="justify-content:${focus&&all.length>1?'space-between':'flex-end'};align-items:center;margin-top:12px">${focus&&all.length>1?`<button type="button" class="pmore" id="dAll" style="margin:0">Show all ${all.length} waiting</button>`:''}<button class="btn" id="dClose">Close</button></div></div>`;
+		  el.querySelector('#dClose').onclick=close;const da=el.querySelector('#dAll');if(da)da.onclick=()=>{focus=null;rej=null;draw()};
 		  const by=k=>decisions().find(x=>x.k===k);
 		  el.querySelectorAll('[data-dapp]').forEach(b=>b.onclick=()=>{const d=by(b.dataset.dapp);if(!d)return;if(d.kind==='link')approveLink(d.g,d.i);else if(d.kind==='del')approveDel(d.g);else decideGoal(d.g,true);rej=null;draw()});
 		  el.querySelectorAll('[data-drej]').forEach(b=>b.onclick=()=>{rej=b.dataset.drej;err='';draw();const t=el.querySelector('#dWhy');if(t)t.focus()});
@@ -527,7 +527,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
    <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)}${n?' &middot; Pushed down to '+n:''}${g.from?' &middot; Pushed down by '+esc(g.from.who.split(',')[0]):''}</span><span class="gc3links"><button class="btn small" data-align="${g.id}">Alignment</button><button class="btn small" data-open="${g.id}">Open Details</button>${g.from?'':g.delReq?`<button class="btn small danger" data-delwd="${g.id}">Withdraw deletion</button>`:`<button class="btn small danger" data-del="${g.id}">${needsOk(g)?'Request deletion':'Delete'}</button>`}</span></div></div>`});
 		 $('#app').innerHTML=h;
 		 const n=$('#newGoal');if(n)n.onclick=()=>startWiz('new');
-		 const dt=$('#decTile');if(dt)dt.onclick=decDialog;
+		 const dt=$('#decTile');if(dt)dt.onclick=()=>decDialog();
 		 ROOT.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>{const x=todoList[+b.dataset.todo];if(x&&x.go)x.go()});
 		 const tm=$('#todoMore');if(tm)tm.onclick=()=>{todoOpen=!todoOpen;renderList()};
 		 ROOT.querySelectorAll('[data-subtoggle]').forEach(b=>b.onclick=()=>{const k=b.dataset.subtoggle;subOpen.has(k)?subOpen.delete(k):subOpen.add(k);renderList()});
