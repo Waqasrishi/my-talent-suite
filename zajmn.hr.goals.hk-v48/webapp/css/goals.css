@@ -598,3 +598,39 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .actdlg .actmsg{color:#A33;font-size:13px;min-height:18px;margin-top:4px}
 @keyframes actin{from{opacity:0}to{opacity:1}}
 .ajmng .actcount{display:inline-block;margin-inline-start:6px;min-width:24px;padding:0 8px;border-radius:999px;background:#F4EBD2;color:#7A4B00;font-size:14px;text-align:center}
+
+/* goal page sub line */
+.ajmng .gsub{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;margin:10px 0 18px;font-size:13px}
+.ajmng .gback{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line,#DCE3EE);border-radius:999px;padding:4px 14px 4px 4px;font:inherit;font-weight:800;color:var(--navy,#14264B);cursor:pointer;box-shadow:0 1px 2px rgba(20,38,75,.08);transition:box-shadow .18s,transform .18s}
+.ajmng .gback .garrow{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#E3BC5E,#C99A2E);color:#14264B;transition:transform .18s}
+.ajmng .gback:hover{box-shadow:0 4px 12px rgba(201,154,46,.35)}
+.ajmng .gback:hover .garrow{transform:translateX(-3px)}
+.ajmng .gback:focus-visible{outline:2px solid #2F5FB3;outline-offset:2px}
+.ajmng .gdiv{width:1px;height:26px;background:var(--line,#DCE3EE)}
+.ajmng .gstat{color:#7A4B00;font-weight:700}
+.ajmng .gwho{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line,#DCE3EE);border-radius:999px;padding:4px 16px 4px 4px}
+.ajmng .gav{width:30px;height:30px;border-radius:50%;background:#14264B;color:#E3BC5E;font:800 12px/30px inherit;text-align:center;font-style:normal;letter-spacing:.04em;flex:0 0 30px}
+.ajmng .gav.alt{background:#F4EBD2;color:#7A4B00}
+.ajmng .gwt{display:flex;flex-direction:column;line-height:1.15}
+.ajmng .gwt small{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#85600F}
+.ajmng .gwt b{font-size:13px;color:#14264B}
+.ajmng .gwt em{font-style:normal;font-size:11px;color:#55607A}
+/* activities: edit, delete, files */
+.ajmng .actrow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.ajmng .actmain{min-width:0;flex:1}
+.ajmng .actbtns{display:flex;gap:6px;flex:0 0 auto;opacity:.55;transition:opacity .15s}
+.ajmng .tl li:hover .actbtns,.ajmng .actbtns:focus-within{opacity:1}
+.ajmng .abtn{font:inherit;font-size:12px;font-weight:800;border:1px solid #C99A2E;background:#fff;color:#14264B;border-radius:4px;padding:3px 10px;cursor:pointer}
+.ajmng .abtn:hover{background:#FBF7EC}
+.ajmng .abtn.del{border-color:#C9CFDB;color:#7A2A2A}
+.ajmng .abtn.del.armed{background:#A33;border-color:#A33;color:#fff}
+.afiles,.actl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.afile{display:inline-flex;align-items:center;gap:4px;background:#F6F7FB;border:1px solid #E1E6F0;border-radius:999px;padding:2px 4px 2px 10px;font-size:12px}
+.afile a{color:#14264B;text-decoration:none;font-weight:700}
+.afile a small{display:inline;color:#55607A;font-weight:400}
+.afile .afx{border:0;background:none;font-size:16px;line-height:1;cursor:pointer;color:#55607A;padding:0 6px}
+.actdlg .actfiles{margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.actdlg .actfiles .actl{flex-basis:100%}
+.actdlg .actmax{font-size:12px;color:#55607A}
+.actdlg .actbox.drop{outline:2px dashed #C99A2E;outline-offset:-8px}
+.actdlg .actfile{cursor:pointer}
