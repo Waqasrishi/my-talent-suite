@@ -1017,3 +1017,12 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .pp .pr:hover .prico b{background:#E3BC5E;color:#14264B}
 .ajmng .pp .prico:focus-visible{outline:2px solid #2F5FB3;outline-offset:2px}
 @media(max-width:900px){.ajmng .pp .pr{grid-template-columns:34px 1fr 52px 30px}.ajmng .pp .blocks{grid-column:2/-2}}
+/* narrow screens: the name on top, then the bar, the percentage and the icon on one line */
+@media(max-width:900px){
+ .ajmng .pp .pr{grid-template-columns:34px 1fr 52px 30px;grid-template-rows:auto auto;column-gap:10px;row-gap:6px}
+ .ajmng .pp .pr .sav{grid-column:1;grid-row:1/3;align-self:center}
+ .ajmng .pp .pr .sl{grid-column:2/5;grid-row:1}
+ .ajmng .pp .pr .blocks{grid-column:2;grid-row:2}
+ .ajmng .pp .pr .sv{grid-column:3;grid-row:2}
+ .ajmng .pp .pr .prico{grid-column:4;grid-row:2}
+}
