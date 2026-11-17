@@ -1026,3 +1026,8 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
  .ajmng .pp .pr .sv{grid-column:3;grid-row:2}
  .ajmng .pp .pr .prico{grid-column:4;grid-row:2}
 }
+
+/* name first, then the tag; the designation under the name */
+.ajmng .pp .sl .sn{display:flex;align-items:center;gap:8px;min-width:0}
+.ajmng .pp .sl .sn b{flex:0 1 auto;min-width:0}
+.ajmng .pp .pr{grid-template-columns:34px minmax(200px,280px) 1fr 52px 30px}
