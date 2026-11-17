@@ -27,18 +27,30 @@ JSON: {"options":[{"text":"<the measure>","why":"<what it tells you, under 12 wo
 Goal: "${clip(c.title, 300)}"
 Measure: "${clip(c.measure, 400)}"
 Due: "${clip(c.due, 40)}"
-Supports: "${clip(c.parent, 300) || "nothing yet"}"
-Check: is it measurable with a number, is it one clear outcome (not an activity), does it have a date, does it support the goal above.
-JSON: {"ready":true|false,"checks":[{"ok":true|false,"text":"<one short sentence>"}],"better":"<a better wording of the goal in one sentence, or an empty string if it is already good>"}
-Give 3 or 4 checks.`,
+${c.top
+    ? "This person is the Director General, the highest role. There is NO goal above it. Do not check, mention or ask for alignment to a higher goal. Instead check that it sets a clear direction for the whole organisation."
+    : `Supports: "${clip(c.parent, 300) || "nothing yet"}". Goals above: ${JSON.stringify(arr(c.above, 8, 200))}. Check that it supports one of them.`}
+Check: is it measurable with a number, is it one clear outcome (not an activity), does it have a date.
+JSON: {"ready":true|false,"checks":[{"ok":true|false,"text":"<one short sentence>","fix":{"field":"title|measure|due|parent","value":"<the corrected value>"}}],"better":"<a better wording of the goal in one sentence, or an empty string if it is already good>"}
+Give 3 or 4 checks. Add "fix" only to a check that fails and only when you can write the exact corrected value: for title the improved goal sentence, for measure the improved measure with a number, a start value, a target and a date, for due a date written like "31 December 2027", for parent one of the goals above copied exactly. Leave "fix" out otherwise.`,
   comment: (c) => `A manager is returning this goal for changes. Goal: "${clip(c.title, 300)}". Measure: "${clip(c.measure, 400)}". Problems found: ${JSON.stringify(arr(c.issues, 6, 200))}.
 Write 3 short, polite comments (one or two sentences each) that tell the owner what to change.
 JSON: {"options":[{"text":"<the comment>"}]}`,
 };
 
-function shape(task, j) {
+function shape(task, j, ctx = {}) {
   if (task === "review") {
-    const checks = (Array.isArray(j.checks) ? j.checks : []).slice(0, 5).map((x) => ({ ok: !!x.ok, text: clip(x.text, 200) })).filter((x) => x.text);
+    const FIELDS = { title: 300, measure: 400, due: 40, parent: 300 };
+    const above = arr(ctx.above, 8, 200);
+    const fixOf = (f, ok) => {
+      if (ok || !f || !FIELDS[f.field]) return undefined;
+      const value = clip(f.value, FIELDS[f.field]).trim();
+      if (!value) return undefined;
+      if (f.field === "due" && !/^\d{1,2} [A-Za-z]+ \d{4}$/.test(value)) return undefined;
+      if (f.field === "parent" && (ctx.top || !above.includes(value))) return undefined;
+      return { field: f.field, value };
+    };
+    const checks = (Array.isArray(j.checks) ? j.checks : []).slice(0, 5).map((x) => ({ ok: !!x.ok, text: clip(x.text, 200), fix: fixOf(x.fix, !!x.ok) })).filter((x) => x.text);
     if (!checks.length) throw new Error("empty review");
     return { ready: !!j.ready, checks, better: clip(j.better, 300) };
   }
@@ -77,7 +89,7 @@ export async function ask(task, context, employeeId, email) {
     if (!r.ok) throw new Error(`model answered ${r.status}`);
     const j = await r.json();
     tokens = j.usage?.total_tokens ?? null;
-    out = shape(task, parse(j.choices?.[0]?.message?.content));
+    out = shape(task, parse(j.choices?.[0]?.message?.content), ctx);
   } catch (e) { status = "error"; error = e.message; }
   const rows = await q("INSERT INTO ai_log (employee_id, task, model, request, response, status, latency_ms, tokens, asked_by) VALUES ($1,$2,$3,$4::jsonb,$5::jsonb,$6,$7,$8,$9) RETURNING id",
     [employeeId || null, task, MODEL, JSON.stringify(ctx).slice(0, 8000), JSON.stringify(out ?? { error }), status, Date.now() - t0, tokens, email || null]).catch(() => [{ id: null }]);

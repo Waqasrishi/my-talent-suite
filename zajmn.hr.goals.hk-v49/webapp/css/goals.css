@@ -842,3 +842,26 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng [data-del]::before,.ajmng #gDelete::before{content:"";width:22px;height:22px;flex:0 0 22px;border-radius:50%;background-color:#F3C9C4;background-repeat:no-repeat;background-position:center;background-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 4.5h10M6.5 4.5V3h3v1.5M5 4.5l.5 8.5h5l.5-8.5' fill='none' stroke='%238A1F14' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .ajmng [data-del],.ajmng #gDelete{padding-left:4px!important}
 .ajmng .gc3 .gc3links .btn.danger{color:#8A1F14;border-color:#E3B1AB}
+
+/* AI suggestions you can apply */
+.ajmng .aifix{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:8px;padding:10px 12px;background:#FBF7EC;border:1px solid #EFE3C3;border-radius:10px}
+.ajmng .aifx-l{flex-basis:100%;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#85600F}
+.ajmng .aifx-v{flex:1;min-width:140px;font-size:13px;font-weight:700;color:#14264B;line-height:1.35;overflow-wrap:anywhere}
+.ajmng .note .aifix{background:#fff}
+
+/* team and contributor bars under a goal */
+.ajmng .gc3sub{gap:2px;padding:6px;background:linear-gradient(180deg,#F8F9FC,#F1F4F9);border:1px solid #E6EAF2;border-radius:14px}
+.ajmng .gc3sub .sr{grid-template-columns:34px minmax(130px,220px) 1fr 56px;gap:12px;padding:8px 10px;border-radius:10px;transition:background .15s}
+.ajmng .gc3sub .sr:hover{background:#fff;box-shadow:0 1px 3px rgba(20,38,75,.08)}
+.ajmng .gc3sub .sav{width:34px;height:34px;border-radius:50%;background:#14264B;color:#E3BC5E;font:800 12px/34px inherit;text-align:center;font-style:normal;letter-spacing:.03em;box-shadow:0 0 0 3px #fff,0 0 0 4px #E3BC5E55}
+.ajmng .gc3sub .sav.grp{background:#F4EBD2;color:#7A4B00;font-size:14px;box-shadow:0 0 0 3px #fff}
+.ajmng .gc3sub .sl{display:flex;flex-direction:column;line-height:1.2;white-space:normal}
+.ajmng .gc3sub .sl b{font-size:13px;font-weight:800;color:#14264B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ajmng .gc3sub .sl em{font-style:normal;font-size:11px;color:#55607A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ajmng .gc3sub .bar-track{height:12px;border-radius:999px;background:#E3E8F2;box-shadow:inset 0 1px 2px rgba(20,38,75,.12);overflow:hidden}
+.ajmng .gc3sub .bar-fill{border-radius:999px;background:linear-gradient(90deg,#C99A2E,#E8C766);min-width:0}
+.ajmng .gc3sub .sr.t .bar-fill{background:linear-gradient(90deg,#1B3566,#3E5FA8)}
+.ajmng .gc3sub .sr.done .bar-fill{background:linear-gradient(90deg,#2E6B3F,#5BAA74)}
+.ajmng .gc3sub .sv{font-size:12px;font-weight:800;color:#14264B;background:#fff;border:1px solid #E1E6F0;border-radius:999px;padding:3px 0;text-align:center}
+.ajmng .gc3sub .sr.done .sv{background:#E4F1E7;border-color:#BFDCC8;color:#2E6B3F}
+@media(max-width:700px){.ajmng .gc3sub .sr{grid-template-columns:34px 1fr 52px}.ajmng .gc3sub .bar-track{grid-column:2/-1}.ajmng .gc3sub .sl{grid-column:auto}}
