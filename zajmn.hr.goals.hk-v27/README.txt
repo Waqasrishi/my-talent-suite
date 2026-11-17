@@ -1,4 +1,4 @@
-zajmn.hr.goals.hk  (version 9, goal suggestions no longer claim links to goals that do not exist)  -  Goals module (demo 1) as a SAPUI5 component project
+zajmn.hr.goals.hk  (version 27: company fonts, English / Arabic switch, Strategic goals for the DG)  -  Goals module as a SAPUI5 component project
 ==========================================================================
 Project / component ID:   zajmn.hr.goals.hk
 Launchpad intent:         ZAJMNGOALS-display   (webapp/manifest.json, sap.app > crossNavigation)
@@ -76,8 +76,16 @@ STRUCTURE (standard Web IDE layout)
 
 NOTES
   - The app draws its own header, so inside the launchpad you will see two headers.
-  - The page loads the prototype's fonts (Inter and Manrope) from Google Fonts; without internet it falls back to system fonts.
+  - Fonts: the company Al Jazeera fonts (Latin and Arabic) are in webapp/fonts and declared in webapp/css/goals.css. Nothing loads from Google Fonts.
   - The browser console may show 404s for Component-preload.js and language files. They are optional; the app works without them.
   - This project has been run here on its own with SAPUI5 1.144, and linked to the home project. It has not been opened in
     SAP Web IDE or inside a launchpad yet.
   - Do not enter real employee data.
+
+VERSION 27 ADDITIONS
+  - English / Arabic switch (button "EN | عربي" in the header). webapp/model/I18n.js holds the English-to-Arabic word lists and turns the page
+    right to left. It translates the screen's own words only; goal titles and anything typed are never translated. It is installed from
+    Goals.start() (I18n.install(ROOT)). To add a word, add it to the D table in I18n.js.
+  - The Director General sees "Strategic goals" (not "My goals"), a breadcrumb that starts at the DG, and no 3-to-5 goal limit.
+  - Header: round home icon on the far left, large "Goals 2027" title, language switch and role picker on the right.
+  - Arabic goal titles are right-aligned in every place (class "ax", direction auto).
