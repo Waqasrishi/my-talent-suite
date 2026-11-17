@@ -48,8 +48,8 @@ resources:
   data:                           # a disk of its own, kept across restarts: the files attached to activities
     type: volume                  # mounted at /data (above); deleted with the app, no backup
     params: {size: 1Gi}
-  # the app's own AI key: OPENAI_BASE_URL, OPENAI_API_KEY and PLATFORM_LLM_MODELS — not used by the app at the moment (translation is switched off)
-  # between Arabic and English. qwen-flash is the company's own model: goal text does not leave the company.
+  # the app's own AI key: OPENAI_BASE_URL, OPENAI_API_KEY and PLATFORM_LLM_MODELS, read by ai.mjs only. It writes goal ideas, measures, reviews
+  # and return comments. qwen-flash is the company's own model: goal text does not leave the company. Every call is logged in ai_log.
   ai:
     type: llm
     params: {models: [qwen-flash]}

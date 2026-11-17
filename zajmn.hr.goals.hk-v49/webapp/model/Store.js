@@ -56,6 +56,8 @@ sap.ui.define([], function () {
 			return fetch(BASE + "/files?name=" + encodeURIComponent(file.name), { method: "POST", credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
 				.then(function (r) { if (!r.ok) { return r.json().catch(function () { return {}; }).then(function (e) { throw new Error(e.error || "HTTP " + r.status); }); } return r.json(); });
 		},
+		ai: function (task, context, employeeId) { return api("POST", "/ai", { task: task, context: context, employeeId: employeeId }, 35000); },
+		aiAccept: function (id, text) { return api("POST", "/ai/" + id + "/accept", { text: text }).catch(function () {}); },
 		log: function () { return api("GET", "/log?limit=400"); },
 		reset: function () { return api("POST", "/reset", {}).then(function () { saved.clear(); }); },
 		OWN: OWN

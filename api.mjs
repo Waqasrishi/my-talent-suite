@@ -5,6 +5,7 @@ import { mkdir, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { db } from "./db.mjs";
+import * as ai from "./ai.mjs";
 
 const MAX_BODY = 1_000_000;
 const MAX_FILE = 10 * 1024 * 1024;
@@ -43,7 +44,7 @@ async function state(res, H) {
   const by = (rows) => rows.reduce((m, r) => ((m[r.goal_id] ??= []).push(r), m), {});
   const A = by(acts), P = by(pushes), C = by(contribs), L = by(audit);
   json(res, H, 200, {
-    ids: ids.map((r) => Number(r.id)),
+    ids: ids.map((r) => Number(r.id)), ai: ai.enabled(),
     goals: goals.map((g) => ({
       id: Number(g.id), code: g.code, employeeId: g.employee_id, title: g.title, desc: g.description, measure: g.measure, due: g.due,
       weight: g.weight, own: g.progress, status: g.status, statusText: g.status_text, parent: g.parent_title,
@@ -168,6 +169,16 @@ export async function api(req, res, path, who, H) {
       json(res, H, 200, { ids: rows.map((r) => Number(r.id)) }); return true;
     }
     if (path === "/api/employees" && req.method === "PUT") { await employees(res, H, await readJson(req)); return true; }
+    if (path === "/api/ai" && req.method === "POST") {
+      const b = await readJson(req);
+      json(res, H, 200, await ai.ask(text(b.task, 20, "task"), b.context, b.employeeId ? text(b.employeeId, 80, "employeeId") : null, who.email)); return true;
+    }
+    if (path === "/api/ai/log" && req.method === "GET") {
+      const rows = await (await db()).query("SELECT id, created_at, employee_id, task, model, status, latency_ms, tokens, accepted FROM ai_log ORDER BY id DESC LIMIT 200");
+      json(res, H, 200, { log: rows }); return true;
+    }
+    const am = path.match(/^\/api\/ai\/(\d+)\/accept$/);
+    if (am && req.method === "POST") { const b = await readJson(req); await ai.accept(Number(am[1]), text(b.text, 800, "text")); json(res, H, 200, { ok: true }); return true; }
     if (path === "/api/log" && req.method === "GET") { await workflowLog(res, H, url); return true; }
     if (path === "/api/files" && req.method === "POST") { await uploadFile(req, res, H, who, url); return true; }
     const fm = path.match(/^\/api\/files\/(\d+)$/);
@@ -180,7 +191,7 @@ export async function api(req, res, path, who, H) {
     }
     json(res, H, 404, { error: "Not found" }); return true;
   } catch (e) {
-    const code = e.code === 400 || e.code === 413 ? e.code : e.code === "23503" || e.code === "23514" || e.code === "22P02" ? 400 : 500;
+    const code = [400, 413, 429, 502, 503].includes(e.code) ? e.code : e.code === "23503" || e.code === "23514" || e.code === "22P02" ? 400 : 500;
     if (code === 500) console.error("api error:", e);
     json(res, H, code, { error: code === 500 ? "Something went wrong saving that." : e.message });
     return true;
