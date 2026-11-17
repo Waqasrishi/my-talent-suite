@@ -53,22 +53,30 @@ sap.ui.define([], function () {
 			}, 400);
 		},
 		// one file to the app's disk: resolves {id, name, size}
+		// one file to the app's disk, in 512 KB pieces, each piece retried alone: resolves {id, name, size}
 		upload: function (file) {
-			// a deploy swaps the server for a moment (502, 503, 504): try again a few times before giving up
-			function once() {
-				return fetch(BASE + "/files?name=" + encodeURIComponent(file.name), { method: "POST", credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
-					.then(function (r) {
-						if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; return r.json().catch(function () { return {}; }).then(function (b) { if (b.error) { e.message = b.error; } throw e; }); }
-						return r.json();
+			function send(method, path, body, ctype) {
+				function once() {
+					return fetch(BASE + path, { method: method, credentials: "same-origin", headers: ctype ? { "Content-Type": ctype } : {}, body: body })
+						.then(function (r) {
+							if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; return r.json().catch(function () { return {}; }).then(function (b) { if (b.error) { e.message = b.error; } throw e; }); }
+							return r.json();
+						});
+				}
+				function go(n) {
+					return once().catch(function (e) {
+						if (n < 4 && (e.status === 502 || e.status === 503 || e.status === 504 || !e.status)) { return new Promise(function (ok) { setTimeout(ok, 1200 * (n + 1)); }).then(function () { return go(n + 1); }); }
+						throw e;
 					});
+				}
+				return go(0);
 			}
-			function go(n) {
-				return once().catch(function (e) {
-					if (n < 3 && (e.status === 502 || e.status === 503 || e.status === 504 || !e.status)) { return new Promise(function (ok) { setTimeout(ok, 1500 * (n + 1)); }).then(function () { return go(n + 1); }); }
-					throw e;
+			return send("POST", "/files/start?name=" + encodeURIComponent(file.name) + "&size=" + file.size + "&type=" + encodeURIComponent(file.type || ""))
+				.then(function (st) {
+					var n = Math.max(1, Math.ceil(file.size / st.chunk)), chain = Promise.resolve();
+					for (var k = 0; k < n; k++) { (function (k) { chain = chain.then(function () { return send("PUT", "/files/" + st.id + "/chunk?n=" + k, file.slice(k * st.chunk, (k + 1) * st.chunk), "application/octet-stream"); }); })(k); }
+					return chain.then(function () { return send("POST", "/files/" + st.id + "/finish", ""); });
 				});
-			}
-			return go(0);
 		},
 		ai: function (task, context, employeeId) { return api("POST", "/ai", { task: task, context: context, employeeId: employeeId }, 35000); },
 		aiAccept: function (id, text) { return api("POST", "/ai/" + id + "/accept", { text: text }).catch(function () {}); },

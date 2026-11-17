@@ -129,7 +129,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 el.onclick=e=>{if(e.target===el)close()};
 		 el.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close()}};
 		 el.querySelector('#actSave').onclick=async()=>{const t=ta.value.trim();if(!t){M.textContent='Write what you did, or choose '+(mode==='progress'?'Skip':'Cancel')+'.';ta.focus();return}
-		  M.textContent='';const sv=el.querySelector('#actSave');sv.disabled=true;await Promise.all(files.map(f=>f.up).filter(Boolean));sv.disabled=false;const bad=files.find(f=>f.failed);if(bad){M.textContent='Could not store '+bad.name+': '+bad.failed+'. Remove it or try again.';return}
+		  M.textContent='';const sv=el.querySelector('#actSave');sv.disabled=true;if(files.some(f=>f.up&&!f.id&&!f.failed))M.textContent='Uploading files\u2026';await Promise.all(files.map(f=>f.up).filter(Boolean));M.textContent='';sv.disabled=false;const bad=files.find(f=>f.failed);if(bad){M.textContent='Could not store '+bad.name+': '+bad.failed+'. Remove it or try again.';return}
 		  if(add){g.updates.unshift({id:Store.nid(),d:TODAY,n:t,p:g.own,a:1,files});g.audit.unshift({d:TODAY,t:'Activity added · '+YOU})}
 		  else{u.n=t;u.a=1;u.files=files;if(edit)g.audit.unshift({d:TODAY,t:'Activity edited · '+YOU})}
 		  close()}}

@@ -1,7 +1,7 @@
 // The goals API: /api/state, /api/ids, /api/employees, /api/goals/:id, /api/reset. Every goal and activity has its
 // own id (one Postgres sequence) and the employee it belongs to. The page keeps working in memory if this is down.
 import { createReadStream, createWriteStream } from "node:fs";
-import { mkdir, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, open, rename, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { db } from "./db.mjs";
@@ -129,8 +129,43 @@ async function uploadFile(req, res, H, who, url) {
   json(res, H, 200, { id, name, size });
 }
 
+// Chunked upload: start (declare name and size), PUT each 512 KB chunk, finish. Small requests pass every proxy, a slow connection
+// only slows one chunk, and a failed chunk is sent again alone.
+const CHUNK = 512 * 1024;
+async function uploadStart(res, H, who, url) {
+  const name = text(url.searchParams.get("name") || "file", 255, "name").replace(/[\\/\u0000-\u001f]/g, "_");
+  const size = int(url.searchParams.get("size"), 0, MAX_FILE, "size");
+  const ct = String(url.searchParams.get("type") || "").toLowerCase();
+  const id = Number((await (await db()).query("SELECT nextval('ts_id')::bigint AS id"))[0].id);
+  await mkdir(DIR, { recursive: true });
+  await writeFile(join(DIR, id + ".part"), "");
+  await (await db()).query("INSERT INTO files (id, name, size, type, uploaded_by, complete) VALUES ($1,$2,$3,$4,$5,false)", [id, name, size, SAFE_TYPES.test(ct) ? ct : "application/octet-stream", who.email]);
+  json(res, H, 200, { id, chunk: CHUNK });
+}
+async function uploadChunk(req, res, H, who, id, n) {
+  const f = (await (await db()).query("SELECT size, uploaded_by, complete FROM files WHERE id = $1", [id]))[0];
+  if (!f || f.complete || f.uploaded_by !== (who.email ?? null)) throw Object.assign(new Error("No such upload"), { code: 404 });
+  const offset = int(n, 0, 100000, "chunk") * CHUNK;
+  const parts = []; let len = 0;
+  for await (const c of req) { len += c.length; if (len > CHUNK) throw bad("chunk too large"); parts.push(c); }
+  if (offset + len > f.size) throw bad("chunk is past the end of the file");
+  const fh = await open(join(DIR, id + ".part"), "r+");
+  try { await fh.write(Buffer.concat(parts), 0, len, offset); } finally { await fh.close(); }
+  json(res, H, 200, { ok: true, received: len });
+}
+async function uploadFinish(res, H, who, id) {
+  const q = (await db()).query;
+  const f = (await q("SELECT name, size, uploaded_by, complete FROM files WHERE id = $1", [id]))[0];
+  if (!f || f.complete || f.uploaded_by !== (who.email ?? null)) throw Object.assign(new Error("No such upload"), { code: 404 });
+  const got = (await stat(join(DIR, id + ".part"))).size;
+  if (got !== f.size) throw bad(`The file is incomplete (${got} of ${f.size} bytes). Try again.`);
+  await rename(join(DIR, id + ".part"), join(DIR, String(id)));
+  await q("UPDATE files SET complete = true WHERE id = $1", [id]);
+  json(res, H, 200, { id, name: f.name, size: f.size });
+}
+
 async function sendFile(req, res, H, id) {
-  const rows = await (await db()).query("SELECT name, size, type FROM files WHERE id = $1", [id]);
+  const rows = await (await db()).query("SELECT name, size, type FROM files WHERE id = $1 AND complete", [id]);
   const f = rows[0];
   const path = join(DIR, String(id));
   if (!f || !(await stat(path).catch(() => null))) return json(res, H, 404, { error: "File not found" });
@@ -185,6 +220,10 @@ export async function api(req, res, path, who, H) {
     const am = path.match(/^\/api\/ai\/(\d+)\/accept$/);
     if (am && req.method === "POST") { const b = await readJson(req); await ai.accept(Number(am[1]), text(b.text, 800, "text")); json(res, H, 200, { ok: true }); return true; }
     if (path === "/api/log" && req.method === "GET") { await workflowLog(res, H, url); return true; }
+    if (path === "/api/files/start" && req.method === "POST") { await uploadStart(res, H, who, url); return true; }
+    const um = path.match(/^\/api\/files\/(\d+)\/(chunk|finish)$/);
+    if (um && req.method === "PUT" && um[2] === "chunk") { await uploadChunk(req, res, H, who, Number(um[1]), url.searchParams.get("n")); return true; }
+    if (um && req.method === "POST" && um[2] === "finish") { await uploadFinish(res, H, who, Number(um[1])); return true; }
     if (path === "/api/files" && req.method === "POST") { await uploadFile(req, res, H, who, url); return true; }
     const fm = path.match(/^\/api\/files\/(\d+)$/);
     if (fm && (req.method === "GET" || req.method === "HEAD")) { await sendFile(req, res, H, Number(fm[1])); return true; }
@@ -204,7 +243,7 @@ export async function api(req, res, path, who, H) {
     }
     json(res, H, 404, { error: "Not found" }); return true;
   } catch (e) {
-    const code = [400, 413, 429, 502, 503].includes(e.code) ? e.code : e.code === "23503" || e.code === "23514" || e.code === "22P02" ? 400 : 500;
+    const code = [400, 404, 413, 429, 502, 503].includes(e.code) ? e.code : e.code === "23503" || e.code === "23514" || e.code === "22P02" ? 400 : 500;
     if (code === 500) console.error("api error:", e);
     json(res, H, code, { error: code === 500 ? "Something went wrong saving that." : e.message });
     return true;
