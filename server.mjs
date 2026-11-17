@@ -26,9 +26,10 @@ const PROJECTS = [
   { url: "aj/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
   { url: "aj/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v2" },
   // the latest goals prototype (version 4, its own navy and gold look), with the Al Jazeera themed home page
+  { url: "latest-v7/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v7" },
   { url: "latest-v6/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v6" },
   { url: "latest-v5/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v5" },
-  { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v7" },
+  { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v8" },
   { url: "goals-module-v5", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v5", home: "/" },
   { url: "goals-module-v6", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v6", home: "/" },
   { url: "goals-module-v7", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v7", home: "/" },
@@ -52,9 +53,10 @@ const PROJECTS = [
   { url: "goals-module-v28", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v28", home: "/" },
   { url: "goals-module-v29", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v29", home: "/" },
   { url: "goals-module-v30", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v30", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v31" },
+  { url: "goals-module-v31", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v31", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v32" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v31", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v32", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
