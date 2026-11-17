@@ -7,6 +7,7 @@
 // The two component projects (the AJMN People home and the Goals module, Web IDE layout) are served under /<id>/webapp/.
 import { readdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
@@ -26,10 +27,11 @@ const PROJECTS = [
   { url: "aj/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v3" },
   { url: "aj/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v2" },
   // the latest goals prototype (version 4, its own navy and gold look), with the Al Jazeera themed home page
+  { url: "latest-v8/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v8" },
   { url: "latest-v7/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v7" },
   { url: "latest-v6/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v6" },
   { url: "latest-v5/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v5" },
-  { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v8" },
+  { url: "latest/zajmn.hr.sucfac1.hk", id: "zajmn.hr.sucfac1.hk", folder: "zajmn.hr.sucfac1.hk-v9" },
   { url: "goals-module-v5", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v5", home: "/" },
   { url: "goals-module-v6", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v6", home: "/" },
   { url: "goals-module-v7", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v7", home: "/" },
@@ -54,9 +56,10 @@ const PROJECTS = [
   { url: "goals-module-v29", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v29", home: "/" },
   { url: "goals-module-v30", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v30", home: "/" },
   { url: "goals-module-v31", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v31", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v32" },
+  { url: "goals-module-v32", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v32", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v33" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v32", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v33", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
@@ -67,12 +70,36 @@ const PROJECT_FILES = new Set(PROJECTS.flatMap(({ url, folder }) => {
     .filter((f) => f.isFile() && f.name.split(".").pop() in PTYPES)
     .map((f) => "/" + url + "/webapp/" + join(f.parentPath, f.name).slice(base.length + 1).split("\\").join("/"));
 }));
+// The start page of each app. Besides loading SAPUI5 it paints a loading screen at once (top bar, menu and a skeleton of the page, in the
+// same colours as the app), so there is no blank page while the app is fetched; the app removes it when it is drawn (id="boot").
+const SKELETON_CSS = `html,body{margin:0;height:100%;background:#CBD9E8}
+#boot{position:fixed;inset:0;z-index:1000;background:#CBD9E8;display:flex;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;transition:opacity .35s ease}
+#boot.done{opacity:0;pointer-events:none}
+#boot .bt{height:44px;background:#14264B;display:flex;align-items:center;padding:0 18px;color:#fff;font-weight:800;font-size:15px;gap:14px;flex-shrink:0}
+#boot .bt i{display:block;width:20px;height:2px;background:#fff;box-shadow:0 6px #fff,0 -6px #fff}
+#boot .gn{height:46px;background:#1B3366;flex-shrink:0;display:flex;align-items:center;padding:0 18px;color:#fff;font-weight:900;font-size:17px}
+#boot .bd{flex:1;display:flex;min-height:0}
+#boot .sd{width:210px;background:#14264B;padding:18px 14px;flex-shrink:0;box-sizing:border-box;color:#F3DC9A;font-weight:900;font-size:20px}
+#boot .sd u{display:block;height:11px;border-radius:6px;background:#2B3F78;margin:20px 8px 0;text-decoration:none}
+#boot .pn{flex:1;display:flex;justify-content:center}
+#boot .pp{width:min(900px,100%);background:#F6F7FB;padding:16px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px}
+#boot .sk{border-radius:4px;background:linear-gradient(90deg,#E8ECF4 25%,#F6F7FB 50%,#E8ECF4 75%);background-size:200% 100%;animation:bsh 1.2s ease-in-out infinite}
+@keyframes bsh{from{background-position:200% 0}to{background-position:-200% 0}}
+#boot .bar{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,#F3DC9A,#C99A2E);animation:bld 2.4s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes bld{from{width:0}to{width:90%}}
+@media(max-width:900px){#boot .sd{display:none}}
+@media(prefers-reduced-motion:reduce){#boot .sk,#boot .bar{animation:none}}`;
 const bootPage = ({ id }) => `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${TITLES[id][0]}</title><style>html, body { margin: 0; height: 100%; background: ${TITLES[id][1]}; }</style>
+<title>${TITLES[id][0]}</title><style>${SKELETON_CSS}</style>
+<link rel="preconnect" href="https://ui5.sap.com" crossorigin>
+<link rel="preload" href="./fonts/AlJazeeraBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/AlJazeeraHeavy.woff2" as="font" type="font/woff2" crossorigin>
 <script id="sap-ui-bootstrap" src="https://ui5.sap.com/1.144.1/resources/sap-ui-core.js" data-sap-ui-theme="sap_horizon"
   data-sap-ui-async="true" data-sap-ui-resource-roots='{"${id}": "./"}' data-sap-ui-on-init="module:sap/ui/core/ComponentSupport"></script>
-</head><body><div data-sap-ui-component data-name="${id}" data-id="container" data-settings='{"id": "app"}'></div></body></html>`;
+</head><body><div id="boot" aria-hidden="true"><div class="bar"></div><div class="bt"><i></i>AJMN Home</div>${id === "zajmn.hr.goals.hk" ? '<div class="gn">Goals <span style="color:#F3DC9A;margin-left:6px">2027</span></div>' : ""}
+<div class="bd"><div class="sd">AJMN<u></u><u></u><u></u><u></u><u></u><u></u><u></u></div><div class="pn"><div class="pp"><div class="sk" style="height:34px"></div><div class="sk" style="height:120px"></div><div class="sk" style="height:34px;width:60%"></div><div class="sk" style="height:90px"></div><div class="sk" style="height:90px"></div></div></div></div></div>
+<div data-sap-ui-component data-name="${id}" data-id="container" data-settings='{"id": "app"}'></div></body></html>`;
 const RULES = JSON.parse(process.env.PLATFORM_ACCESS || "{}");
 const SSO = process.env.PLATFORM_AUTH === "sso";
 // index.html is kept exactly as it is: one inline script, one inline style block, and its fonts
@@ -146,7 +173,10 @@ createServer(async (req, res) => {
       m["sap.ui5"].config.nav.home.url = p.home;
       out = JSON.stringify(m);
     }
-    res.writeHead(200, { ...PROJECT_HEADERS, "Content-Type": /\.(ttf|woff2)$/.test(path) ? PTYPES[path.split(".").pop()] : `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": "no-cache" });
+    const isFont = /\.(ttf|woff2)$/.test(path), etag = `W/"${createHash("sha1").update(out).digest("base64url").slice(0, 20)}"`;
+    const head = { ...PROJECT_HEADERS, "Content-Type": isFont ? PTYPES[path.split(".").pop()] : `${PTYPES[path.split(".").pop()]}; charset=utf-8`, "Cache-Control": isFont ? "public, max-age=86400" : "no-cache", ETag: etag };
+    if (req.headers["if-none-match"] === etag) { return res.writeHead(304, head).end(); }
+    res.writeHead(200, head);
     return res.end(req.method === "HEAD" ? undefined : out);
   }
   const dir = ["/fiori", "/fiori-people"].find((d) => path === d);
