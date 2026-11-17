@@ -349,8 +349,8 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 h+=`<div class="card"><h2 style="font-size:22px;margin-bottom:10px">Needs attention</h2>${att.length?att.map(g=>`<div class="sumrow"><span class="v">${esc(g.title)}</span>${chip(g)}</div>`).join(''):'<div style="color:var(--muted)">Nothing needs attention.</div>'}</div>`;
 		 $('#app').innerHTML=h}
 		let alUp=0,alDown=0,alGoal=null,alFrom='list';
-		const LV=['DG strategy','Executive Director','Director','Manager','Employee'],LVS=['DG','ED','Director','Manager','Employee'];
-		function alNodes(){const N=[],LVI={dg:0,ed:1,dir:2,mgr:3,emp:4};
+		const LV=['DG strategy','Executive Director','Director','Manager','Section head','Employee'],LVS=['DG','ED','Director','Manager','Section head','Employee'];
+		function alNodes(){const N=[],LVI={dg:0,ed:1,dir:2,mgr:3,sh:4,emp:5};
 		 const par=g=>{const o=pByLabel(g.owner),b=o&&pById(o.boss);return b?STORE[b.id].find(x=>x.title===g.parent)||null:null};
 		 ALLG().forEach(g=>{const o=pByLabel(g.owner)||ME,pg=par(g),ct=CTO.find(x=>x.t===g.cto)||ALLG().filter(x=>x.title===g.cto).map(x=>({id:'g'+x.id}))[0]||{};
 		  N.push({id:'g'+g.id,lvl:LVI[o.lv],t:g.title,who:g.owner,p:pg?'g'+pg.id:null,also:(g.also||[]).map(t=>{const m=ALLG().find(x=>x.title===t);return m?'g'+m.id:null}).filter(Boolean),st:g.statusText,cto:ct.id,pc:g.own});
@@ -358,14 +358,14 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		  (g.pushed||[]).forEach((x,i)=>{const r=pByLabel(x.who);if(r)N.push({id:'r'+g.id+'_'+i,lvl:LVI[r.lv],t:'Plan for: '+g.title,who:x.who,p:'g'+g.id,also:[],pc:x.p})})});
 		 return N}
 		function renderAlign(){crumb('Alignment');tabs();
-		 const F=alGoal?findG(alGoal):null,ownLvl=F?{dg:0,ed:1,dir:2,mgr:3,emp:4}[(pByLabel(F.owner)||ME).lv]:{dg:0,ed:1,dir:2,mgr:3,emp:4}[ME.lv],N=alNodes(),by={};N.forEach(n=>by[n.id]=n);
+		 const F=alGoal?findG(alGoal):null,ownLvl=F?{dg:0,ed:1,dir:2,mgr:3,sh:4,emp:5}[(pByLabel(F.owner)||ME).lv]:{dg:0,ed:1,dir:2,mgr:3,sh:4,emp:5}[ME.lv],N=alNodes(),by={};N.forEach(n=>by[n.id]=n);
 		 const own=F?['g'+F.id]:N.filter(n=>n.who===ME.label&&!n.ctr).map(n=>n.id);
 		 if(!own.length){$('#app').innerHTML=`<h1>Alignment</h1><p class="sub">Your place in the cascade.</p><div class="empty">No goals to show yet.<br>Create a goal, or ask the person above you to push one down to you.</div>`;return}
 		 const inc=new Set(own);
 		 const up=id=>{const n=by[id];[n.p,...(n.also||[])].filter(Boolean).forEach(p=>{if(!inc.has(p)){inc.add(p)}up(p)})};
 		 own.forEach(up);N.filter(n=>own.includes(n.id)&&n.cto).forEach(n=>{inc.add(n.cto);up(n.cto)});
 		 const down=id=>{N.filter(c=>c.p===id).forEach(c=>{inc.add(c.id);down(c.id)})};own.forEach(down);N.filter(n=>n.ctr&&inc.has(n.ctr)).forEach(n=>inc.add(n.id));
-		 const defLo=Math.max(0,ownLvl-1),defHi=Math.min(4,ownLvl+1);let lo=Math.max(0,defLo-alUp),hi=Math.min(4,defHi+alDown);
+		 const defLo=Math.max(0,ownLvl-1),defHi=Math.min(5,ownLvl+1);let lo=Math.max(0,defLo-alUp),hi=Math.min(5,defHi+alDown);
 		 if(F){lo=0;hi=Math.max(...N.filter(n=>inc.has(n.id)).map(n=>n.lvl))}
 		 const vis=N.filter(n=>inc.has(n.id)&&n.lvl>=lo&&n.lvl<=hi),vs=new Set(vis.map(n=>n.id));
 		 const PITCH=266,NW=234,NH=96,GG=20,RG=56,ry=l=>(l-lo)*(NH+RG),pos={};let cur=0;
@@ -384,7 +384,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 const cap=[];for(let l=lo;l<=hi;l++)cap.push(`<div style="position:absolute;left:0;top:${ry(l)}px;width:38px;height:${NH}px;display:flex;align-items:center;justify-content:center;border-radius:8px;overflow:hidden;background:${l===ownLvl?'var(--tint)':'var(--warm)'}"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;line-height:1.3;text-align:center;font-weight:800;color:${l===ownLvl?'#5F4300':'var(--muted)'};text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">${LVS[l]}${l===ownLvl?'<br>'+(F?'this goal':'you'):''}</span></div>`);
 		 const tb=(id,t,pri)=>`<button class="btn small" id="${id}" style="min-height:40px">${t}</button>`;
 		 const topBtns=F?'':(lo>0?tb('alUp','+ Show '+LV[lo-1]+' goals above'):'')+(alUp>0?tb('alUpHide','&minus; Hide '+LV[lo]+' level'):'');
-		 const botBtns=F?'':(hi<4?tb('alDown','+ Show '+LV[hi+1]+' goals below'):'')+(alDown>0?tb('alDownHide','&minus; Hide '+LV[hi]+' level'):'');
+		 const botBtns=F?'':(hi<5?tb('alDown','+ Show '+LV[hi+1]+' goals below'):'')+(alDown>0?tb('alDownHide','&minus; Hide '+LV[hi]+' level'):'');
 		 $('#app').innerHTML=F?`<h1>${esc(F.title)}</h1><p class="sub"><button class="link" id="alBack">&lsaquo; ${alFrom==='goal'?'Back to the goal':MYL()}</button> &nbsp; Alignment of this goal only: what it supports above it and what is built on it below, from the DG strategy down to the employee.</p>`:`<h1>Alignment</h1><p class="sub">Your place in the cascade, one level up and one level down. Use the + buttons to open more levels, from the DG strategy down to the employee.</p>`;
 		 $('#app').insertAdjacentHTML('beforeend',`
 		 <div class="row" style="justify-content:center;margin-bottom:12px;min-height:0">${topBtns}</div>
@@ -724,7 +724,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
  function wizScroll(){const k=step+'';if(wiz&&wiz.k!==k){wiz.k=k;keepY=null;if(scrollYNow()>0)scrollToY(0,'smooth')}}
 		{const D=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');Object.defineProperty($('#app'),'innerHTML',{configurable:true,get(){return D.get.call(this)},set(v){draw(v)}})}
 		let keepY=null;
-		{const LVN={dg:'Director General',ed:'Executive Directors',dir:'Directors',mgr:'Managers',emp:'Employees'};
+		{const LVN={dg:'Director General',ed:'Executive Directors',dir:'Directors',mgr:'Managers',sh:'Section heads',emp:'Employees'};
 		 $('#role').innerHTML=Object.keys(LVN).map(k=>'<optgroup label="'+LVN[k]+'">'+PEOPLE.filter(x=>x.lv===k).map(x=>'<option value="'+x.id+'"'+(x.id==='dg'?' selected':'')+'>'+esc(x.label)+(x.id==='dg'?' (you)':'')+'</option>').join('')+'</optgroup>').join('');setMe('dg')}
 		$('#homeLink').onclick=()=>NAV.to('home');
 		const rd=$('#resetData');if(rd)rd.onclick=()=>{if(!confirm('Delete every goal and activity in the test database and start again from empty?'))return;Store.reset().then(r=>{const d=(r&&r.deleted)||{};toast('Deleted '+(d.goals||0)+' goals, '+(d.activities||0)+' activities and '+(d.log||0)+' log rows. Starting again.');setTimeout(()=>location.reload(),1200)}).catch(()=>toast('Could not reset. Check you are signed in and try again.'))};
