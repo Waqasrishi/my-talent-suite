@@ -9,7 +9,7 @@ import { readdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
-import { api } from "./api.mjs";
+import { api, checkDisk } from "./api.mjs";
 import { join } from "node:path";
 
 const PAGES = { "/": "home.html", "/home.html": "home.html", "/goals.html": "goals.html", "/goals-hub-v2.html": "goals-hub-v2.html", "/index.html": "index.html", "/strategy.html": "strategy.html",
@@ -213,3 +213,4 @@ createServer(async (req, res) => {
   res.writeHead(200, { ...HEADERS, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
   res.end(req.method === "HEAD" ? undefined : page);
 }).listen(Number(process.env.PORT ?? 8080), "0.0.0.0");
+checkDisk();

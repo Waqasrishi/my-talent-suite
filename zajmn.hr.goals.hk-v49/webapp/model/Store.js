@@ -54,8 +54,21 @@ sap.ui.define([], function () {
 		},
 		// one file to the app's disk: resolves {id, name, size}
 		upload: function (file) {
-			return fetch(BASE + "/files?name=" + encodeURIComponent(file.name), { method: "POST", credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
-				.then(function (r) { if (!r.ok) { return r.json().catch(function () { return {}; }).then(function (e) { throw new Error(e.error || "HTTP " + r.status); }); } return r.json(); });
+			// a deploy swaps the server for a moment (502, 503, 504): try again a few times before giving up
+			function once() {
+				return fetch(BASE + "/files?name=" + encodeURIComponent(file.name), { method: "POST", credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
+					.then(function (r) {
+						if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; return r.json().catch(function () { return {}; }).then(function (b) { if (b.error) { e.message = b.error; } throw e; }); }
+						return r.json();
+					});
+			}
+			function go(n) {
+				return once().catch(function (e) {
+					if (n < 3 && (e.status === 502 || e.status === 503 || e.status === 504 || !e.status)) { return new Promise(function (ok) { setTimeout(ok, 1500 * (n + 1)); }).then(function () { return go(n + 1); }); }
+					throw e;
+				});
+			}
+			return go(0);
 		},
 		ai: function (task, context, employeeId) { return api("POST", "/ai", { task: task, context: context, employeeId: employeeId }, 35000); },
 		aiAccept: function (id, text) { return api("POST", "/ai/" + id + "/accept", { text: text }).catch(function () {}); },

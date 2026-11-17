@@ -1,7 +1,7 @@
 // The goals API: /api/state, /api/ids, /api/employees, /api/goals/:id, /api/reset. Every goal and activity has its
 // own id (one Postgres sequence) and the employee it belongs to. The page keeps working in memory if this is down.
 import { createReadStream, createWriteStream } from "node:fs";
-import { mkdir, rm, stat } from "node:fs/promises";
+import { mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { db } from "./db.mjs";
@@ -204,4 +204,14 @@ export async function api(req, res, path, who, H) {
     json(res, H, code, { error: code === 500 ? "Something went wrong saving that." : e.message });
     return true;
   }
+}
+
+// At start-up: say in the logs whether the attachment disk can be written, so a problem shows in `canvas logs` before anyone uploads.
+export async function checkDisk() {
+  try {
+    await mkdir(DIR, { recursive: true });
+    const probe = join(DIR, ".probe");
+    await writeFile(probe, "ok"); await rm(probe, { force: true });
+    console.log(`attachments: ${DIR} is writable`);
+  } catch (e) { console.error(`attachments: ${DIR} is NOT writable: ${e.code || e.message}`); }
 }
