@@ -132,6 +132,20 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		const withdrawDel=g=>{g.delReq=null;ev(g,'deletion_withdrawn','Deletion request withdrawn \u00b7 '+YOU);toast('Deletion request withdrawn.');renderList()};
 		const approveDel=g=>{doDelete(g,'approved by '+nameOf(ME))};
 		const returnDel=(g,why,stay)=>{if(!why){cRetErr='Say why it is not approved.';renderApprovals();return}g.delReq=null;g.note='Deletion request returned: '+why;ev(g,'deletion_returned','Deletion returned: '+why+' \u00b7 '+YOU,{reason:why});cRet=null;cRetOg=null;cRetErr='';toast('Returned to '+nameOf(pByLabel(g.owner))+'.');if(stay)renderList();else renderApprovals()};
+		// ---- a person's activities and attachments, in a popup, from the team and contributor rows ----
+		function personDlg(k){const info=PRV.get(k);if(!info)return;const old=ROOT.querySelector('.actdlg');if(old)old.remove();
+		 const pg=info.pg,raw=info.raw,nm=raw.split(',')[0].trim(),role=raw.split(',').slice(1).join(',').trim(),ups=pg?(pg.updates||[]):[],files=ups.flatMap(u=>(u.files||[]).map(f=>Object.assign({when:u.d},f)));
+		 const el=document.createElement('div');el.className='actdlg';
+		 el.innerHTML=`<div class="actbox decbox pdlg" role="dialog" aria-modal="true" aria-labelledby="pdT"><header class="dhead"><div class="pdwho"><i class="sav"${avt(info.key)} aria-hidden="true"></i><div><h2 id="pdT">${esc(nm)}</h2><small>${esc(role)}</small></div></div><span class="pdp">${info.p}%</span></header>
+		  <p class="pdsub">${info.key==='c'?'Linked goal':'Pushed down goal'}: <b>${esc(pg?pg.title:info.og.title)}</b></p>
+		  <div class="pdbar">${blocks(info.p)}</div>
+		  <h3 class="pdh">Activities <span class="actcount">${ups.length}</span></h3>
+		  ${ups.length?`<ul class="tl pdtl">${ups.map(u=>`<li class="act"><span class="actdot" aria-hidden="true"></span><div class="acthead"><span class="actp">Progress ${u.p}%</span><span class="actd">${esc(u.d)}</span></div><div class="actn">${esc(u.n)}</div>${u.files&&u.files.length?'<div class="afiles">'+fchips(u.files)+'</div>':''}</li>`).join('')}</ul>`:'<p class="pdnone">No activities logged yet.</p>'}
+		  <h3 class="pdh">Attachments <span class="actcount">${files.length}</span></h3>
+		  ${files.length?`<div class="pdfiles">${files.map(f=>fchips([f])).join('')}</div>`:'<p class="pdnone">No files attached.</p>'}
+		  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="pdClose">Close</button></div></div>`;
+		 ROOT.appendChild(el);const close=()=>el.remove();el.querySelector('#pdClose').onclick=close;el.onclick=e=>{if(e.target===el)close()};el.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();close()}};el.querySelector('#pdClose').focus()}
+		ROOT.addEventListener('click',e=>{const row=e.target.closest&&e.target.closest('[data-prvrow]');if(row&&!e.target.closest('a'))personDlg(row.dataset.prvrow)});
 		// the activity popup: opens when progress changes, from Add activity, or from Edit; a note and files join the goal's activity list
 		const fsize=n=>n<1024?n+' B':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB';
 		const fext=n=>(n.split('.').length>1?n.split('.').pop():'file').slice(0,4).toUpperCase();
@@ -204,7 +218,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		// a person's colour says how they relate to the goal: pushed down to them (gold), contributing to it (blue), approving it (purple)
 		const AVT={t:['#FBF1D2','#F0D88C'],c:['#E3EDFB','#BCD3F2'],a:['#EEEBFA','#D6D0F3']};
 		const avt=k=>{const c=AVT[k]||AVT.t;return ` style="--a1:${c[0]};--a2:${c[1]}"`};
-		const subOpen=new Set();
+		const subOpen=new Set(),PRV=new Map();
 		const band=p=>p>=100?4:p>=67?3:p>=34?2:p>0?1:0;
 		const blocks=p=>{let h='';for(let i=0;i<10;i++){const f=Math.max(0,Math.min(1,(p-i*10)/10));h+=`<i class="bk${f>0?' on b'+band(p):''}"${f>0&&f<1?` style="opacity:${(0.25+f*0.75).toFixed(2)}"`:''}></i>`}return `<span class="blocks" role="img" aria-label="${p} percent">${h}</span>`};
 		function ppanel(g,key,title,list){
@@ -212,10 +226,11 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 const avg=Math.round(s.reduce((t,x)=>t+x[1],0)/n),done=s.filter(x=>x[1]>=100).length,none=s.filter(x=>x[1]===0).length,mid=n-done-none;
 		 const head=n>3?`<div class="pph"><div><span class="ppt">${title}</span><b>${avg}%</b><span class="ppn">average of ${n}</span></div><span class="pps">${done} done &middot; ${mid} in progress &middot; ${none} not started</span></div><div class="ppseg" role="img" aria-label="${done} done, ${mid} in progress, ${none} not started"><i style="flex:${done};background:#2E6B3F"></i><i style="flex:${mid};background:#C99A2E"></i><i style="flex:${none};background:#E3E8F2"></i></div>`:`<div class="pph"><div><span class="ppt">${title}</span></div></div>`;
 		 return `<div class="gc3sub pp ${key}" role="list">${head}${show.map(x=>{const raw=String(x[0]).replace(/&amp;/g,'&'),nm=raw.split(',')[0].trim(),role=raw.split(',').slice(1).join(',').trim(),ini=nm.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-		  return `<div class="pr${x[1]>=100?' done':''}" role="listitem"><i class="sav"${avt(key)} aria-hidden="true">${esc(ini)}</i><span class="sl" title="${esc(raw)}"><b>${esc(nm)}</b>${role?`<em>${esc(role)}</em>`:''}</span>${blocks(x[1])}<span class="sv">${x[1]}%</span></div>`}).join('')}${n>3?`<button type="button" class="ppmore" data-subtoggle="${g.id}|${key}">${open?'Show fewer':'Show all '+n}</button>`:''}</div>`}
+		  PRV.set(g.id+'|'+key+'|'+raw,{pg:x[2],raw,p:x[1],key,og:g});const pgl=x[2],nAct=pgl?(pgl.updates||[]).length:0,nFil=pgl?(pgl.updates||[]).reduce((t,u)=>t+((u.files||[]).length),0):0;
+		  return `<div class="pr${x[1]>=100?' done':''}" role="listitem" data-prvrow="${esc(g.id+'|'+key+'|'+raw)}"><button type="button" class="prview" data-prv="${esc(g.id+'|'+key+'|'+raw)}" aria-label="View activities and attachments of ${esc(nm)}"><i aria-hidden="true">&#9201;</i>${nAct?nAct+' activit'+(nAct>1?'ies':'y'):'No activity yet'}${nFil?' &middot; &#128206; '+nFil:''}</button><i class="sav"${avt(key)} aria-hidden="true">${esc(ini)}</i><span class="sl" title="${esc(raw)}"><b>${esc(nm)}</b>${role?`<em>${esc(role)}</em>`:''}</span>${blocks(x[1])}<span class="sv">${x[1]}%</span></div>`}).join('')}${n>3?`<button type="button" class="ppmore" data-subtoggle="${g.id}|${key}">${open?'Show fewer':'Show all '+n}</button>`:''}</div>`}
 		function subbars(g){const out=[];
-		 if(!BOSS){if((g.pushed||[]).length)out.push(ppanel(g,'t','Team progress',g.pushed.map(x=>[x.who,x.p])))}
-		 else{const cs=(g.contribs||[]).filter(c=>c.status==='Linked');if(cs.length)out.push(ppanel(g,'c','Contributors',cs.map(c=>[c.who,c.p])));if((g.pushed||[]).length)out.push(ppanel(g,'t','Team',g.pushed.map(x=>[x.who,x.p])))}
+		 if(!BOSS){if((g.pushed||[]).length)out.push(ppanel(g,'t','Team progress',g.pushed.map(x=>[x.who,x.p,ALLG().find(y=>y.from&&y.from.gid===g.id&&y.owner===x.who)])))}
+		 else{const cs=(g.contribs||[]).filter(c=>c.status==='Linked');if(cs.length)out.push(ppanel(g,'c','Contributors',cs.map(c=>[c.who,c.p,c.myId?findG(c.myId):null])));if((g.pushed||[]).length)out.push(ppanel(g,'t','Team',g.pushed.map(x=>[x.who,x.p,ALLG().find(y=>y.from&&y.from.gid===g.id&&y.owner===x.who)])))}
 		 return out.join('')}
 		function chip(g){if(g.delReq)return '<span class="chip att"><span aria-hidden="true">&#9201;</span>Deletion awaiting approval</span>';if(g.pending)return '<span class="chip att"><span aria-hidden="true">&#9201;</span>Change awaiting approval</span>';if(!BOSS&&g.status==='ok')return '';const i={ok:'&#10003;',att:'&#9201;',neu:'&#8226;'}[g.status];return `<span class="chip ${g.status}"><span aria-hidden="true">${i}</span>${esc(g.statusText)}</span>`}
 		function tabs(){const tg=$('#tabLog');if(tg){tg.classList.toggle('on',view==='log');tg.setAttribute('aria-current',view==='log'?'page':'false')}const ta=$('#tabAppr');if(ta){ta.classList.toggle('on',view==='appr');ta.setAttribute('aria-current',view==='appr'?'page':'false')}
