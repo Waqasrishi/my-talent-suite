@@ -1005,3 +1005,15 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .ptag.c{background:#E3EDFB;color:#3C62A5}
 .actdlg .pdlg .ptag{margin-inline-end:6px}
 @media(max-width:900px){.ajmng .pp .pr{grid-template-columns:34px 1fr 52px}}
+
+/* name with its designation under it, tag in front; a small activity icon after the bar */
+.ajmng .pp .pr{grid-template-columns:34px minmax(210px,290px) 1fr 52px 30px}
+.ajmng .pp .sl{flex-direction:row;align-items:center;gap:10px}
+.ajmng .pp .sl .snm{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.ajmng .pp .prico{position:relative;width:30px;height:30px;padding:0;border-radius:50%;border:1px solid #E1E6F0;background:#fff;color:#8A96AE;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s,border-color .15s,transform .15s}
+.ajmng .pp .prico.has{color:#8A6A1C;border-color:#E3BC5E;background:#FBF1D2}
+.ajmng .pp .prico b{position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#14264B;color:#E3BC5E;font-size:10px;font-weight:800;line-height:16px;text-align:center}
+.ajmng .pp .pr:hover .prico,.ajmng .pp .prico:focus-visible{background:#14264B;color:#E3BC5E;border-color:#14264B;transform:scale(1.08)}
+.ajmng .pp .pr:hover .prico b{background:#E3BC5E;color:#14264B}
+.ajmng .pp .prico:focus-visible{outline:2px solid #2F5FB3;outline-offset:2px}
+@media(max-width:900px){.ajmng .pp .pr{grid-template-columns:34px 1fr 52px 30px}.ajmng .pp .blocks{grid-column:2/-2}}
