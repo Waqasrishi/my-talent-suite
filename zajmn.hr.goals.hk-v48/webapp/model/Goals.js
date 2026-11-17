@@ -262,12 +262,12 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 ${BOSS?contribCard(g):''}
 		 <div class="card" style="margin-top:16px;background:var(--warm)">${aihead('Quick check of this goal.')}<ul class="checks">${C.map(c=>`<li><span class="mark ${c[0]?'ok':'warn'}" aria-hidden="true">${c[0]?'&#10003;':'!'}</span><span>${c[0]?c[1]:c[2]}</span></li>`).join('')}</ul></div>
 		 <div class="card" style="margin-top:16px"><h3 style="font-size:17px;margin-bottom:8px">Activity</h3><ul class="tl">${g.audit.map(a=>`<li>${esc(a.t)}<small>${esc(a.d)}</small></li>`).join('')}</ul></div>`;
-		 $('#app').innerHTML=`<div class="ghead"><p class="gbackrow"><button class="link" id="gBack">&lsaquo; ${MYL()}</button>${chip(g)}<span>${g.pending?'Change waiting for approval':(locked?'Locked since 5 Nov 2026':(pend?'Waiting for approval':''))}</span></p>
-		 <div class="card gcard gc3 gh" data-ring-scope="1">${isStrat(g)?STAB:''}<div class="gc3row">${ring(g.own)}
-		  <div class="gc3mid"><div class="geyebrow">Goal</div><h1 class="gtitle">${esc(g.title)}</h1><div class="gc3measure"><span>Measure</span> ${esc(g.measure||'Not set')}</div>${Slider.markup('own:'+g.id,g.own,BOSS?'Owner progress':'Your progress')}</div>
+		 $('#app').innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px"><h1 style="font-size:34px">${esc(g.title)}</h1><span class="row" style="gap:8px"><button class="btn" id="gAlign">Alignment</button><button class="btn" id="gPush">Push down</button>${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn" id="gWithdraw">Withdraw change request</button>':'<button class="btn primary" id="gEdit">Request a change</button>')}</span></div>
+		 <p class="sub"><button class="link" id="gBack">&lsaquo; ${MYL()}</button> &nbsp; ${chip(g)} &nbsp; ${g.pending?'Change waiting for approval':(locked?'Locked since 5 Nov 2026':(pend?'Waiting for approval':''))} &nbsp; Due ${esc(g.due)} &middot; ${dleft(g)} &middot; ${BOSS?'Owner':'Set by'} ${YOU}${BOSS?' &middot; Approver '+esc(BOSS.label):''}</p>
+		 <div class="card gcard gc3 gh" data-ring-scope="1" style="margin-bottom:16px">${isStrat(g)?STAB:''}<div class="gc3row">${ring(g.own)}
+		  <div class="gc3mid"><div class="geyebrow">Goal</div><div class="gc3measure"><span>Measure</span> ${esc(g.measure||'Not set')}</div>${Slider.markup('own:'+g.id,g.own,BOSS?'Owner progress':'Your progress')}</div>
 		  ${wcirc(g,g.weight==null||g.weight==='')}</div>
-		  ${subbars(g)}
-		  <div class="gc3foot"><span>Due ${esc(g.due)} &middot; ${dleft(g)} &middot; ${BOSS?'Owner':'Set by'} ${YOU}${BOSS?' &middot; Approver '+esc(BOSS.label):''}</span><span class="gc3links"><button class="btn small" id="gAlign">Alignment</button><button class="btn small" id="gPush">Push down</button>${(inlineEdit||gEdit)?'':(g.pending?'<button class="btn small" id="gWithdraw">Withdraw change request</button>':'<button class="btn small primary" id="gEdit">Request a change</button>')}</span></div></div></div>
+		  ${subbars(g)}</div>
 		 <div class="g2"><div>${main}</div><div>${side}</div></div>`;
 		 const bk=$('#gBack');bk.onclick=()=>{view='list';gEdit=false;cAddOpen=false;cErr='';renderList()};
 		 const ed=$('#gEdit');if(ed)ed.onclick=()=>{gEdit=true;renderGoal()};
