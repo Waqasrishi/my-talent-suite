@@ -77,8 +77,8 @@ written again in the app; how a call works is its reference skill. `canvas valid
 | Check a change works, before saying it does | look at it as each of its people — `verify-change` |
 | Something in the running app is broken or wrong | find the cause first — `debug-report` (a failed deploy: `debug-deployment`) |
 | Remember what the person decided — who it is for, the roles, the words, the look | `NOTES.md`: read it before a change; add a line when they decide something |
+| Follow your team's house rules — how its apps are built, their tone, their words | `TEAM.md`, when there is one: the team's kit, read with this file; where the two differ, this file wins. Never edited here: the team's owners change it (`canvas kit`), and `canvas update` brings it in, with the team's skills as `.agents/skills/team-*` |
 | Say what a person can do with the app and how it is built — the brief its team reads on the portal's Info and Architecture tabs | `BRIEF.md` — `describe-app`. What was decided stays in `NOTES.md` |
-| A model or library that runs in the browser — a script, a WebAssembly runtime, a model's weights (face detection, OCR, a speech model) | `src/static/vendor/`, **only** by `canvas files add <name>` from the team's Files, listed with its sha256 in `src/static/vendor/files.json` — never written by hand, never from a CDN; loaded by `asset("vendor/<name>")` — `use-files` |
 | Tests | `tests/` |
 
 ### The stack, for the skills
@@ -149,8 +149,7 @@ headers are forgeable — `add-auth`.
 
 **Only the app's own script files run** (`ajnkit.origin`'s policy): no inline `<script>`, no
 `onclick=` — a file under `src/static/`, and a dialog opens with `data-dialog-open`. `canvas validate`
-names each line it would refuse. Someone else's script, WebAssembly runtime or model is a file of the app's too,
-in `src/static/vendor/` by `canvas files add` (`use-files`): WebAssembly compiles, nothing loads from another site.
+names each line it would refuse.
 
 **The platform's code is packages, `ajnkit`** — `from ajnkit import db, access, llm` — installed from the
 app's own `packages/` folder (`pyproject.toml`'s `[tool.uv.sources]`, one line each; never PyPI) and
