@@ -78,6 +78,7 @@ written again in the app; how a call works is its reference skill. `canvas valid
 | Something in the running app is broken or wrong | find the cause first — `debug-report` (a failed deploy: `debug-deployment`) |
 | Remember what the person decided — who it is for, the roles, the words, the look | `NOTES.md`: read it before a change; add a line when they decide something |
 | Follow your team's house rules — how its apps are built, their tone, their words | `TEAM.md`, when there is one: the team's kit, read with this file; where the two differ, this file wins. Never edited here: the team's owners change it (`canvas kit`), and `canvas update` brings it in, with the team's skills as `.agents/skills/team-*` and its colours and mark as `src/static/team/` (`theme.css`, `logo.svg`), which the page shell takes by itself — never link, copy or override them |
+| Take only some of your team's skills | `canvas kit use --skills <groups or skills>` writes `canvas.dev/kit-skills` in score.yaml (`.canvas/kit.json` says what the kit offers); the next `canvas update` or deploy brings just those to `.agents/skills/team-*/`. Never edit those copies |
 | Say what a person can do with the app and how it is built — the brief its team reads on the portal's Info and Architecture tabs | `BRIEF.md` — `describe-app`. What was decided stays in `NOTES.md` |
 | Tests | `tests/` |
 
