@@ -1,5 +1,6 @@
 // The AI behind the goal screens: the platform's own model (llm resource, qwen-flash: goal text stays inside the company).
-// Four jobs: goals (ideas for a new goal), measures (how to know it is done), review (is this goal ready), comment (drafts for returning a goal).
+// Five jobs: goals (ideas for a new goal), measures (how to know it is done), review (is this goal ready), comment (drafts for returning a goal),
+// translate (one goal field into Arabic or English, shown beside the original; the goal itself is never changed).
 // Every call is logged in ai_log. With no key (a laptop) enabled() is false and the screens fall back to the goal library.
 import { db } from "./db.mjs";
 
@@ -33,6 +34,9 @@ ${c.top
 Check: is it measurable with a number, is it one clear outcome (not an activity), does it have a date.
 JSON: {"ready":true|false,"checks":[{"ok":true|false,"text":"<one short sentence>","fix":{"field":"title|measure|due|parent","value":"<the corrected value>"}}],"better":"<a better wording of the goal in one sentence, or an empty string if it is already good>"}
 Give 3 or 4 checks. Add "fix" only to a check that fails and only when you can write the exact corrected value: for title the improved goal sentence, for measure the improved measure with a number, a start value, a target and a date, for due a date written like "31 December 2027", for parent one of the goals above copied exactly. Leave "fix" out otherwise.`,
+  translate: (c) => `Translate this text from a goal into ${c.to === "en" ? "English" : "Modern Standard Arabic"}. Keep numbers, dates and names as they are. Translate only; do not improve or explain it.
+Text: "${clip(c.text, 800)}"
+JSON: {"text":"<the translation>"}`,
   comment: (c) => `A manager is returning this goal for changes. Goal: "${clip(c.title, 300)}". Measure: "${clip(c.measure, 400)}". Problems found: ${JSON.stringify(arr(c.issues, 6, 200))}.
 Write 3 short, polite comments (one or two sentences each) that tell the owner what to change.
 JSON: {"options":[{"text":"<the comment>"}]}`,
@@ -53,6 +57,11 @@ function shape(task, j, ctx = {}) {
     const checks = (Array.isArray(j.checks) ? j.checks : []).slice(0, 5).map((x) => ({ ok: !!x.ok, text: clip(x.text, 200), fix: fixOf(x.fix, !!x.ok) })).filter((x) => x.text);
     if (!checks.length) throw new Error("empty review");
     return { ready: !!j.ready, checks, better: clip(j.better, 300) };
+  }
+  if (task === "translate") {
+    const text = clip(j.text, 1200).trim();
+    if (!text) throw new Error("empty translation");
+    return { text };
   }
   const options = (Array.isArray(j.options) ? j.options : []).slice(0, 6).map((x) => ({ text: clip(x.text, 400), why: clip(x.why, 160) })).filter((x) => x.text);
   if (!options.length) throw new Error("no options");
