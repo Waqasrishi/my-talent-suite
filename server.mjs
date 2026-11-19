@@ -106,6 +106,8 @@ const PROJECTS = [
   { url: "goals-module-v70", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v70", home: "/" },
   // v71 = v70 with the ownership rule: the Director General's goals are the strategy (no separate column); Owner only on goals an owner holds; team goals carry no tag
   { url: "goals-module-v71", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v71", home: "/" },
+  // v72 = v71 with bigger goal titles, a Goal N badge, and one expandable block for team and contributors
+  { url: "goals-module-v72", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v72", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v71" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
