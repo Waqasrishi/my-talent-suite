@@ -1,0 +1,92 @@
+{
+	"_version": "1.12.0",
+	"sap.app": {
+		"id": "zajmn.hr.goals.hk",
+		"type": "application",
+		"title": "Goals 2027",
+		"description": "AJMN Goals 2027: goals, push down, contributors, reviews, alignment and AI suggestions. Data in SAP ECC (ZAJMN_GOALS_SRV).",
+		"applicationVersion": {
+			"version": "71.0.0"
+		},
+		"crossNavigation": {
+			"inbounds": {
+				"display": {
+					"semanticObject": "ZAJMNGOALS",
+					"action": "display",
+					"title": "Goals 2027",
+					"signature": {
+						"parameters": {
+							"start": {
+								"required": false
+							}
+						},
+						"additionalParameters": "allowed"
+					}
+				}
+			},
+			"outbounds": {
+				"home": {
+					"semanticObject": "ZAJMNHR",
+					"action": "display"
+				}
+			}
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/ZAJMN_GOALS_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": [
+			"sap_belize",
+			"sap_fiori_3",
+			"sap_horizon",
+			"sap_bluecrystal"
+		]
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "zajmn.hr.goals.hk.view.App",
+			"type": "XML",
+			"async": true
+		},
+		"dependencies": {
+			"minUI5Version": "1.44.0",
+			"libs": {
+				"sap.ui.core": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/goals.css"
+				}
+			]
+		},
+		"config": {
+			"nav": {
+				"home": {
+					"semanticObject": "ZAJMNHR",
+					"action": "display",
+					"url": "../../zajmn.hr.sucfac1.hk/webapp/index.html"
+				}
+			}
+		}
+	}
+}
