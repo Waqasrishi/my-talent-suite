@@ -22,7 +22,7 @@ Same tables, same OData service, same names. Nothing to re-create in SE11 or SEG
 
 | Area | v68 |
 |---|---|
-| Push down | One grid of people against goals; Director General and Executive Director can reach people one level down; copies arrive already approved |
+| Push down | Three quick steps (goals, people, check); Director General and Executive Director can reach people one level down; copies arrive already approved |
 | Delete | Always the owner's choice; people linked to the goal are told and their link is broken, with an item to relink |
 | Contributors | Search box (Executive Directors, Directors, Managers), a Contributor tab, Accept opens an editable copy, no tailoring window |
 | Director General | Dashboard of Executive Directors with expected progress, a drill-down with Show more (activities and files), Split evenly for weights, Approve all asks first |

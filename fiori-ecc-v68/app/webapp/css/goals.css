@@ -1435,3 +1435,22 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .cbo b{display:block;font-size:14px;color:#14264B;font-weight:600}
 .ajmng .cbo small{display:block;font-size:12px;color:#8A93A6}
 .ajmng .cbn{padding:14px;font-size:14px;color:#8A93A6;text-align:center}
+
+/* push down: three quick steps */
+.casdlg .pdstep{margin:6px 0 14px}
+.casdlg .pdk{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9A7A22}
+.casdlg .pdstep h3{font-size:24px;margin:2px 0 0;color:#14264B}
+.casdlg .pdbody{min-height:200px}
+.casdlg .pdm{display:grid;gap:10px}
+.casdlg .pdo{display:flex;gap:14px;align-items:center;padding:16px 18px;border:1.5px solid #E6EAF2;border-radius:16px;cursor:pointer;background:#fff}
+.casdlg .pdo.on{border-color:#C99A2E;background:#FFFCF3}
+.casdlg .pdo b{display:block;font-size:16px;color:#14264B}
+.casdlg .pdo small{display:block;color:#8A93A6;font-size:13px;margin-top:2px}
+.casdlg .pdl{margin-top:12px;max-height:300px;overflow:auto}
+.casdlg .pds{padding:4px 0}
+.casdlg .pdsn{font-size:22px;color:#14264B;margin-bottom:14px}
+.casdlg .pdc{margin:12px 0;font-size:15px;color:#14264B}
+.casdlg .pdc>div{padding:4px 0}
+.casdlg .pdch{display:flex;flex-wrap:wrap;gap:8px}
+.casdlg .pdchip{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:#FAFBFE;border:1px solid #EEF1F7;font-size:14px}
+.casdlg .pdchip .gav{width:26px;height:26px;font-size:11px}
