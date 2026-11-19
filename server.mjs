@@ -110,6 +110,8 @@ const PROJECTS = [
   { url: "goals-module-v72", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v72", home: "/" },
   // v73 = v72 with the Alignment arrows fixed, no column headers, no hover text on cards
   { url: "goals-module-v73", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v73", home: "/" },
+  // v74 = v73 with the Goal N tab hanging from the top left of each goal card, a little transparent
+  { url: "goals-module-v74", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v71" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
