@@ -94,6 +94,12 @@ const PROJECTS = [
   // v64 = v62 with at most 5 suggestions per wizard step (AI first)
   { url: "goals-module-v64", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v64", home: "/" },
   // v65 = v64 with an easier My goals: suggestions in the empty box, attention box only when needed, Approvals count, slimmer banner
+  // v66 = v65 with the review answers: Role, Parent and Due date steps filled in, one-screen push down, grouped approvals, DG dashboard by Executive Director, Owner badge
+  { url: "goals-module-v66", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v66", home: "/" },
+  // v67 = v66 with round 2 answers: calmer Team progress, Contributor tag, Director/ED wizard with Role step, lighter push down, Approve all asks, dashboard drill-down
+  { url: "goals-module-v67", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v67", home: "/" },
+  // v68 = v67 with round 3 answers: no tags on review rows, hover tips, lighter glow, drill-down Show more, searchable contributor picker, new push down
+  { url: "goals-module-v68", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
