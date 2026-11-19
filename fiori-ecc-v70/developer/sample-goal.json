@@ -1,0 +1,26 @@
+{
+  "GoalId": "1001",
+  "Pernr": "90000002",
+  "Title": "Raise the share of stories with video from 30% to 50%",
+  "Description": "Video drives reach on every platform.",
+  "Measure": "Share of stories with video: from 30% to 50% by 31 December 2027",
+  "DueText": "31 December 2027",
+  "Weight": -1,
+  "Progress": 47,
+  "Status": "att",
+  "StatusText": "Awaiting review",
+  "ParentTitle": "Raise the share of stories with video from 30% to 50%",
+  "PushedFromGoal": "1000",
+  "PushedFromPernr": "90000001",
+  "Extra": "{\"cto\":null,\"also\":[],\"approvals\":[]}",
+  "Activities": [
+    { "GoalId": "1001", "ActId": "1002", "Progress": 47, "Note": "Launched the video desk rota", "HasNote": true, "DoneText": "19 Nov 2026", "Position": 0, "Files": "[{\"id\":1,\"name\":\"rota.txt\",\"size\":9}]" }
+  ],
+  "Pushes": [],
+  "Contributors": [
+    { "GoalId": "1001", "Position": 0, "Pernr": "90000004", "Data": "{\"who\":\"Khalid Nasser, ED Arabic\",\"status\":\"Invited\",\"employeeId\":\"ed3\"}" }
+  ],
+  "Log": [
+    { "GoalId": "1001", "Position": 0, "ActorPernr": "90000002", "Action": "progress", "Text": "Progress update: 47% · You, Omar Saleh, ED Digital", "DateText": "19 Nov 2026", "Detail": "{}", "OccurredAt": "2026-11-19T07:30:12.000Z" }
+  ]
+}
