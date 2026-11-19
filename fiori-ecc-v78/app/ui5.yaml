@@ -1,0 +1,5 @@
+# UI5 Tooling: `npm run build` writes dist/ with Component-preload.js (one file for the launchpad to load). Upload dist/, not webapp/.
+specVersion: "3.0"
+metadata:
+  name: zajmn.hr.goals.hk
+type: application

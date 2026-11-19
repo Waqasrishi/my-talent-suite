@@ -118,6 +118,8 @@ const PROJECTS = [
   { url: "goals-module-v76", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v76", home: "/" },
   // v77 = v76 with the Alignment chart keeping the goal you open or close in the middle of the view
   { url: "goals-module-v77", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v77", home: "/" },
+  // v78 = v77 with a gold line along the top of each goal portlet, like the overview tiles
+  { url: "goals-module-v78", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v78", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v77" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
