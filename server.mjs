@@ -100,6 +100,8 @@ const PROJECTS = [
   { url: "goals-module-v67", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v67", home: "/" },
   // v68 = v67 with round 3 answers: no tags on review rows, hover tips, lighter glow, drill-down Show more, searchable contributor picker, new push down
   { url: "goals-module-v68", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68", home: "/" },
+  // v69 = v68 with workflow round answers (in-app part): draft first, send checks, review rules, reminders
+  { url: "goals-module-v69", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v69", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
