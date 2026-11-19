@@ -113,9 +113,9 @@ const PROJECTS = [
   // v74 = v73 with the Goal N tab hanging from the top left of each goal card, a little transparent
   { url: "goals-module-v74", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v71" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v71", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
