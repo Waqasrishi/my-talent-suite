@@ -101,7 +101,7 @@ const PROJECTS = [
   // v68 = v67 with round 3 answers: no tags on review rows, hover tips, lighter glow, drill-down Show more, searchable contributor picker, new push down
   { url: "goals-module-v68", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
   { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v68", home: "/" },
   // the previous goals prototype (version 3), still reachable
