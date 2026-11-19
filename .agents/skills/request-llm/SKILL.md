@@ -41,6 +41,9 @@ For the deployed app:
    ```
    The platform sets `OPENAI_BASE_URL`, `OPENAI_API_KEY` and `PLATFORM_LLM_MODELS`; the app reads all
    three as *read a setting* says. Do not add them to `variables`.
+   The model the app calls is the app's own setting — `CHAT_MODEL: gemini-flash-lite` (and `SPEECH_MODEL` for speech)
+   under `containers.app.variables`, read as AGENTS.md's *a value that may differ where the app runs* says — never
+   a name written into the code: moving to `qwen-flash`, or to another model, is then an edit to `score.yaml`.
 2. Python or adapted app: `canvas app add llm` once. Call `client()` (`ajnkit-llm`).
 3. `canvas validate`, then `canvas deploy` — the first deploy makes the app's key
 
@@ -86,10 +89,10 @@ Leaving `models` out gives the app every model it may call now, not these.
 The same SDK and key, on `audio.speech`:
 
 ```python
-client().audio.speech.create(model="gemini-flash-lite-tts", voice="Kore", input=text).write_to_file(path)
+client().audio.speech.create(model=envs.SPEECH_MODEL, voice="Kore", input=text).write_to_file(path)
 ```
 ```ts
-const speech = await client().audio.speech.create({ model: "gemini-flash-lite-tts", voice: "Kore", input: text });
+const speech = await client().audio.speech.create({ model: setting("SPEECH_MODEL", "gemini-flash-lite-tts"), voice: "Kore", input: text });
 await writeFile(path, Buffer.from(await speech.arrayBuffer()));
 ```
 

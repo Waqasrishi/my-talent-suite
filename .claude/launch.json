@@ -18,6 +18,15 @@
         "process.env.PORT='8092';import('/Users/waqasrishi/Documents/talent-suite/server.mjs')"
       ],
       "port": 8092
+    },
+    {
+      "name": "fiori-ecc-mock",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "process.env.MOCK_AI='1';process.env.PORT='8094';import('/Users/waqasrishi/Documents/talent-suite/fiori-ecc-v62/developer/mock-gateway.mjs')"
+      ],
+      "port": 8094
     }
   ]
 }

@@ -38,7 +38,7 @@ A chat is the platform's window, docked on every page, each answer streamed.
    ```python
    # src/lib/assistant.py
    def answer(q: chat.Ask) -> Iterator[str]:          # from ajnkit import chat
-       reply = client().chat.completions.create(model="gemini-flash-lite", stream=True,
+       reply = client().chat.completions.create(model=envs.CHAT_MODEL, stream=True,   # a setting (AGENTS.md)
                                                 messages=q.messages("You help the desk with …"))
        yield from chat.text(reply)
 
@@ -53,7 +53,7 @@ A chat is the platform's window, docked on every page, each answer streamed.
    ```ts
    // src/lib/assistant.ts — messages, text, Ask: @ajnkit/chat
    export async function* answer(q: Ask) {
-     const reply = await client().chat.completions.create({ model: "gemini-flash-lite", stream: true,
+     const reply = await client().chat.completions.create({ model: setting("CHAT_MODEL", "gemini-flash-lite"), stream: true,
        messages: messages(q, "You help the desk with …") });
      yield* text(reply);
    }

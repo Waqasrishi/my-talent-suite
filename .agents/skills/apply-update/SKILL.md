@@ -57,6 +57,8 @@ Then the steps below as for any update — `packages/` changed, so it ships (ste
    | `.gitignore` leaves out `/data/`, the volume's folder at the root only | a `data/` line in `.gitignore`: make it `/data/` — `data/` leaves out every folder named data (`src/static/data`, `src/lib/data`), which then never ships; `git status` now shows those files: they are the app's, commit them |
    | a secret read with `envs.secret("KEY")` where it is used | every app whose `src/envs.py` has no `def secret(`, a secret or not yet — AGENTS.md and the skills now say `envs.secret(…)`, which otherwise raises `AttributeError`: copy `secret()` and `secret_file()` from the blueprint's `src/envs.py` (*The blueprint's lines*, below; `import os` and `from pathlib import Path` with them). A secret it reads at import (`os.environ["KEY"]`): read it with them where it is used |
    | the skills' folder is `.agents/` | `src/static/tw.css` has `@source not "../../.agent";`: make it `"../../.agents"`, or Tailwind puts the skills' pages' classes in `app.css` — then regenerate `app.css` |
+   | settings are read in `src/envs.py` only, and ruff enforces it (`TID251`) | `pyproject.toml`'s `select` has no `"TID251"`: add it, the `banned-api` table and the `per-file-ignores` lines as the blueprint has them (*The blueprint's lines*, below) — keep the app's own rules and ignores beside them. Then `uv run ruff check .`: each `TID251` names a read outside `src/envs.py` — add the variable there (`NAME = os.environ.get("NAME")`), use `envs.NAME` where it was read, and run the tests |
+   | a model's name is a setting (`CHAT_MODEL`, `SPEECH_MODEL`), not a constant in code | a model name written in the app's own code — `MODEL = "qwen-flash"`, `model="gemini-flash-lite"`: declare it under `containers.app.variables` in `score.yaml` with the value it has now, read it in `src/envs.py` with that value as the default (AGENTS.md, *a value that may differ where the app runs*), use `envs.CHAT_MODEL` where the name was, and run the tests. The same for an outside URL, a recipient or a partner's id. An embedding model stays where it is: the stored vectors were made with it |
    | ruff checks likely bugs and security, named (`[tool.ruff.lint] select`) | `pyproject.toml` has no `[tool.ruff.lint]` with a `select`: add the blueprint's (*The blueprint's lines*, below), its `per-file-ignores` with it, then `uv run ruff check .` and fix what it names — an `S` line is a security finding: fix it, never ignore it without the user |
    | the readiness probe answers without a thread (`async def healthz`) | `src/views.py` has `def healthz()`: make it `async def healthz()` — it does no I/O, so a busy app never makes the probe wait |
    | apps say what they are (`describe-app`) | no `canvas.dev/title` in `score.yaml`: run `describe-app` |
@@ -105,12 +107,19 @@ def secret_file(key: str) -> str:
 ```toml
 [tool.ruff.lint]
 # Named, so every ruff version checks the same: errors (F, E9), likely bugs (B), security (S — an
-# injection, a hard-coded secret, a shell call) and what blocks the server inside `async def` (ASYNC).
-select = ["E9", "F", "B", "S", "ASYNC"]
+# injection, a hard-coded secret, a shell call), what blocks the server inside `async def` (ASYNC),
+# and settings read in one place (TID251: src/envs.py reads the environment, the rest imports it).
+select = ["E9", "F", "B", "S", "ASYNC", "TID251"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"os.environ".msg = "read settings in src/envs.py only: add the line there (NAME = os.environ.get(\"NAME\")), then use envs.NAME"
+"os.getenv".msg = "read settings in src/envs.py only: add the line there (NAME = os.environ.get(\"NAME\")), then use envs.NAME"
+"os.putenv".msg = "settings are the platform's (score.yaml): read them in src/envs.py, never set them from code"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"]    # pytest's assert
-"run.py" = ["S104"]     # a container listens on every address
+"tests/*" = ["S101", "TID251"]  # pytest's assert; a test sets the environment it runs in
+"run.py" = ["S104"]             # a container listens on every address
+"src/envs.py" = ["TID251"]      # the one place that reads the environment
 ```
 
 ## What NOT to do

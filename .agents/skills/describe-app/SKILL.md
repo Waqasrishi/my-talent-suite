@@ -13,7 +13,7 @@ description: Use after a new app's first feature (not straight after `canvas ini
 | What | Where |
 |---|---|
 | the title, description, category and tags | `score.yaml`, under `metadata.annotations` |
-| the categories and tags there are | `.canvas/contracts/score-extensions.schema.json` — `$defs/category`, `$defs/tag` |
+| the categories and tags there are | the platform's: `.canvas/contracts/score-extensions.schema.json` — `$defs/category`, `$defs/tag`; the team's own, beside them: `.canvas/kit.json` — `vocabulary` (names and what each means) |
 | the icon and the cover picture | `src/static/icon.png`, `src/static/cover.jpg` — named in `score.yaml` as `canvas.dev/icon`, `canvas.dev/cover` |
 | the same words for people reading the repo | `README.md` — its `#` heading and first line |
 | the brief the team reads on the portal's Info tab, and what its Architecture tab draws | `BRIEF.md` — at most 8,000 bytes |
@@ -40,14 +40,14 @@ A shorter address (`<name>.<base>`, beside that one) is `canvas domain request <
      `expense-app`, not "AI-Powered Expense Platform". Up to 60 characters
    - the **description** — one sentence: what it does, and for whom. Plain words, up to 280
      characters. "Lets the newsroom check a clip's rights before it airs."
-   - the **category** — exactly one from `$defs/category`, each with what it covers: what the app
+   - the **category** — exactly one from `$defs/category` or the team's own (`vocabulary.categories`), each with what it covers: what the app
      is *for* in the newsroom (a subtitle checker is `video`, not `editorial`). Unsure between two:
      the one whose people use it
-   - the **tags** — **always one to three** from `$defs/tag`, the three that say most: its coverage
+   - the **tags** — **always one to three** from `$defs/tag` or the team's own (`vocabulary.tags`) — the team's when one fits as well — the three that say most: its coverage
      (`sport`), language (`arabic`), format (`podcast`) or craft (`subtitles`, `ai`). Only what is
      true of it — but something always is: an app that calls a model is `ai`, one that shows
-     numbers is `dashboard` or `charts`, a step in a process is `workflow`. A tag the list lacks is
-     not invented — pick the nearest, and tell the user it can be added to the platform's list
+     numbers is `dashboard` or `charts`, a step in a process is `workflow`. A tag neither list has is
+     not invented — pick the nearest, and tell the user a team owner can add it as the team's own (the Team kit page, Tags)
 3. **Ask when it is not clear — and only then.**
    - What the app is for — still unclear from what it does, or a slug like `test01`: one question,
      with three titles to pick from:
@@ -220,7 +220,7 @@ size: a cover 2:1 to 3.2:1 and at least 1200 wide, an icon square and at least 2
 
 - Do not change `metadata.name` — it is the URL, and renaming it is a new app.
 - Do not write marketing copy or emoji, nor list the features in the description: one sentence says what it is, and the features are the brief's.
-- Do not use a category or tag outside the contract's list — `canvas validate` refuses it, and a
+- Do not use a category or tag outside the platform's and the team's own lists — `canvas validate` refuses it, and a
   filter would never find the app.
 - Do not describe what the code does not do yet — not the plan, the app as it is, in the brief too.
 - Do not put a person's name, a secret or a customer's data in any of them: the whole team sees them.

@@ -89,7 +89,7 @@ a request, not a boundary.
    `"SELECT 1) x; COMMIT; DELETE FROM t; SELECT * FROM (SELECT 1"` is refused and the rows are still
    there. Then `canvas validate` and `canvas deploy` — there is no database on your computer.
 
-The model: `gemini-flash-lite`; `gemini-flash` only if joins stay wrong once the tables are described.
+The model: `gemini-flash-lite`, as the `CHAT_MODEL` setting (AGENTS.md); `gemini-flash` only if joins stay wrong once the tables are described.
 
 ## What NOT to do
 

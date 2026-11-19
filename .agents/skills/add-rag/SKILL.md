@@ -38,8 +38,10 @@ OVERLAP_CHARS = 150         # carried from the end of one chunk into the next
 TOP_K = 5                   # passages given to the chat model
 MAX_DISTANCE = 0.40         # cosine distance; a passage farther than this is not a match
 LATEST = 10                 # newest sources listed for the model, for "what is new" questions
-CHAT_MODEL = "gemini-flash-lite"
 ```
+
+The chat model is not one of them: it is a setting, `envs.CHAT_MODEL` (Next: `setting("CHAT_MODEL", …)`), declared in
+`score.yaml` (AGENTS.md). The embedding model stays a constant beside them: the stored vectors were made with it.
 
 | The texts are | Chunk | Overlap | Top k | Put before each chunk when embedding |
 |---|---|---|---|---|

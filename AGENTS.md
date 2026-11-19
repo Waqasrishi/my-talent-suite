@@ -67,7 +67,8 @@ written again in the app; how a call works is its reference skill. `canvas valid
 | A short address of its own — `<name>.` on the platform's domain | `canvas domain request <name> "<why>"` — a platform admin approves; the app keeps its address too. Not `score.yaml`, no build |
 | Catch up with a newer canvas | "update canvas": `canvas update`, then apply what changed — `apply-update` |
 | Change the schema | `src/models.py`, then `canvas db revision` |
-| Read an injected variable | `src/envs.py` — never `os.environ` elsewhere |
+| Read an injected variable | `src/envs.py` — never `os.environ` elsewhere: `ruff check` fails on one (`TID251`) |
+| A value that may differ where the app runs — a model's name, an outside URL, a recipient, a partner's id | a setting, never a constant in code: under `containers.app.variables` in `score.yaml` (`CHAT_MODEL: gemini-flash-lite`), read in `src/envs.py` with the same value as its default for your computer and the tests (`CHAT_MODEL = os.environ.get("CHAT_MODEL", "gemini-flash-lite")`), used as `envs.CHAT_MODEL`. Changing it is an edit to `score.yaml` and a deploy — one `score.yaml` serves wherever the app runs. Constants in code are for what never changes: a limit, a chunk size, the embedding model the stored vectors were made with |
 | Talk to the database | `ajnkit.db` — few queries, short transactions, live state in memory: `use-database` |
 | Keep a file across restarts — uploads, images, videos, audio | a `volume` in `score.yaml`, mounted at `/data`, read as `envs.DATA_DIR` — `request-volume` |
 | Work after the response, a job | `src/tasks.py` — `add-job` |
