@@ -1422,3 +1422,16 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .casdlg .mxc.on{background:#14264B;border-color:#14264B}
 .casdlg .mxc.had:not(.on){border-style:dashed;border-color:#C99A2E}
 .casdlg .mxef{margin-top:14px}
+
+/* contributor search: a designed list, not the browser's */
+.ajmng .cb{position:relative}
+.ajmng .cb input{width:100%}
+.ajmng .cbl{position:absolute;z-index:20;inset-inline:0;top:calc(100% + 6px);max-height:300px;overflow:auto;background:#fff;border:1px solid #EBD9A0;border-radius:16px;box-shadow:0 18px 44px rgba(20,38,75,.18);padding:6px}
+.ajmng .cbl[hidden],.ajmng .cbo[hidden],.ajmng .cbg[hidden],.ajmng .cbn[hidden]{display:none}
+.ajmng .cbg{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9A7A22;padding:10px 12px 4px}
+.ajmng .cbo{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:12px;cursor:pointer}
+.ajmng .cbo:hover,.ajmng .cbo.hi{background:#FBF6E6}
+.ajmng .cbo i{font-style:normal;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FBF1D2,#F0D88C);color:#7A5A00;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+.ajmng .cbo b{display:block;font-size:14px;color:#14264B;font-weight:600}
+.ajmng .cbo small{display:block;font-size:12px;color:#8A93A6}
+.ajmng .cbn{padding:14px;font-size:14px;color:#8A93A6;text-align:center}
