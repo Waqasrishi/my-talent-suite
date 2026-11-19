@@ -114,6 +114,8 @@ const PROJECTS = [
   { url: "goals-module-v74", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74", home: "/" },
   // v75 = v74 with the Alignment chart linking a contributor to the right goal (by the invitation, not by matching titles)
   { url: "goals-module-v75", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v75", home: "/" },
+  // v76 = v75 with the Mist surface theme (soft lavender-grey ground, white cards with hairline and soft shadow) and no "Pushed down to N" line
+  { url: "goals-module-v76", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v76", home: "/" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v74" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
