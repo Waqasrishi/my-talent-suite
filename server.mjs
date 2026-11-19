@@ -91,9 +91,11 @@ const PROJECTS = [
   { url: "goals-module-v62", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v62", home: "/" },
   // v63 (the process upgrade) was taken off the live link on 19 Nov 2026 at the owner's request; it stays here to look at
   { url: "goals-module-v63", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v63", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v62" },
+  // v64 = v62 with at most 5 suggestions per wizard step (AI first)
+  { url: "goals-module-v64", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v64", home: "/" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v64" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v62", home: "/" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v64", home: "/" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
