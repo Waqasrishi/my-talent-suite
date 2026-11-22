@@ -158,6 +158,8 @@ const PROJECTS = [
   { url: "goals-module-v97", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v97", home: "/", skin: "clean" },
   // v98 = v97 with the team panel staying open when a popup opened from it (a person's activities) is closed, and the goal screen showing the tile's link strip instead of the old pill
   { url: "goals-module-v98", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v98", home: "/", skin: "clean" },
+  // v99 = v98 with a gold glow on the link strip of a goal that is not linked yet (goal page)
+  { url: "goals-module-v99", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v99", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v98", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
