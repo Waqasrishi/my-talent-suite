@@ -1718,7 +1718,7 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 @media(max-width:1240px){.ajmng .glist{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:940px){.ajmng .glist{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.ajmng .glist{grid-template-columns:minmax(0,1fr)}}
-.ajmng .gc3.gc5{position:relative;padding:0;margin:0;height:352px;box-sizing:border-box;display:flex;flex-direction:column;overflow:visible;background:#fff;border:1px solid var(--line);border-top:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);transition:box-shadow .15s,border-color .15s}
+.ajmng .gc3.gc5{position:relative;padding:0;margin:0;height:368px;box-sizing:border-box;display:flex;flex-direction:column;overflow:visible;background:#fff;border:1px solid var(--line);border-top:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);transition:box-shadow .15s,border-color .15s}
 .ajmng .gc3.gc5:hover{box-shadow:var(--sh2);border-color:var(--line2)}
 .ajmng .gc3.gc5:has(.tpbtn.open){height:auto}
 .ajmng .gc5 .gban{position:relative;height:84px;flex:none;border-radius:11px 11px 0 0;overflow:visible;background:linear-gradient(180deg,#2B2371,#6E5578 80%,#C89130)}
@@ -1754,19 +1754,13 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .gc5 .gmeas{margin:0;font-size:12.5px;line-height:1.4;color:var(--mute);height:18px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .ajmng .gc5 .gcur{font-size:12px;color:var(--body);margin-top:2px}
 .ajmng .gc5 .gcur b{font-weight:700}
-/* the progress line: ticks at a quarter, a half and three quarters; the thumb still drags */
-.ajmng .gc5 .gtrack{position:relative;height:18px;color:var(--link)}
-.ajmng .gc5 .gtrack.ok{color:var(--okc)}
-.ajmng .gc5 .gtrack::before{content:"";position:absolute;left:0;right:0;top:6px;height:7px;pointer-events:none;background:linear-gradient(#B8BEC8,#B8BEC8) 25% 0/1px 100% no-repeat,linear-gradient(#B8BEC8,#B8BEC8) 50% 0/1px 100% no-repeat,linear-gradient(#B8BEC8,#B8BEC8) 75% 0/1px 100% no-repeat}
-.ajmng .gc5 .gtrack::after{content:"";position:absolute;inset-inline-end:-2px;top:5px;width:9px;height:9px;border-radius:50%;background:#8C93A0;pointer-events:none}
-.ajmng .gc5 .pctl{display:block;margin:0;height:18px;padding:0}
-.ajmng .gc5 .pctl .pval{display:none}
-.ajmng .gc5 .pbar{position:relative;top:8px;height:3px;border-radius:2px;background:#E2E5EA;box-shadow:none;overflow:visible;cursor:pointer}
-.ajmng .gc5 .pfill{background:currentColor;border-radius:2px}
-.ajmng .gc5 .pthumb{width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid currentColor;box-shadow:none;top:50%;margin:0}
-.ajmng .gc5 .pbub{display:none}
-.ajmng .gc5 .gexp{position:absolute;top:10px;width:0;height:0;margin-inline-start:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid var(--okc);pointer-events:none;text-decoration:none}
-.ajmng .gc5 .gexpt{font-size:11.5px;color:var(--mute);text-align:end;height:15px;margin-top:2px}
+/* the progress bar as in the previous version: a 12px bar with a round knob; the Expected-by-today mark sits under it */
+.ajmng .gc5 .gtrack{position:relative;height:auto}
+.ajmng .gc5 .pctl{margin:0}
+.ajmng .gc5 .pbar{margin:10px 11px 14px}
+.ajmng .gc5 .gexpw{position:absolute;left:11px;right:11px;bottom:0;height:10px;pointer-events:none}
+.ajmng .gc5 .gexp{position:absolute;bottom:0;width:0;height:0;margin-inline-start:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:9px solid var(--okc);text-decoration:none}
+.ajmng .gc5 .gexpt{font-size:11.5px;color:var(--mute);text-align:end;height:15px;margin-top:0}
 .ajmng .gc5 .gnotice{height:18px;font-size:12px;line-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .ajmng .gc5 .gnote{color:var(--body)}
 .ajmng .gc5 .gnote.att{color:#7A4B00}
@@ -1778,7 +1772,7 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .glink{border:0;background:none;padding:0;min-height:0;color:var(--link);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
 .ajmng .glink:hover{text-decoration:underline}
 .ajmng .glink::before{display:none!important}
-.ajmng .gadd{height:352px;box-sizing:border-box;border:1.5px dashed #B8BEC8;border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--in);font-size:13px;cursor:pointer;text-align:center;padding:16px}
+.ajmng .gadd{height:368px;box-sizing:border-box;border:1.5px dashed #B8BEC8;border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--in);font-size:13px;cursor:pointer;text-align:center;padding:16px}
 .ajmng .gadd b{font-size:14px}
 .ajmng .gadd span:last-child{color:var(--mute)}
 .ajmng .gadd .gaddp{width:44px;height:44px;border-radius:10px;background:#EEEAF6;color:var(--in);display:grid;place-items:center;font-size:24px;font-weight:400}
