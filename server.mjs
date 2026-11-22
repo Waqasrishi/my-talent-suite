@@ -152,6 +152,8 @@ const PROJECTS = [
   { url: "goals-module-v94", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v94", home: "/", skin: "clean" },
   // v95 = v94 with Add a goal the same size as the tiles, the due date back, a soft glow on clickable tile parts, the team panel opened by click only and closed by a click outside, a "Top of the cascade" strip on top-level goals, and Needs your attention as the small box on the right (as in v78)
   { url: "goals-module-v95", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v95", home: "/", skin: "clean" },
+  // v96 = v95 with no "days left" anywhere (tiles and goal page); only Due today or overdue still show
+  { url: "goals-module-v96", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v96", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
