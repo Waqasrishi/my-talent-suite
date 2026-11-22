@@ -27,6 +27,15 @@
         "process.env.MOCK_AI='1';process.env.PORT='8094';import('/Users/waqasrishi/Documents/talent-suite/fiori-ecc-v62/developer/mock-gateway.mjs')"
       ],
       "port": 8094
+    },
+    {
+      "name": "talent-suite-ai-mock",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "process.env.PORT='8093';process.env.OPENAI_BASE_URL='http://127.0.0.1:8095/v1';process.env.OPENAI_API_KEY='local-test';import('/private/tmp/claude-502/-Users-waqasrishi--claude-spares-spare-mhbi2w/7c03912b-51a9-4083-83b7-173a946abf2c/scratchpad/ai-mock.mjs').then(()=>import('/Users/waqasrishi/Documents/talent-suite/server.mjs'))"
+      ],
+      "port": 8093
     }
   ]
 }

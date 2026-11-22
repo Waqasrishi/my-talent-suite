@@ -140,10 +140,12 @@ const PROJECTS = [
   { url: "goals-module-v88", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v88", home: "/", skin: "clean" },
   // v89 = v88 with Alignment, Open details and Delete along the bottom of each tile (no ⋯ menu, no triangle), a steady hover, the team panel inside the tile, a see-through welcome panel and a dashed attention bar
   { url: "goals-module-v89", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v89", home: "/", skin: "clean" },
+  // v90 = v89 with a steady goal step in the wizard: AI ideas asked for when the wizard opens, a loading state until they come (9 s at most), a list that never changes under the pointer, and a picked option that keeps its text size; no Team view button; the welcome panel light grey and 20% more see-through; random dark themes for the top banner and the tile headers; the earlier Strategy / Owner / Contributor tags back
+  { url: "goals-module-v90", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v89", skin: "clean" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v89", home: "/", skin: "clean" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", home: "/", skin: "clean" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
