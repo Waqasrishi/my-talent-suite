@@ -132,6 +132,8 @@ const PROJECTS = [
   { url: "goals-module-v84", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v84", home: "/", skin: "aurora" },
   // v85 = v83 revamped in the Indigo rail look (option B): deep indigo side menu, pill tabs, gold main buttons, popups restyled, smaller goal tiles
   { url: "goals-module-v85", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v85", home: "/", skin: "rail" },
+  // v86 = v85 rebuilt to the approved Indigo rail mockup (option B): path and person in the top bar, Goals 2027 card in the menu, segmented tabs under the title, goal cards with a sun banner in two columns
+  { url: "goals-module-v86", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v86", home: "/", skin: "rail" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v85", skin: "rail" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
