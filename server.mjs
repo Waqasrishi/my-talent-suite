@@ -142,7 +142,7 @@ const PROJECTS = [
   { url: "goals-module-v89", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v89", home: "/", skin: "clean" },
   // v90 = v89 with a steady goal step in the wizard: AI ideas asked for when the wizard opens, a loading state until they come (9 s at most), a list that never changes under the pointer, and a picked option that keeps its text size; no Team view button; the welcome panel light grey and 20% more see-through; random dark themes for the top banner and the tile headers; the earlier Strategy / Owner / Contributor tags back
   { url: "goals-module-v90", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", home: "/", skin: "clean" },
-  // v91 = v90 with a small drawn person (face, hair, shirt; the same for the same name) in place of initials in the team stack on each tile
+  // v91 = v90 standardised: a drawn person for every avatar; one set of buttons (secondary, primary, danger; no underlined links), fields and labels; goal titles at most 500 characters with two-line tiles; a smooth tile hover; attention items that say what to do, which goal, why, and who it is from with their role; one goal status line (badge, then who it is with or from; "Agreed" reads as Approved); a bigger goal number
   { url: "goals-module-v91", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", skin: "clean" },

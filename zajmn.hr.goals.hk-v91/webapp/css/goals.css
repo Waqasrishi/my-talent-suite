@@ -2041,3 +2041,39 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 /* v91: the welcome panel's "See alignment" is a secondary button like the others */
 .ajmng .bbtn.lnk{min-height:36px!important;padding:0 16px!important;border:1px solid var(--in)!important;border-radius:8px!important;background:#fff!important;color:var(--in)!important;font-size:14px!important;font-weight:700!important;text-decoration:none!important}
 .ajmng .bbtn.lnk:hover{background:#F3F2F8!important}
+
+/* v91: attention items say what to do, which goal, why, and who it comes from with their role */
+.ajmng .portlet .pit{align-items:flex-start;padding:10px 0!important;border-top:1px solid var(--line)}
+.ajmng .portlet .plist .pit:first-child{border-top:0}
+.ajmng .pit-t{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.ajmng .pit-t b{font-size:15px!important;font-weight:700;color:var(--ink)}
+.ajmng .pit-t small.pgoal{font-size:13px!important;font-weight:600;color:var(--ink)!important}
+.ajmng .pit-t small.pgoal::before{content:"Goal: ";font-weight:500;color:var(--mute)}
+.ajmng .pit-t small.pneed{font-size:13px!important;color:var(--body)!important;font-weight:500}
+.ajmng .pfrom{display:inline-flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;color:var(--mute)}
+.ajmng .pfrom b{color:var(--ink);font-weight:700}
+.ajmng .pfrom .pav{width:24px!important;height:24px!important;flex:none}
+.ajmng .pfrom.sys{padding-left:0}
+.ajmng .portlet .pit>.btn{align-self:center;flex:none}
+
+/* v91: the goal number on each tile is easy to read */
+.ajmng .gc5 .glab{font-size:15px!important;font-weight:700!important;color:var(--ink)!important;letter-spacing:0!important;text-transform:none!important;gap:8px!important;align-items:center}
+.ajmng .gc5 .glab span{font-size:15px!important}
+.ajmng .gc5 .glab svg{width:18px!important;height:18px!important}
+
+/* v91: one status line: a badge for the state, then who it is with or from */
+.ajmng .gstatus{display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px}
+.ajmng .gstatus .chip{display:inline-flex;align-items:center;gap:5px;margin:0;padding:3px 10px;border-radius:999px;font-size:12px!important;font-weight:700;border:1px solid transparent}
+.ajmng .gstatus .chip.ok{background:#E8F3EC;color:#22603D;border-color:#C9E3D3}
+.ajmng .gstatus .chip.att{background:#FFF4E0;color:#7A4B00;border-color:#F1D9A6}
+.ajmng .gstatus .chip.neu{background:#EEF0F3;color:#3E4352;border-color:#DADDE3}
+.ajmng .gstatus .gby{color:var(--mute)}
+.ajmng .gstatus .gby b{color:var(--ink);font-weight:700}
+.ajmng .gnotice{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.ajmng .pit-t small.pgoal.nog::before{content:none}
+.ajmng .gc5 .gnotice{height:auto!important;min-height:30px;line-height:1.3!important;overflow:visible!important;white-space:normal!important;flex-wrap:nowrap;gap:8px}
+.ajmng .gc5 .gnotice>*{overflow:visible!important}
+.ajmng .gc5 .gnotice .gstatus{flex:1 1 auto;min-width:0;flex-wrap:nowrap}
+.ajmng .gc5 .gnotice .gby{overflow:hidden!important;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ajmng .gc5 .gnotice .btn{flex:none}
+.ajmng .gc5 .gnotice .gnote{overflow:hidden!important;text-overflow:ellipsis;white-space:nowrap}
