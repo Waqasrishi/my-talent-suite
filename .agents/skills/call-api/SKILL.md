@@ -70,7 +70,7 @@ only to an app of their own (an owner of the team, any two). `canvas deploy` ref
    (`SCORES_URL`: a plain variable in score.yaml — Python adds it to `src/envs.py`, Next reads it with `setting()`.)
    **Outside the company, through its egress proxy** — `containers.app: {egress: {proxy: true}}` in `score.yaml` for any
    site outside the company: without it the app reaches only the few the network lets through directly, and the rest fail to
-   connect or time out. The platform sets `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`, which `http.client()` and `call()` honour; no code
+   connect or time out. **A platform admin approves it:** add `why:` beside `proxy: true` (what it calls, and why; 300 characters), deploy, and the app runs without the proxy until the admin says yes (the app's page in the portal says where it stands; the answer comes to the owner's bell). Never loop or work around a wait. The platform sets `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`, which `http.client()` and `call()` honour; no code
    changes. HTTPS only (port 443, never plain `http://`); the proxy's log names the app and pod. `canvas validate` refuses it
    where the platform has no proxy. **A database outside** (SQL Server on 1433) is not HTTP: its driver cannot use the proxy, so
    connect where `tunnel.open(host, 1433)` says (`ajnkit.tunnel`; Next: `open` from `@ajnkit/core/services/tunnel`) — the

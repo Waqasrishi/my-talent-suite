@@ -120,6 +120,16 @@ const PROJECTS = [
   { url: "goals-module-v77", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v77", home: "/" },
   // v78 = v77 with a gold line along the top of each goal portlet, like the overview tiles
   { url: "goals-module-v78", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v78", home: "/" },
+  // v79 = v78 in the Portal look (option A): AJ indigo and gold, light side menu, white top bar, soft haze behind the title, AJ fonts only
+  { url: "goals-module-v79", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v79", home: "/", skin: "portal" },
+  // v80 = v78 in the AJ aurora look (option C): AJ indigo, gold and blue, frosted cards on a faint grid, AJ fonts only
+  { url: "goals-module-v80", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v80", home: "/", skin: "aurora" },
+  // v81 = v79 (Portal) and v82 = v80 (AJ aurora) with no English / Arabic switch: always English
+  { url: "goals-module-v81", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v81", home: "/", skin: "portal" },
+  { url: "goals-module-v82", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v82", home: "/", skin: "aurora" },
+  // v83 = v81 (Portal) and v84 = v82 (AJ aurora) with no Set weights popup opening by itself after a new goal
+  { url: "goals-module-v83", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v83", home: "/", skin: "portal" },
+  { url: "goals-module-v84", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v84", home: "/", skin: "aurora" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v78" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
@@ -153,9 +163,15 @@ const SKELETON_CSS = `html,body{margin:0;height:100%;background:#CBD9E8}
 @keyframes bld{from{width:0}to{width:90%}}
 @media(max-width:900px){#boot .sd{display:none}}
 @media(prefers-reduced-motion:reduce){#boot .sk,#boot .bar{animation:none}}`;
-const bootPage = ({ id }) => `<!DOCTYPE html>
+// the loading screen in the colours of a skinned version (v79 Portal, v80 AJ aurora), in the AJ fonts
+const SKIN_FONTS = `@font-face{font-family:"AJ Latin";src:url(./fonts/AlJazeeraRegular.woff2) format("woff2");font-weight:400}@font-face{font-family:"AJ Latin";src:url(./fonts/AlJazeeraBold.woff2) format("woff2");font-weight:700}@font-face{font-family:"AJ Latin";src:url(./fonts/AlJazeeraHeavy.woff2) format("woff2");font-weight:900}`;
+const SKIN_CSS = {
+  portal: `html,body,#boot{background:#FBFBFD}#boot{font-family:"AJ Latin","AJ Arabic"}#boot .bt{height:56px;background:#fff;color:#1D174E;border-bottom:1px solid #E5E7EB}#boot .bt i{background:#1D174E;box-shadow:0 6px #1D174E,0 -6px #1D174E}#boot .gn{height:48px;background:#fff;color:#1D174E;border-bottom:1px solid #E5E7EB}#boot .sd{background:#F7F7FA;color:#1D174E;border-right:1px solid #E5E7EB}#boot .sd u{background:#E5E7EB}#boot .pp{background:transparent}#boot .sk{background:linear-gradient(90deg,#EDEEF2 25%,#F7F7FA 50%,#EDEEF2 75%);background-size:200% 100%;border-radius:12px}#boot .bar{background:linear-gradient(90deg,#F2D38A,#D69D10)}`,
+  aurora: `html,body,#boot{background:#F6F7FB}#boot{font-family:"AJ Latin","AJ Arabic"}#boot .bt{height:56px;background:rgba(255,255,255,.7);color:#1D174E;border-bottom:1px solid rgba(29,23,78,.07)}#boot .bt i{background:#1D174E;box-shadow:0 6px #1D174E,0 -6px #1D174E}#boot .gn{height:48px;background:rgba(255,255,255,.55);color:#1D174E;border-bottom:1px solid rgba(29,23,78,.07)}#boot .sd{background:rgba(255,255,255,.62);color:#1D174E}#boot .sd u{background:#D9EEF8}#boot .pp{background:transparent}#boot .sk{background:linear-gradient(90deg,#E9EBF3 25%,#F6F7FB 50%,#E9EBF3 75%);background-size:200% 100%;border-radius:16px}#boot .bar{background:linear-gradient(90deg,#0083C7,#D69D10)}`,
+};
+const bootPage = ({ id, skin }) => `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${TITLES[id][0]}</title><style>${SKELETON_CSS}</style>
+<title>${TITLES[id][0]}</title><style>${SKELETON_CSS}${skin ? SKIN_FONTS + SKIN_CSS[skin] : ""}</style>
 <link rel="preconnect" href="https://ui5.sap.com" crossorigin>
 <link rel="preload" href="./fonts/AlJazeeraBold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="./fonts/AlJazeeraHeavy.woff2" as="font" type="font/woff2" crossorigin>
