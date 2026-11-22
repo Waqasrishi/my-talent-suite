@@ -144,6 +144,8 @@ const PROJECTS = [
   { url: "goals-module-v90", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", home: "/", skin: "clean" },
   // v91 = v90 standardised: a drawn person for every avatar; one set of buttons (secondary, primary, danger; no underlined links), fields and labels; goal titles at most 500 characters with two-line tiles; a smooth tile hover; attention items that say what to do, which goal, why, and who it is from with their role; one goal status line (badge, then who it is with or from; "Agreed" reads as Approved); a bigger goal number
   { url: "goals-module-v91", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", home: "/", skin: "clean" },
+  // v92 = v91 with no Approved badge on the Director General's goals (they need no approval)
+  { url: "goals-module-v92", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v92", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
