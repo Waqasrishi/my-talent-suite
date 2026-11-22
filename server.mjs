@@ -150,6 +150,8 @@ const PROJECTS = [
   { url: "goals-module-v93", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", home: "/", skin: "clean" },
   // v94 = v93 with the tile from the approved mockup: picture banner, a link strip to the direct senior's goal, progress ring beside the title and the bar under it, no measure, due date or Expected, no hover reveal or tooltips on tiles, even tile heights; the link popup shows the direct senior only
   { url: "goals-module-v94", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v94", home: "/", skin: "clean" },
+  // v95 = v94 with Add a goal the same size as the tiles, the due date back, a soft glow on clickable tile parts, the team panel opened by click only and closed by a click outside, a "Top of the cascade" strip on top-level goals, and Needs your attention as the small box on the right (as in v78)
+  { url: "goals-module-v95", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v95", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
