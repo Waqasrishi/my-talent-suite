@@ -145,9 +145,9 @@ const PROJECTS = [
   // v91 = v90 standardised: a drawn person for every avatar; one set of buttons (secondary, primary, danger; no underlined links), fields and labels; goal titles at most 500 characters with two-line tiles; a smooth tile hover; attention items that say what to do, which goal, why, and who it is from with their role; one goal status line (badge, then who it is with or from; "Agreed" reads as Approved); a bigger goal number
   { url: "goals-module-v91", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", skin: "clean" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v90", home: "/", skin: "clean" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", home: "/", skin: "clean" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
