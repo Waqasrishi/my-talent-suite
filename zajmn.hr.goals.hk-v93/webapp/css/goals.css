@@ -2167,3 +2167,30 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .lkbox{animation:none}
 .ajmng .lkdlg.lkin .lkbox{animation:lkpop .24s cubic-bezier(.2,.7,.2,1)}
 .ajmng .lksec{flex-shrink:0}
+
+/* v93: tile buttons as in v90: Open details filled, Delete as quiet red text */
+.ajmng .gc5 .gfoot .btn{min-height:32px!important;padding:0 12px!important}
+.ajmng .gc5 .gfoot .gopen{background:#1D174E!important;border-color:#1D174E!important;color:#fff!important}
+.ajmng .gc5 .gfoot .gopen:hover{background:#2B2470!important;border-color:#2B2470!important}
+.ajmng .gc5 .gfoot .btn.danger{background:transparent!important;border-color:transparent!important;color:#A3261B!important}
+.ajmng .gc5 .gfoot .btn.danger:hover{background:#FBEDEB!important;border-color:#F0CFCB!important}
+
+/* v93: the team panel floats over the goals below instead of pushing the page down. Hover shows it; a click keeps it open */
+.ajmng .gc5 .tpwrap{position:relative}
+.ajmng .gc5 .tppop{position:absolute;left:-1px;right:-1px;top:calc(100% + 6px);z-index:40;max-height:360px;overflow:auto;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 44px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.06);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .18s ease,transform .18s ease,visibility 0s linear .18s}
+.ajmng .gc5 .tppop::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
+.ajmng .gc5 .tpwrap:hover .tppop,.ajmng .gc5 .tpwrap.open .tppop,.ajmng .gc5 .tpwrap:focus-within .tppop{opacity:1;visibility:visible;transform:none;transition:opacity .18s ease,transform .18s ease}
+.ajmng .gc5 .tppop .gc3sub{margin:0!important;border:0!important;box-shadow:none!important;padding:0!important;background:none!important}
+.ajmng .gc5 .tppop .gc3sub+.gc3sub{margin-top:10px!important;padding-top:10px!important;border-top:1px solid var(--line)!important}
+.ajmng .gcell:has(.tpwrap:hover),.ajmng .gcell:has(.tpwrap.open),.ajmng .gcell:has(.tpwrap:focus-within){z-index:6!important}
+.ajmng .gc3.gc5,.ajmng .gc5 .gbody{overflow:visible!important}
+@media(hover:none){.ajmng .gc5 .tpwrap:hover:not(.open) .tppop{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){.ajmng .gc5 .tppop{transition:none}}
+
+/* v93: a calm tile. Measure, current %, the slider knob, days left and "Expected by today" show when the tile is hovered or focused */
+.ajmng .gc5 :is(.gmeas,.gcur,.gdl,.gexpd,.gtrack .pthumb,.gtrack .pbub){opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}
+.ajmng .gcell:is(:hover,:focus-within) .gc5 :is(.gmeas,.gcur,.gdl,.gexpd,.gtrack .pthumb){opacity:1;visibility:visible;transition:opacity .22s ease}
+@media(hover:none){.ajmng .gc5 :is(.gmeas,.gcur,.gdl,.gexpd,.gtrack .pthumb){opacity:1;visibility:visible}}
+.ajmng .glinkrow:empty{display:none}
+.ajmng .gc5 .gnotice{min-height:22px!important}
+.ajmng .gc5 .gnotice:empty{display:none}

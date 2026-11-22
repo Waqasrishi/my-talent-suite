@@ -146,7 +146,7 @@ const PROJECTS = [
   { url: "goals-module-v91", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", home: "/", skin: "clean" },
   // v92 = v91 with no Approved badge on the Director General's goals (they need no approval)
   { url: "goals-module-v92", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v92", home: "/", skin: "clean" },
-  // v93 = v92 with an aligned weight pill; a pushed-down goal is accepted as it is or adjusted by its receiver (adjusted goes to the pusher for approval, accepted tells the pusher); a "Link to a senior goal" pill on tiles and in the goal with a themed popup; Needs your attention collapsed until clicked, each item the action, the goal and who it is from
+  // v93 = v92 with an aligned weight pill; a pushed-down goal is accepted as it is or adjusted by its receiver (adjusted goes to the pusher for approval, accepted tells the pusher); a "Link to a senior goal" pill on tiles and in the goal with a themed popup; Needs your attention collapsed until clicked, each item the action, the goal and who it is from; neutral person icons (no faces or skin colours); tile buttons as in v90; the team panel floats over the goals below (hover shows it, a click keeps it open); measure, current %, knob, days left and Expected show on tile hover
   { url: "goals-module-v93", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v91", skin: "clean" },
