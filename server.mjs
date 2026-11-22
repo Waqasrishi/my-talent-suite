@@ -162,10 +162,12 @@ const PROJECTS = [
   { url: "goals-module-v99", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v99", home: "/", skin: "clean" },
   // v100 = v99 with no maximum number of goals, Needs your attention items showing the goal name in full and who it is from or goes to, and a Send for approval popup with the goal's details and checks
   { url: "goals-module-v100", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v100", home: "/", skin: "clean" },
+  // v101 = v100 with the last two 5-goal mentions removed (wizard review check, approver checklist): there is no maximum number of goals
+  { url: "goals-module-v101", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v101", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v100", skin: "clean" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v101", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v100", home: "/", skin: "clean" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v101", home: "/", skin: "clean" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
