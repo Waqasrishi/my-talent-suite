@@ -138,6 +138,8 @@ const PROJECTS = [
   { url: "goals-module-v87", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v87", home: "/", skin: "clean" },
   // v88 = v87 with three goal tiles to a row, no clipped text on the tiles, and a tile that grows a little under the pointer
   { url: "goals-module-v88", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v88", home: "/", skin: "clean" },
+  // v89 = v88 with Alignment, Open details and Delete along the bottom of each tile (no ⋯ menu, no triangle), a steady hover, the team panel inside the tile, a see-through welcome panel and a dashed attention bar
+  { url: "goals-module-v89", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v89", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v88", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
