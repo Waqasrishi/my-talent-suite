@@ -135,9 +135,9 @@ const PROJECTS = [
   // v86 = v85 rebuilt to the approved Indigo rail mockup (option B): path and person in the top bar, Goals 2027 card in the menu, segmented tabs under the title, goal cards with a sun banner in two columns
   { url: "goals-module-v86", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v86", home: "/", skin: "rail" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
-  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v85", skin: "rail" },
+  { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v86", skin: "rail" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
-  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v85", home: "/", skin: "rail" },
+  { url: "goals-module", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v86", home: "/", skin: "rail" },
   // the previous goals prototype (version 3), still reachable
   { url: "goals-module-v3", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v3", home: "/" }];
 const TITLES = { "zajmn.hr.sucfac1.hk": ["AJMN People", "#F4F7FB"], "zajmn.hr.goals.hk": ["Goals 2027", "#FFFFFF"] };
