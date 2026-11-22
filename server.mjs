@@ -156,6 +156,8 @@ const PROJECTS = [
   { url: "goals-module-v96", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v96", home: "/", skin: "clean" },
   // v97 = v96 with Show all / Show fewer keeping the team panel open (any click outside still closes it), new goals created with no link (the owner picks it from the strip), and the goal number and arrows aligned; Needs your attention items are two lines (action, then who and the goal)
   { url: "goals-module-v97", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v97", home: "/", skin: "clean" },
+  // v98 = v97 with the team panel staying open when a popup opened from it (a person's activities) is closed
+  { url: "goals-module-v98", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v98", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v97", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project

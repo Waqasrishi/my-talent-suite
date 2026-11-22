@@ -31,3 +31,12 @@ __pycache__/
 
 .data/
 node_modules/
+
+# Not served by server.mjs, so not uploaded with each deploy (22 Nov 2026: the upload passed Canvas's 50 MB limit).
+# They stay on this computer: the ECC packages and their zips, the dist/ handouts, the Fiori project exports.
+dist/
+fiori-ecc/
+fiori-ecc-v*/
+fiori-ecc-v*.zip
+fiori-projects/
+.DS_Store
