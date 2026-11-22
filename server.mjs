@@ -136,6 +136,8 @@ const PROJECTS = [
   { url: "goals-module-v86", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v86", home: "/", skin: "rail" },
   // v87 = v86 in the clean look approved on 22 Nov 2026 (after SuccessFactors Growth Portfolio): grey page, crisp borders, person strip, welcome banner, same-size goal tiles
   { url: "goals-module-v87", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v87", home: "/", skin: "clean" },
+  // v88 = v87 with three goal tiles to a row, no clipped text on the tiles, and a tile that grows a little under the pointer
+  { url: "goals-module-v88", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v88", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v87", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
