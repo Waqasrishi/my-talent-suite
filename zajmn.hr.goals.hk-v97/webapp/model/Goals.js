@@ -956,8 +956,7 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
 		 if(s===5)return r!=='team';
 		 return false}
 		function autoFill(){const a=wiz.a,r=rc(a);if(!a.measure)return;
-		 if(!wiz.dueChosen){const d=dueFrom(a.measure);if(d)a.due=d}
-		 if((r==='own'||r==='team')&&BOSS&&MGMT.length&&!wiz.parentChosen)a.parent=rankMgmt(a)[0].m.t}
+		 if(!wiz.dueChosen){const d=dueFrom(a.measure);if(d)a.due=d}}
 		function nextStep(cur){const a=wiz.a,R=wR(a);
 		 if(wiz.fromReview){for(let s=cur+1;s<R;s++){if((s===3&&((rc(a)==='con'&&!a.cto)||(rc(a)==='mem'&&!a.parent)))||(s===4&&!a.due)||(s===5&&rc(a)==='team'&&!a.teams.length))return s}return R}
 		 for(let s=cur+1;s<R;s++)if(!skipped(s))return s;return R}

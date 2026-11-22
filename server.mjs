@@ -154,7 +154,7 @@ const PROJECTS = [
   { url: "goals-module-v95", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v95", home: "/", skin: "clean" },
   // v96 = v95 with no "days left" anywhere (tiles and goal page); only Due today or overdue still show
   { url: "goals-module-v96", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v96", home: "/", skin: "clean" },
-  // v97 = v96 with Show all / Show fewer keeping the team panel open
+  // v97 = v96 with Show all / Show fewer keeping the team panel open (any click outside still closes it), new goals created with no link (the owner picks it from the strip), and the goal number and arrows aligned
   { url: "goals-module-v97", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v97", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v96", skin: "clean" },

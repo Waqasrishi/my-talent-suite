@@ -2278,3 +2278,16 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 @media(max-width:640px){.ajmng .striprow .portlet{width:100%!important;max-width:none}}
 /* every row of tiles is the same height, so Add a goal matches the goal tiles */
 .ajmng .glist{grid-auto-rows:1fr}
+
+/* ===== v97 ===== */
+/* Goal number: icon and text on one centre line */
+.ajmng .gc5 .glab{display:flex!important;align-items:center!important;gap:8px!important;height:26px!important;line-height:1!important}
+.ajmng .gc5 .glab>svg{display:block;flex:none;width:18px!important;height:18px!important;margin:0!important}
+.ajmng .gc5 .glab>span:not(.gsp){display:block;line-height:1!important;font-size:15px!important;font-weight:700!important;padding-top:1px}
+/* arrows and chevrons sit on the centre line of their row */
+.ajmng .glk{align-items:center!important}
+.ajmng .glk>svg.go,.ajmng .glk .up svg,.ajmng .lkp>svg.lkch,.ajmng .tpbtn>svg.tpch{display:block;flex:none;align-self:center;margin:0}
+.ajmng .glk>svg.go{width:18px;height:18px}
+.ajmng .lkp{align-items:center!important}
+.ajmng .lkp .lkcount,.ajmng .lkp .lktag{align-self:center;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.ajmng .lkp .lktag{height:24px}
