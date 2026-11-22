@@ -2291,3 +2291,11 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 .ajmng .lkp{align-items:center!important}
 .ajmng .lkp .lkcount,.ajmng .lkp .lktag{align-self:center;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .ajmng .lkp .lktag{height:24px}
+/* v97: Needs your attention: two lines per item. Line 2 = who it goes to or comes from, then the goal, cut with "..." */
+.ajmng .portlet .pit-t small.pline{display:block!important;min-width:0;font-size:11px!important;line-height:1.35!important;color:#55607A!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.ajmng .portlet .pit-t small.pline .ptxw b{color:var(--ink,#16152B);font-weight:700}
+.ajmng .portlet .pit-t small.pline .ptxg:not(.nog)::before{content:"Goal: "}
+.ajmng .portlet .pit{align-items:center!important}
+.ajmng .portlet .pit-t{min-width:0}
+.ajmng .portlet .pit-t>b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ajmng .portlet .pit-t small.pline b,.ajmng .portlet .pit-t small.pline span{display:inline!important;font-size:11px!important}
