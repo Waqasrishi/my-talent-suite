@@ -148,6 +148,8 @@ const PROJECTS = [
   { url: "goals-module-v92", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v92", home: "/", skin: "clean" },
   // v93 = v92 with an aligned weight pill; a pushed-down goal is accepted as it is or adjusted by its receiver (adjusted goes to the pusher for approval, accepted tells the pusher); a "Link to a senior goal" pill on tiles and in the goal with a themed popup; Needs your attention collapsed until clicked, each item the action, the goal and who it is from; neutral person icons (no faces or skin colours); tile buttons as in v90; the team panel floats over the goals below (hover shows it, a click keeps it open); measure, current %, knob, days left and Expected show on tile hover
   { url: "goals-module-v93", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", home: "/", skin: "clean" },
+  // v94 = v93 with the tile from the approved mockup: picture banner, a link strip to the direct senior's goal, progress ring beside the title and the bar under it, no measure, due date or Expected, no hover reveal or tooltips on tiles, even tile heights; the link popup shows the direct senior only
+  { url: "goals-module-v94", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v94", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v93", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
