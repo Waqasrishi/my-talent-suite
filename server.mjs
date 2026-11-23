@@ -170,6 +170,8 @@ const PROJECTS = [
   { url: "goals-module-v103", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v103", home: "/", skin: "clean" },
   // v104 (23 Nov 2026): the robot floats in its own lane at the right (top bar on smaller screens), never over the goal tiles; a new win animation (rays, stars, confetti rain, victory jump)
   { url: "goals-module-v104", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v104", home: "/", skin: "clean" },
+  // v105 (23 Nov 2026): popups zoom forward with the page easing back (soft zoom with depth), New goal steps keep one size and fade, one Close pill in every popup, the robot celebrates with a quiet halo
+  { url: "goals-module-v105", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v105", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v104", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
