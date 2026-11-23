@@ -176,6 +176,8 @@ const PROJECTS = [
   { url: "goals-module-v106", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v106", home: "/", skin: "clean" },
   // v107 (23 Nov 2026): popups open without the page jumping (banner kept), no per-frame blur on the page, steps never blank, Back/Continue a solid bar in the popup
   { url: "goals-module-v107", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", home: "/", skin: "clean" },
+  // v108 (23 Nov 2026): feedback on goals from SAP SuccessFactors continuous feedback, in one place: a Feedback button on each tile opens the Feedback popup, a Feedback card on the goal popup, requests answered in Needs your attention
+  { url: "goals-module-v108", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v108", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
