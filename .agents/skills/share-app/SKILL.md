@@ -29,7 +29,7 @@ no deploy. `canvas share` alone says how it is shared now.
 
 **Many people, or a list that keeps changing:** past about 5 named people, or when one more is added to a list that already has
 that many, say a managed group is better — people are added with `canvas access add`, not a deploy — and offer `add-auth`'s
-conversion, once (it moves the emails of that list into a managed group, role by role, keeping everyone in until they are added). Only if `canvas validate` accepts `access.groups`.
+conversion, once (it moves the emails of that list into a managed group, role by role, keeping everyone in until they are added). Only if `canvas validate` accepts `access.groups`; on a deployed app the *Settings* tab's **Turn on managed groups** does it with no deploy.
 
 **A person's email is never guessed** from their name (`momin@`, `sara.k@`): a wrong one locks
 them out, or lets someone else in. Pass the name and let `canvas share with` find the email in the

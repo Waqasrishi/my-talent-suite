@@ -44,8 +44,7 @@ before building. Build the smallest thing that does what was asked (AGENTS.md §
 
 **Roles:** when the app has more than one kind of user — an admin and a viewer, a page only Finance may open — ask once, with the
 question before building: "Should each role be a group the platform keeps, so you add and remove people with `canvas access`
-and no deploy, or do you list the people in score.yaml?" Offer it only if `canvas validate` accepts `access.groups` (the team
-has groups on); `add-auth` has the steps. One role per group, never one group for everything.
+and no deploy, or do you list the people in score.yaml?" Offer it only if `canvas validate` accepts `access.groups` (groups are on for every team); `add-auth` has the steps. One role per group, never one group for everything.
 
 ## What to do
 

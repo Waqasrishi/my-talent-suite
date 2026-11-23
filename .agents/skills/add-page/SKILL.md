@@ -13,7 +13,7 @@ good: its `design.md`.
 > **A ported app** (`.canvas/ported`, or `.canvas/legacy/`) keeps the old app's look unless the user asks (AGENTS.md §1).
 > **An app without `ajnkit-ui`** in `pyproject.toml`: `add-ui` first.
 
-## Act as the UI/UX expert
+## Page design rules
 
 - **One page first.** Put the job on one page — sections, tabs, a sheet or a dialog, parts that update in place — and
   add a second page only when the app has separate jobs or audiences, a list with a deep detail, or a flow too long
@@ -21,7 +21,14 @@ good: its `design.md`.
 - **Say it once.** Only the kit's parts, templates and tokens; markup used three times becomes a macro in `src/templates/`; a style or a
   copy of a kit part is a bug.
 - **Make it look chosen.** The first screen shows the point: one leading element, real content (not lorem), every
-  state drawn (`design.md`). Look at it on phone and desktop before showing it, and fix what looks off.
+  state drawn (`design.md`). Look at it on phone and desktop before showing it, and fix what looks off
+  (`verify-change` says how).
+- **Reachable by everyone.** Every control works by keyboard in a sensible order with a visible focus, and the
+  kit's colours keep their contrast: never a colour of your own, never information carried by colour alone.
+- **Say what will happen.** A button names its action ("Save order", not "Submit"); an error says what went wrong
+  and what to do next; a delete or other loss asks first and names what goes (`ui.dialog`).
+- **Arabic and English.** In a bilingual app the page reads right to left and left to right with the same layout:
+  logical spacing, no text in an image, numbers as the person's language shows them (`arabic`).
 
 ## What to do
 

@@ -158,7 +158,7 @@ shell like any page — never a page of its own making (a Next app's `permit` sh
 ## People who change without a deploy — a managed group behind the role
 
 A **managed group** is the platform's own Authentik group for one role of this app, `canvas-<team>--<app>--<role>`, kept with
-`canvas access` — not an Entra group (Entra's are the company's: read only here, named with `use`). Ask for one when the people
+`canvas access` or the app's *Settings* tab in the portal — not an Entra group (Entra's are the company's: read only here, named with `use`). Groups are on for every team. Ask for one when the people
 for a role change often ("let me add people without redeploying", "give each role a group"). Under the route's `access`,
 `groups` names the role — `read`, `write`, `deny` or `rules.<name>` — and the code stays the same; only the people move:
 
@@ -170,12 +170,12 @@ for a role change often ("let me add people without redeploying", "give each rol
 ```
 
 - **First deploy:** `canvas deploy` makes the group and puts the person deploying in it, so the owner is not shut out.
-- **The people:** `canvas access add <role> <email>` · `remove` · `list` — an owner of the team or an admin; it reaches the person
-  at their next sign-in, and they must have opened Canvas once (`canvas team members` shows who has; never guess an email).
+- **The people:** the app's *Settings* tab in the portal, or `canvas access add <role> <email>` · `remove` · `list` — an owner of the team or an admin; it
+  reaches the person at their next sign-in. Someone who has not opened Canvas yet is invited and put in when they first do (never guess an email).
 - **One group per role**, never one for everything. At a pair's root these act on the API, which holds the access.
 - **It goes with the app:** taking the app down deletes its groups; dropping a role from `groups` deletes that group at the next
   `canvas deploy` (`--yes` when people are in it). While a role comes from a group, `canvas share … with` cannot change it.
-- **Not provided?** If `canvas validate` says groups are not provided, or the team has them off, list the people in `access` as
+- **Not provided?** If `canvas validate` says groups are not provided, the platform's switch is off: list the people in `access` as
   above and offer `report-issue`.
 
 ### "Use managed groups" is a whole instruction
@@ -202,14 +202,16 @@ better — each change is a command, not an edit and a deploy — and offer to c
 
 ### Convert a list of people to a managed group
 
-Do it **role by role** (`read`, `write`, `deny`, each `rules.<name>`), in this order, so nobody loses access on the way:
+On a deployed app the quickest way is the app's *Settings* tab: **Turn on managed groups** does steps 2–5 for `read`, `write` and the
+rules, with no deploy, and leaves anyone who has not opened Canvas in the list. Otherwise do it **role by role** (`read`, `write`, `deny`, each
+`rules.<name>`), in this order, so nobody loses access on the way:
 
 1. **Sort the list.** Emails and people's names go into the group. An Entra group name stays in the list or moves to
    `use: [name]`; `canvas-<team>-owners` / `-members` stay as they are. Turn a name into an email with `canvas team members`.
 2. **Add the group, keep the list.** `groups: {<role>: {managed: true}}` beside the existing list; `canvas validate`, `canvas deploy`.
    Both are let in now: the old list and the new, empty group (with you in it).
-3. **Move the people.** `canvas access add <role> <email>` for each one. "has not signed in to Canvas yet" is not an error to
-   work around: tell the user whom to ask to open the portal once, leave that person's email in the list, and add them later.
+3. **Move the people.** `canvas access add <role> <email>` for each one. Someone who has not signed in to Canvas yet is invited
+   (`canvas access list` marks them) and put in when they first open it; leave that person's email in the list until then.
 4. **Check.** `canvas access list` names everyone who was in the list.
 5. **Drop the emails.** Delete the converted emails from the role's list (an emptied list is removed, never left as `[]`),
    `canvas deploy`. The Entra groups left in it still count.

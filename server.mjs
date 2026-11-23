@@ -164,6 +164,8 @@ const PROJECTS = [
   { url: "goals-module-v100", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v100", home: "/", skin: "clean" },
   // v101 = v100 with the last two 5-goal mentions removed (wizard review check, approver checklist): there is no maximum number of goals
   { url: "goals-module-v101", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v101", home: "/", skin: "clean" },
+  // v102 (23 Nov 2026): helper bot for Needs your attention, every screen as a centred popup, push-down roles (Owner for the Director General, Contributor, Team member)
+  { url: "goals-module-v102", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v102", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v101", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
