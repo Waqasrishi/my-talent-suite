@@ -1112,11 +1112,15 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
  // what was on screen (no ids, inert), so nothing behind can be clicked; #hero and #app move into the popup and keep their handlers.
  const SH={box:null,home:null,behind:null};const POPV=()=>['goal','wiz','dash','align'].includes(view);
  function sheet(on){const app=$('#app'),H=$('#hero');
+  // moving a node restarts its CSS animation: drop the page's fade-in class first, so nothing flashes when it moves in or out of a popup
+  if(on!==!!SH.box){H.classList.remove('enter');app.classList.remove('enter')}
+  if(on&&!SH.box)SH.y=scrollYNow();
   if(on&&!SH.box){SH.home=H.parentElement;SH.behind=document.createElement('div');SH.behind.className='gbehind';SH.home2=ROOT.classList.contains('is-home');SH.behind.innerHTML='<div class="gbhero">'+H.innerHTML+'</div><div class="gbapp">'+app.innerHTML+'</div>';SH.behind.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));SH.behind.querySelectorAll('[for]').forEach(e=>e.removeAttribute('for'));SH.behind.inert=true;SH.behind.setAttribute('aria-hidden','true');
    SH.home.insertBefore(SH.behind,H);SH.box=document.createElement('div');SH.box.className='gsheet';SH.box.innerHTML='<div class="gsbox" role="dialog" aria-modal="true" aria-label="Goals"><button type="button" class="gsx" aria-label="Close">&times;</button></div>';ROOT.appendChild(SH.box);
    const bx=SH.box.firstChild;bx.appendChild(H);bx.appendChild(app);ROOT.classList.add('sheet-on');document.documentElement.classList.add('gs-lock');
    bx.querySelector('.gsx').onclick=sheetClose;SH.box.onmousedown=e=>{SH.down=e.target===SH.box};SH.box.onclick=e=>{if(e.target===SH.box&&SH.down)sheetClose()};SH.box.focus&&SH.box.setAttribute('tabindex','-1')}
-  else if(!on&&SH.box){SH.home.insertBefore(H,SH.behind);SH.home.insertBefore(app,SH.behind);SH.behind.remove();SH.box.remove();SH.box=null;ROOT.classList.remove('sheet-on');document.documentElement.classList.remove('gs-lock')}
+  else if(!on&&SH.box){const ghost=SH.box.cloneNode(true);ghost.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));ghost.classList.add('gs-out');ghost.setAttribute('aria-hidden','true');ghost.inert=true;ROOT.appendChild(ghost);ghost.scrollTop=SH.box.scrollTop;setTimeout(()=>ghost.remove(),230);
+   SH.home.insertBefore(H,SH.behind);SH.home.insertBefore(app,SH.behind);SH.behind.remove();SH.box.remove();SH.box=null;ROOT.classList.remove('sheet-on');document.documentElement.classList.remove('gs-lock')}
   if(SH.box){SH.box.classList.toggle('big',view==='align'||view==='dash');SH.box.classList.toggle('narrow',view==='wiz');ROOT.classList.toggle('is-home',!!SH.home2)}}
  function sheetClose(){if(!SH.box)return;const ex=$('#exit');if(ex&&SH.box.contains(ex)){ex.click();return}wiz=null;view=SH.from||'list';renderList()}
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&SH.box&&!document.querySelector('.actdlg,.casdlg,.wt-pop,.dp-pop,.axo')){e.preventDefault();sheetClose()}});
@@ -1126,7 +1130,9 @@ sap.ui.define(["./Scenario", "./I18n", "./Motion", "./Morph", "./Datepicker", ".
   Morph.children(H,head);Morph.children(app,C);
   ROOT.classList.toggle('wide',view==='align');app.classList.toggle('wiz',!!q);H.classList.toggle('wiz',!!q);
   const hq=H.querySelector('#q');if(hq){hq.setAttribute('tabindex','-1');const ae=document.activeElement;if(!ae||ae===document.body||!app.contains(ae))hq.focus({preventScroll:true})}
-  bot()}
+  bot();
+  // the page under a popup stays where it was, and is still there when the popup closes
+  if(SH.y!=null){const yy=SH.y;if(!SH.box)SH.y=null;const fix=()=>{if(Math.abs(scrollYNow()-yy)>2)scrollToY(yy,'instant')};fix();setTimeout(fix,0);setTimeout(fix,60)}}
  let lastV='list';
  // ---- v102: the helper bot. Fixed bottom right on every screen; its face follows what is waiting; click for the list ----
  const BMC={clear:'#2FB673',steady:'#3BA7E0',busy:'#E8AE1F',urgent:'#E0493B'},BMN={clear:'All clear',steady:'A few things',busy:'Busy',urgent:'Urgent'};

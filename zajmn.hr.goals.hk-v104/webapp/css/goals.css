@@ -2354,7 +2354,6 @@ html{scrollbar-gutter:stable;overflow-anchor:auto}
 @media(prefers-reduced-motion:reduce){.ajmng .sdbox{animation:none}}
 
 /* ===== v102: every screen as a centred popup, the helper bot, push-down roles ===== */
-html.gs-lock,html.gs-lock body{overflow:hidden}
 .ajmng .gbehind{pointer-events:none;user-select:none}
 .ajmng .gsheet{position:fixed;inset:0;z-index:900;background:rgba(29,23,78,.45);overflow-y:auto;overscroll-behavior:contain;padding:28px 16px;display:flex;align-items:flex-start;justify-content:center;animation:actin .18s ease-out}
 .ajmng .gsbox{position:relative;width:min(1120px,100%);margin:auto 0;background:var(--page,#F4F5F7);border-radius:12px;border-top:4px solid #D69D10;box-shadow:0 24px 60px rgba(29,23,78,.35);padding:22px 28px 28px;box-sizing:border-box}
@@ -2516,3 +2515,18 @@ html.gs-lock,html.gs-lock body{overflow:hidden}
 
 /* v104: a tile's details in the Alignment chart open above the Alignment popup */
 .axo{z-index:1000}
+/* v104: smooth popups. In: the dimmed page fades, the popup rises and settles. Out: the popup fades and sinks a little while the page is already in place */
+@keyframes gsFade{from{opacity:0}to{opacity:1}}
+@keyframes gsRise{from{opacity:0;transform:translateY(14px) scale(.975)}to{opacity:1;transform:none}}
+@keyframes gsOut{from{opacity:1}to{opacity:0}}
+@keyframes gsSink{from{opacity:1;transform:none}to{opacity:0;transform:translateY(10px) scale(.98)}}
+.ajmng .gsheet{animation:gsFade .2s ease-out both}
+.ajmng .gsheet>.gsbox{animation:gsRise .26s cubic-bezier(.2,.8,.25,1) both}
+.ajmng .gsheet.gs-out{animation:gsOut .22s ease-in both;pointer-events:none}
+.ajmng .gsheet.gs-out>.gsbox{animation:gsSink .22s ease-in both}
+.ajmng .gsheet #app.enter,.ajmng .gsheet #hero.enter{animation:ajmngIn .18s ease-out both}
+/* a softer page change: from half-visible instead of blank, so it never flashes white */
+@keyframes ajmngIn{from{opacity:.45}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.ajmng .gsheet,.ajmng .gsheet>.gsbox,.ajmng .gsheet.gs-out,.ajmng .gsheet.gs-out>.gsbox{animation:none}}
+/* v104: the page keeps its scroll position under a popup; the popup layer is always scrollable, so the wheel scrolls the popup and never the page */
+.ajmng .gsheet::after{content:"";position:absolute;top:0;left:0;width:1px;height:calc(100% + 1px);pointer-events:none}
