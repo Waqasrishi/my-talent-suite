@@ -178,6 +178,8 @@ const PROJECTS = [
   { url: "goals-module-v107", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", home: "/", skin: "clean" },
   // v108 (23 Nov 2026): feedback on goals from SAP SuccessFactors continuous feedback, in one place: a Feedback button on each tile opens the Feedback popup, a Feedback card on the goal popup, requests answered in Needs your attention
   { url: "goals-module-v108", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v108", home: "/", skin: "clean" },
+  // v109 (24 Nov 2026): v108 with the banner mountains breathing: each peak grows and settles slowly on its own rhythm
+  { url: "goals-module-v109", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v109", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
