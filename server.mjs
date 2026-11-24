@@ -184,6 +184,8 @@ const PROJECTS = [
   { url: "goals-module-v110", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v110", home: "/", skin: "clean" },
   // v111 (24 Nov 2026): v110 without the second set of Alignment / Push down / New goal buttons under the banner (the welcome banner has them)
   { url: "goals-module-v111", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v111", home: "/", skin: "clean" },
+  // v112 (24 Nov 2026): v111 with STILL mountains and slow drifting clouds (valley mist and low mist), chosen in the cloud studio
+  { url: "goals-module-v112", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v112", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project
