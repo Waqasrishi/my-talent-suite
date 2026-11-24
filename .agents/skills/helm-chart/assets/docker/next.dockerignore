@@ -1,0 +1,10 @@
+# Next to the Dockerfile as <Dockerfile>.dockerignore, so nothing is added to the app's own folder.
+.git
+node_modules
+.next
+coverage
+data
+custom-deploy
+.env
+.env.*
+*.log

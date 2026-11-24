@@ -1,0 +1,26 @@
+{{ include "canvasapp.fullname" . }} is installed.
+{{- if .Values.ingress.enabled }}
+
+Address: {{ ternary "https" "http" .Values.ingress.tls.enabled }}://{{ .Values.ingress.host }}
+{{- else }}
+
+No ingress. To open it from your computer:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "canvasapp.fullname" . }} {{ .Values.port }}:{{ .Values.port }}
+  then http://localhost:{{ .Values.port }}
+{{- end }}
+
+Check it:   helm test {{ .Release.Name }} -n {{ .Release.Namespace }}
+Its log:    kubectl -n {{ .Release.Namespace }} logs deploy/{{ include "canvasapp.fullname" . }}
+{{- if and .Values.migrations.enabled (include "canvasapp.hasDatabase" .) }}
+Migrations: kubectl -n {{ .Release.Namespace }} logs job/{{ include "canvasapp.fullname" . }}-migrate
+{{- end }}
+{{- with include "canvasapp.secretKeys" . | fromJsonArray }}
+
+It reads {{ join ", " . }} from the Secret {{ include "canvasapp.secretName" $ }}.
+{{- end }}
+{{- if and .Values.authentik.enabled (not .Values.networkPolicy.enabled) }}
+
+WARNING: sign-in is on but networkPolicy.enabled is false. Traefik replaces the X-authentik-*
+headers on the way in, but anything else in the cluster can call the Service directly and claim to
+be anyone. Turn networkPolicy.enabled on.
+{{- end }}

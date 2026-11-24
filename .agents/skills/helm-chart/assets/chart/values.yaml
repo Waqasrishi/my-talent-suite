@@ -1,0 +1,195 @@
+# Values for a Canvas app outside Canvas. Each block says which line of score.yaml it comes from.
+# The helm-chart skill fills them from score.yaml; what is left here is yours to set per cluster.
+# Never put a secret's value in this file: they go in secret.yaml (a filled-in copy of
+# secret.example.yaml), applied with kubectl before the install, and never committed.
+
+# -- Shared with the other parts of a pair (an umbrella chart sets them once for both).
+global:
+  # Prefixed to image.repository when set, e.g. registry.example.com/team
+  imageRegistry: ""
+  imagePullSecrets: []
+  # A pair: the one Secret both parts read.
+  secretName: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- `python` or `next` (the blueprint the app was made from): Next gets a writable .next/cache.
+stack: python
+
+# -- The image built from custom-deploy/docker/Dockerfile and pushed to your registry.
+image:
+  repository: canvas-app
+  # Empty: the chart's appVersion.
+  tag: ""
+  # sha256:… — wins over tag when set.
+  digest: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# -- score.yaml containers.app.replicas. Above 1, a PodDisruptionBudget keeps one serving.
+replicaCount: 1
+
+# -- score.yaml route: the port the app listens on (PORT) and the path its probes call.
+port: 8080
+healthPath: /healthz
+
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits: { memory: 512Mi }
+
+# -- score.yaml containers.app.variables: plain settings, never a secret.
+env: {}
+
+# -- score.yaml route.access, given to the app as PLATFORM_ACCESS (applies with sign-in). Its
+#    Canvas groups (canvas-<team>-members, -owners) are Canvas's: name your Authentik's own instead.
+access: {}
+
+# -- score.yaml route.docs: `public` lets /api/docs past the sign-in. Empty: private, the default.
+docs: ""
+
+# -- The app's address, PUBLIC_URL. Empty: https://<ingress.host> when the ingress is on.
+publicUrl: ""
+
+# -- Every secret value the app needs is in one Secret you create before the install
+#    (kubectl apply -f secret.yaml). Key NAMES only here (score.yaml `secret`). The install stops,
+#    naming each one, if that Secret lacks a key the app needs.
+secrets:
+  # The Secret's name. Bitnami's charts below are given the same one.
+  name: canvas-app-secrets
+  # Each one an env var of the same name.
+  keys: []
+  # Each one a file at /secrets/<KEY>, readable by the app only, with <KEY>_FILE pointing at it.
+  files: []
+
+# -- score.yaml `service`: the other apps this one calls. Each becomes <NAME>_URL — what ajnkit's
+#    serviceUrl("<name>") reads: the chart named `chart` in the same release, or `url` when it runs
+#    somewhere else.
+links: []
+#  - name: api
+#    chart: api
+#    port: 8080
+#    url: ""                # e.g. http://api.other-namespace.svc.cluster.local:8080
+
+# -- Traefik ingress: the app's address.
+ingress:
+  enabled: false
+  className: traefik
+  host: ""
+  entrypoints: websecure
+  tls:
+    enabled: true
+    # Your certificate's Secret. Empty: Traefik's default certificate.
+    secretName: ""
+  # More Traefik middlewares, as <namespace>-<name>@kubernetescrd.
+  middlewares: []
+  annotations: {}
+
+# -- score.yaml route.auth: sso — sign-in through Authentik's Traefik forward auth, as on Canvas.
+#    Needs ingress.enabled, and in Authentik a Proxy Provider (forward auth) and Application for
+#    ingress.host. Traefik replaces any X-authentik-* header a caller sends, so the app can trust them.
+authentik:
+  enabled: false
+  outpostUrl: http://authentik-server.authentik.svc.cluster.local/outpost.goauthentik.io/auth/traefik
+  # Shown as "Sign out" in the page shell.
+  signOutUrl: ""
+  # Removes Authentik's session cookie before the app sees it. Needs Traefik's stripcookies plugin.
+  stripCookies: false
+
+# -- A pair's API: trust the X-authentik-* headers its web app forwards. Safe only while the
+#    NetworkPolicy lets nothing but that web app reach it — the chart refuses to render otherwise.
+identity:
+  fromCaller: false
+
+networkPolicy:
+  enabled: false
+  # The namespace the ingress controller runs in, allowed in when the ingress is on.
+  ingressNamespace: traefik
+  # Charts of this release whose pods may call this app (a pair's API: [web]).
+  allowFrom: []
+
+# -- score.yaml `volume`: a disk at mountPath (DATA_DIR). One replica only: the disk attaches to one node.
+persistence:
+  enabled: false
+  size: 1Gi
+  storageClass: ""
+  mountPath: /data
+
+# -- score.yaml `postgres`: Bitnami's PostgreSQL chart. DATABASE_URL is made from it.
+postgresql:
+  enabled: false
+  auth:
+    username: app
+    database: app
+    # = secrets.name: its keys `password` (the app user) and `postgres-password` (the superuser).
+    existingSecret: canvas-app-secrets
+  primary:
+    persistence:
+      size: 1Gi
+    initdb:
+      scripts:
+        # Every Canvas database has pgvector.
+        vector.sql: |
+          \connect app
+          CREATE EXTENSION IF NOT EXISTS vector;
+  # Bitnami stopped publishing free versioned images in 2025: point this at an image your team may use.
+  image:
+    registry: registry-1.docker.io
+    repository: bitnami/postgresql
+    tag: latest
+
+# -- Or a database you already have: postgresql.enabled false, this true, and its URL as the
+#    secret key DATABASE_URL.
+externalDatabase:
+  enabled: false
+
+# -- db/migrations (copied into files/migrations/), applied after install and before every upgrade
+#    by Canvas's own runner: each file once, in order, refused if it changed after it ran.
+migrations:
+  enabled: true
+  image: docker.io/library/postgres:17-alpine
+
+# -- score.yaml containers.app.egress.proxy: calls outside go through the company's egress proxy, as
+#    on Canvas (HTTP_PROXY and HTTPS_PROXY, which the SDK's HTTP clients honour; Node's fetch too).
+egress:
+  proxy: false
+  # The proxy's address, e.g. http://proxy.example.com:3128
+  url: ""
+  # Reached directly, not through the proxy: the cluster's own addresses.
+  noProxy: localhost,127.0.0.1,.svc,.cluster.local
+
+# -- score.yaml `llm`: the company's LiteLLM, which serves the same model names and web search as
+#    Canvas's. Its key, OPENAI_API_KEY, is in the Secret.
+llm:
+  enabled: false
+  # The company LiteLLM's OpenAI-compatible address, ending in /v1.
+  baseUrl: ""
+  # score.yaml llm.models — the models the app may use. Empty: every one the key allows.
+  models: []
+
+# -- score.yaml `cache`: Bitnami's Redis chart. REDIS_URL is made from it. Its Redis has no vector
+#    search, so ajnkit's SemanticCache always misses; @cached works.
+redis:
+  enabled: false
+  architecture: standalone
+  auth:
+    # = secrets.name: its key `redis-password`.
+    existingSecret: canvas-app-secrets
+    existingSecretPasswordKey: redis-password
+  image:
+    registry: registry-1.docker.io
+    repository: bitnami/redis
+    tag: latest
+
+# -- Or a Redis you already have: redis.enabled false, this true, and its URL as the secret key
+#    REDIS_URL (redis://:<password>@<host>:6379/0). A Redis 8 with its query engine, as on Canvas,
+#    makes SemanticCache work too.
+externalRedis:
+  enabled: false
+
+nodeSelector: {}
+tolerations: []
+
+# -- The `helm test` pod.
+test:
+  image: docker.io/library/busybox:1.37

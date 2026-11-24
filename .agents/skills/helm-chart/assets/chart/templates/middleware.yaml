@@ -1,0 +1,63 @@
+{{- /* Sign-in, as on Canvas: Traefik asks Authentik's outpost about every request. Without a session
+the person is sent to sign in; with one, the outpost's answer says who they are, and Traefik REPLACES
+any X-authentik-* header the caller sent — which is what lets the app trust them. */}}
+{{- if .Values.authentik.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-authentik
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  forwardAuth:
+    address: {{ required "authentik.outpostUrl is required" .Values.authentik.outpostUrl | quote }}
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-authentik-username
+      - X-authentik-email
+      - X-authentik-name
+      - X-authentik-groups
+      - X-authentik-uid
+{{- if .Values.authentik.stripCookies }}
+---
+{{- /* Authentik's session cookie out of every request before the app sees it, so no app's code can
+replay a visitor's session elsewhere. Needs Traefik's stripcookies plugin. */}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-cookies
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  plugin:
+    stripcookies:
+      prefixes: [authentik_proxy_]
+{{- end }}
+{{- end }}
+{{- if and .Values.ingress.enabled (eq .Values.ingress.className "traefik") }}
+---
+{{- /* As on Canvas, on every app with an address: browsers come back over HTTPS only, for a year. */}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-hsts
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  headers:
+    stsSeconds: 31536000
+---
+{{- /* As on Canvas: responses compressed for a browser that takes them — never a stream (an LLM's
+tokens, server-sent events) or what is compressed already. */}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-compress
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  compress:
+    encodings: [zstd, br, gzip]
+    minResponseBodyBytes: 1024
+    excludedContentTypes: [text/event-stream, application/x-ndjson, image/png, image/jpeg, image/gif, image/webp, image/avif, video/mp4, video/webm, audio/mpeg, audio/mp4, audio/ogg, audio/wav, application/zip, application/gzip, application/x-gzip, application/zstd, application/pdf, application/octet-stream, font/woff, font/woff2]
+{{- end }}

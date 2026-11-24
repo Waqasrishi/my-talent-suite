@@ -180,6 +180,8 @@ const PROJECTS = [
   { url: "goals-module-v108", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v108", home: "/", skin: "clean" },
   // v109 (24 Nov 2026): v108 with the banner mountains breathing: each peak grows and settles slowly on its own rhythm
   { url: "goals-module-v109", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v109", home: "/", skin: "clean" },
+  // v110 (24 Nov 2026): a cinematic banner from the design studio: shaded mountain layers, each peak breathing and swaying, a slow sideways camera glide, mist, film grain, and a climber (helmet, headlamp, ice axe) who reaches the flag, celebrates and rests
+  { url: "goals-module-v110", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v110", home: "/", skin: "clean" },
   { url: "goals-module-v65", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v65", home: "/" },
   { url: "latest/zajmn.hr.goals.hk", id: "zajmn.hr.goals.hk", folder: "zajmn.hr.goals.hk-v107", skin: "clean" },
   // the latest goals prototype as opened from the home page "/": its link back goes to "/", not to the UI5 home project

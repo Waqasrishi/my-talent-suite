@@ -44,8 +44,9 @@ look** (`{% block look %}` in `base.html`) unless the person asks for another. R
 and its `design.md` before the first page; `add-page` for each. **Replace the starter home page (`src/templates/index.html`) before the first deploy** — the app does not start while it says "Tell your assistant what to build".
 
 **Never write** a Dockerfile, Kubernetes YAML, a Helm chart or a compose file — the platform renders
-all of it (delete an old `Dockerfile`). No `Makefile`: platform commands are `canvas <verb>`; run and
-test with `uv run` (`local-run`).
+all of it (delete an old `Dockerfile`). The one exception is `custom-deploy/`, for running the app
+outside Canvas: only `helm-chart` writes it, and Canvas never reads it. No `Makefile`: platform
+commands are `canvas <verb>`; run and test with `uv run` (`local-run`).
 
 **Exactly one container, named `app`, and one copy of it unless the user asks for more** (`request-availability`).
 No sidecars. A second process is a second app — never a second container in the pod.
@@ -232,6 +233,9 @@ speech to text, decisions), `add-rag` (answers from the app's text), `ask-data` 
 Schema: `src/models.py`, then `canvas db revision "<what changed>"`; `canvas deploy` applies it. Read
 what it generated; never edit a migration that has run. A drop, rename, type change or new constraint
 is refused — `request-database`.
+A migration is schema and small seeds, never a file's bytes: no hex or base64 of a document, picture or recording
+(refused over 4 KB, 512 KiB in all). A person's files go through the app's uploads — `canvas-sdk`, `ajnkit-media`;
+files that ship with the app sit beside the code and the code reads them.
 
 ## 8. The failure playbook
 

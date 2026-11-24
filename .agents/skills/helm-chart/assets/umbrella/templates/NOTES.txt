@@ -1,0 +1,9 @@
+{{ .Release.Name }} is installed: its web app and its API.
+{{- if .Values.web.ingress.enabled }}
+
+Address: https://{{ .Values.web.ingress.host }}
+{{- end }}
+
+Check both:  helm test {{ .Release.Name }} -n {{ .Release.Namespace }}
+Logs:        kubectl -n {{ .Release.Namespace }} logs deploy/{{ .Release.Name }}-web
+             kubectl -n {{ .Release.Namespace }} logs deploy/{{ .Release.Name }}-api

@@ -1,0 +1,20 @@
+apiVersion: v2
+# The app's name (score.yaml metadata.name) — the helm-chart skill sets it. In a pair: `api` or `web`.
+name: canvas-app
+description: A Canvas app, packaged for any Kubernetes cluster. Written by the helm-chart skill; Canvas never reads it.
+type: application
+# The chart's own version: bump it on every change to the chart.
+version: 0.1.0
+# The image's tag when image.tag is empty.
+appVersion: "0.1.0"
+# Helm dependencies wherever one exists. Each is off until its value says otherwise, and
+# `helm dependency build` fetches only what Chart.lock pins.
+dependencies:
+  - name: postgresql
+    version: 18.12.14
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql.enabled
+  - name: redis
+    version: 28.3.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: redis.enabled

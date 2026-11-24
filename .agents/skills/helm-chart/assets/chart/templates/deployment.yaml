@@ -1,0 +1,220 @@
+{{- include "canvasapp.validate" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "canvasapp.fullname" . }}
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  {{- if .Values.persistence.enabled }}
+  # A ReadWriteOnce disk attaches to one node: the old pod lets go before the new one starts.
+  strategy: { type: Recreate }
+  {{- else }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "canvasapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "canvasapp.selectorLabels" . | nindent 8 }}
+      annotations:
+        # A changed setting restarts the pods: env is read once, at start.
+        checksum/env: {{ toJson (list .Values.env .Values.access .Values.secrets .Values.links) | sha256sum }}
+    spec:
+      # The app never calls the Kubernetes API, so it carries no token for it.
+      automountServiceAccountToken: false
+      {{- include "canvasapp.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        # The Dockerfile's user: the same uid and gid as on Canvas.
+        runAsNonRoot: true
+        runAsUser: 1002
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+      {{- if gt (int .Values.replicaCount) 1 }}
+      # Spread over nodes, so one lost node leaves a replica serving.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          matchLabelKeys: [pod-template-hash]
+          labelSelector:
+            matchLabels:
+              {{- include "canvasapp.selectorLabels" . | nindent 14 }}
+      {{- end }}
+      containers:
+        - name: app
+          image: {{ include "canvasapp.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          ports:
+            - name: http
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          env:
+            - name: PORT
+              value: {{ .Values.port | quote }}
+            {{- $public := .Values.publicUrl }}
+            {{- if and (not $public) .Values.ingress.enabled }}
+            {{- $public = printf "%s://%s" (ternary "https" "http" .Values.ingress.tls.enabled) .Values.ingress.host }}
+            {{- end }}
+            {{- with $public }}
+            - name: PUBLIC_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- /* Each only when the app uses it: unset is the SDK's own default. */}}
+            {{- if include "canvasapp.sso" . }}
+            # The X-authentik-* headers say who is calling (ajnkit.identity), and `access` applies.
+            - name: PLATFORM_AUTH
+              value: "sso"
+            {{- end }}
+            {{- with .Values.access }}
+            - name: PLATFORM_ACCESS
+              value: {{ toJson . | quote }}
+            {{- end }}
+            {{- if eq .Values.docs "public" }}
+            - name: PLATFORM_DOCS
+              value: "public"
+            {{- end }}
+            {{- if .Values.egress.proxy }}
+            {{- range $n := list "HTTP_PROXY" "HTTPS_PROXY" "http_proxy" "https_proxy" }}
+            - { name: {{ $n }}, value: {{ $.Values.egress.url | quote }} }
+            {{- end }}
+            {{- range $n := list "NO_PROXY" "no_proxy" }}
+            - { name: {{ $n }}, value: {{ $.Values.egress.noProxy | quote }} }
+            {{- end }}
+            - { name: NODE_USE_ENV_PROXY, value: "1" }
+            {{- end }}
+            {{- if .Values.llm.enabled }}
+            - name: OPENAI_BASE_URL
+              value: {{ .Values.llm.baseUrl | quote }}
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef: { name: {{ include "canvasapp.secretName" . }}, key: OPENAI_API_KEY }
+            {{- with .Values.llm.models }}
+            - name: PLATFORM_LLM_MODELS
+              value: {{ join "," . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if and .Values.authentik.enabled .Values.authentik.signOutUrl }}
+            - name: PLATFORM_SIGN_OUT_URL
+              value: {{ .Values.authentik.signOutUrl | quote }}
+            {{- end }}
+            {{- include "canvasapp.databaseEnv" . | nindent 12 }}
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canvasapp.secretName" . }}
+                  key: redis-password
+            - name: REDIS_URL
+              value: {{ printf "redis://:$(REDIS_PASSWORD)@%s:6379/0" (include "canvasapp.redis.host" .) | quote }}
+            {{- else if .Values.externalRedis.enabled }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef: { name: {{ include "canvasapp.secretName" . }}, key: REDIS_URL }
+            {{- end }}
+            {{- if .Values.persistence.enabled }}
+            - name: DATA_DIR
+              value: {{ .Values.persistence.mountPath | quote }}
+            {{- end }}
+            {{- range .Values.links }}
+            - name: {{ printf "%s_URL" (.name | upper | replace "-" "_") }}
+              value: {{ .url | default (printf "http://%s-%s:%v" $.Release.Name .chart (.port | default 8080)) | quote }}
+            {{- end }}
+            {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | toString | quote }}
+            {{- end }}
+            {{- $secret := include "canvasapp.secretName" . }}
+            {{- range .Values.secrets.keys }}
+            - name: {{ . }}
+              valueFrom:
+                secretKeyRef: { name: {{ $secret }}, key: {{ . }} }
+            {{- end }}
+            {{- range .Values.secrets.files }}
+            - name: {{ printf "%s_FILE" . }}
+              value: {{ printf "/secrets/%s" . | quote }}
+            {{- end }}
+          volumeMounts:
+            # The root filesystem is read-only: /tmp is where a library or an upload writes.
+            - { name: tmp, mountPath: /tmp }
+            {{- if eq .Values.stack "next" }}
+            - { name: next-cache, mountPath: /workspace/.next/cache }
+            {{- end }}
+            {{- if .Values.persistence.enabled }}
+            - { name: data, mountPath: {{ .Values.persistence.mountPath }} }
+            {{- end }}
+            {{- if .Values.secrets.files }}
+            - { name: secret-files, mountPath: /secrets, readOnly: true }
+            {{- end }}
+          startupProbe:
+            httpGet: { path: {{ .Values.healthPath }}, port: http }
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: {{ .Values.healthPath }}, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet: { path: {{ .Values.healthPath }}, port: http }
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 512Mi }
+        {{- if eq .Values.stack "next" }}
+        - name: next-cache
+          emptyDir: { sizeLimit: 256Mi }
+        {{- end }}
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "canvasapp.fullname" . }}-data
+        {{- end }}
+        {{- with .Values.secrets.files }}
+        - name: secret-files
+          secret:
+            secretName: {{ include "canvasapp.secretName" $ }}
+            # The owner and the app's group, nobody else.
+            defaultMode: 0440
+            items:
+              {{- range . }}
+              - { key: {{ . }}, path: {{ . }} }
+              {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- if gt (int .Values.replicaCount) 1 }}
+---
+# More than one replica: node maintenance never takes the last one down.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "canvasapp.fullname" . }}
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      {{- include "canvasapp.selectorLabels" . | nindent 6 }}
+{{- end }}

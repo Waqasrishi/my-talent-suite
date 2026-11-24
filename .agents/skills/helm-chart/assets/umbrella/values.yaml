@@ -1,0 +1,55 @@
+# Values for a Canvas pair outside Canvas: one release, its web app and its API. Each subchart's
+# own values.yaml documents every setting; set them here under api: and web:.
+# Never put a secret's value in this file: they go in secret.yaml (a filled-in copy of
+# secret.example.yaml), applied with kubectl before the install, and never committed.
+
+# -- Shared by both.
+global:
+  # Prefixed to both images, e.g. registry.example.com/team
+  imageRegistry: ""
+  imagePullSecrets: []
+  # The one Secret both parts read — created before the install (kubectl apply -f secret.yaml).
+  secretName: canvas-pair-secrets
+
+# -- The API (Python): no address of its own — only the web app reaches it, as on Canvas
+#    (scope: internal-cluster). It owns the data: the database and its migrations are its.
+api:
+  enabled: true
+  stack: python
+  image:
+    repository: canvas-pair-api
+  # The web app forwards the signed-in person's X-authentik-* headers with every call; the API
+  # trusts them because nothing but the web app can reach it.
+  identity:
+    fromCaller: true
+  networkPolicy:
+    enabled: true
+    allowFrom: [web]
+  ingress:
+    enabled: false
+  secrets:
+    keys: []
+  postgresql:
+    enabled: false
+    auth:
+      existingSecret: canvas-pair-secrets
+
+# -- The web app (Next): the pair's address and its sign-in.
+web:
+  enabled: true
+  stack: next
+  image:
+    repository: canvas-pair-web
+  ingress:
+    enabled: true
+    host: canvas-pair.example.com
+  authentik:
+    enabled: true
+    signOutUrl: ""
+  # API_URL → the API's Service in this release: what serviceUrl("api") reads.
+  links:
+    - name: api
+      chart: api
+      port: 8080
+  secrets:
+    keys: []

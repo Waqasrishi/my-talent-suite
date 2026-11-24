@@ -41,5 +41,6 @@ Locally there is no platform around the app, so what score.yaml declares is not 
 
 ## What NOT to do
 
-- Do not start containers by hand or write a compose file, a Dockerfile or a `run.sh`.
+- Do not start containers by hand or write a compose file, a Dockerfile or a `run.sh`. To run it
+  outside Canvas, on a Kubernetes cluster, is `helm-chart`.
 - Do not run `canvas down` to stop it: `canvas down` **deletes the deployed app**, not the local one.

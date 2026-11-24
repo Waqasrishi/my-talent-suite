@@ -1,0 +1,68 @@
+{{- /* db/migrations, applied by Canvas's own runner (files/migrate.sh). After install — Bitnami's
+database is one of this release's resources, so it does not exist before — and before every upgrade,
+so the new version starts on the schema it needs. A failed run keeps its Job, and its log, until the
+next one. */}}
+{{- $sql := .Files.Glob "files/migrations/*.sql" }}
+{{- if and .Values.migrations.enabled (include "canvasapp.hasDatabase" .) $sql }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-migrations
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+data:
+  {{- $sql.AsConfig | nindent 2 }}
+  migrate.sh: |
+    {{- .Files.Get "files/migrate.sh" | nindent 4 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "canvasapp.fullname" . }}-migrate
+  labels:
+    {{- include "canvasapp.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "canvasapp.name" . }}-migrate
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      {{- include "canvasapp.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        # The postgres image's own user.
+        runAsNonRoot: true
+        runAsUser: 70
+        runAsGroup: 70
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: migrate
+          image: {{ .Values.migrations.image | quote }}
+          command: ["sh", "/migrations/migrate.sh"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          env:
+            {{- include "canvasapp.databaseEnv" . | nindent 12 }}
+          volumeMounts:
+            - { name: migrations, mountPath: /migrations, readOnly: true }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }
+      volumes:
+        - name: migrations
+          configMap:
+            name: {{ include "canvasapp.fullname" . }}-migrations
+{{- end }}

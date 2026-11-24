@@ -1,0 +1,11 @@
+# Next to the Dockerfile as <Dockerfile>.dockerignore, so nothing is added to the app's own folder.
+.git
+.venv
+**/__pycache__
+.pytest_cache
+.ruff_cache
+data
+custom-deploy
+.env
+.env.*
+*.log

@@ -1,0 +1,5 @@
+# Not part of the packaged chart: the Secret, as an example and filled in.
+secret.yaml
+secret.example.yaml
+.DS_Store
+.git/

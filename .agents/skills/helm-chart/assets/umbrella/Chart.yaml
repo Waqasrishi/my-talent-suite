@@ -1,0 +1,17 @@
+apiVersion: v2
+# The pair's name — the helm-chart skill sets it. One chart to install: its API and its web app are
+# subcharts in charts/, made from the same template as a single app's chart.
+name: canvas-pair
+description: A Canvas pair (web app + API), packaged for any Kubernetes cluster. Written by the helm-chart skill; Canvas never reads it.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+# Local subcharts, unpacked in charts/: no repository. Each fetches its own dependencies
+# (the API's Bitnami PostgreSQL) with `helm dependency build charts/<name>` first.
+dependencies:
+  - name: api
+    version: 0.1.0
+    condition: api.enabled
+  - name: web
+    version: 0.1.0
+    condition: web.enabled

@@ -1,0 +1,31 @@
+{{- /* The web app answers, and its API answers — from a pod the API's NetworkPolicy lets in as the
+web app would be let in (the test label), so the policy itself is not what fails. */}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-test-end-to-end
+  labels:
+    canvas.dev/helm-test: {{ printf "%s-api" .Release.Name | quote }}
+  annotations:
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile: { type: RuntimeDefault }
+  containers:
+    - name: end-to-end
+      image: docker.io/library/busybox:1.37
+      command:
+        - sh
+        - -c
+        - >-
+          wget -q -O- http://{{ .Release.Name }}-web:{{ .Values.web.port | default 8080 }}{{ .Values.web.healthPath | default "/healthz" }} &&
+          wget -q -O- http://{{ .Release.Name }}-api:{{ .Values.api.port | default 8080 }}{{ .Values.api.healthPath | default "/healthz" }}
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities: { drop: [ALL] }
